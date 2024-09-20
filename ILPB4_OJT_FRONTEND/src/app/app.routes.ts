@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { MarketlistComponent } from './features/marketlist/marketlist.component'; // Make sure to update the path
+import { MarketlistComponent } from './features/pages/marketlist/marketlist.component'; // Make sure to update the path
 
 export const routes: Routes = [
   {
