@@ -1,0 +1,40 @@
+<p-card>
+    <div class="header">
+      <h1>{{ marketDetails.marketCode }} - {{ marketDetails.marketName }}</h1>
+    </div>
+    
+    <p-panel header="Region">
+      {{ marketDetails.region }}
+    </p-panel>
+  
+    <p-panel header="Subregion">
+      {{ marketDetails.subregion }}
+    </p-panel>
+  
+    <p-panel header="Market Name">
+      {{ marketDetails.marketName }}
+    </p-panel>
+  
+    <p-panel header="Long Code">
+      {{ marketDetails.longCode }}
+    </p-panel>
+  
+    <p-panel header="Market Tags">
+      <div *ngFor="let tag of marketDetails.tags">
+        <p-tag>{{ tag }}</p-tag>
+      </div>
+    </p-panel>
+  
+    <p-panel header="Subgroup(s)">
+      <div *ngFor="let subgroup of marketDetails.subgroups">
+        <p>{{ subgroup.name }}</p>
+        <div *ngIf="subgroup.tags && subgroup.tags.length">
+          <p-tag *ngFor="let tag of subgroup.tags">{{ tag }}</p-tag>
+        </div>
+        <div *ngIf="!subgroup.tags || subgroup.tags.length === 0">
+          <p>No tags added</p>
+        </div>
+      </div>
+    </p-panel>
+  </p-card>
+  
