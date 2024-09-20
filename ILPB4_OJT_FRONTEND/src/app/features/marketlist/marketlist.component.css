@@ -1,6 +1,7 @@
 .container{
     margin: 10px;
     
+    
 }
 .market-header {
     display: flex;
@@ -27,18 +28,20 @@
 }
 
 
+
+
 .add-market-button {
     display: flex;
     align-items: center;
-    background-color: #0a55a4;
+    background-color: var(--primary-navy-color);
     border: none;
     color: white;
     padding: 10px 20px;
     font-size: 16px;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-right: 10px; /* Add right margin to adjust the button's position */
+    
     margin-bottom: 5px; /* Margin below button to separate from the underline */
 }
 
@@ -56,6 +59,7 @@
     padding: 1rem;
     border-radius: 8px;
     background-color: #fff;
+    
 }
 
 /* Table layout adjustments */
@@ -63,6 +67,7 @@
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
+   
 }
 
 /* Header styling */

@@ -1,7 +1,7 @@
 <div class="container">
     <div class="market-header">
         <h2>Markets</h2>
-        <button class="add-market-button"><i class="pi pi-plus"></i> Create Market</button>
+        <button class="add-market-button" [routerLink]="['/marketlist/create']" routerLinkActive="router-link-active" ><i class="pi pi-plus"></i> Create Market</button>
     </div>
     <div class="card">
         <p-table [value]="markets" [tableStyle]="{'min-width': '60rem'}" sortMode="single" (onSort)="onSort($event)">

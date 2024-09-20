@@ -3,6 +3,7 @@ import { TableModule } from 'primeng/table';
 import { HttpClientModule } from '@angular/common/http';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
+import { RouterLink } from '@angular/router';
 
 interface Market {
   code: string;
@@ -18,7 +19,7 @@ interface Market {
     TableModule, 
     HttpClientModule, 
     InputTextModule, 
-    TagModule
+    TagModule,RouterLink
   ],
   templateUrl: './marketlist.component.html',
   styleUrls: ['./marketlist.component.css']
