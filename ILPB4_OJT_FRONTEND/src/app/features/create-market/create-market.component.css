@@ -1,0 +1,152 @@
+/* Main container for the Create Market form */
+.create-market-container {
+    max-width: 700px;
+    margin: 0 auto; /* Center the form horizontally */
+    padding: 20px;
+    font-family: 'DM Sans', sans-serif;
+    background-color: #fff; /* Background for the form */
+    border: 1px solid #e1e5eb;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Optional box shadow for depth */
+  }
+  
+  h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .form-section {
+    margin-bottom: 20px;
+  }
+  
+  .form-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+  }
+  
+  .region-options {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .shortcode-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Shortcode and Market Name container styling */
+  .shortcode-marketname-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #c4cfd9; /* Light gray border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* Slight shadow */
+    width: 100%; /* Make the container full width */
+  }
+  
+  /* Inputs for Short Code and Market Name */
+  .shortcode-input,
+  .marketname-input {
+    border: none;
+    padding: 0 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none; /* Remove default outline */
+    background-color: transparent; /* Match background with the container */
+  }
+  
+  .shortcode-input {
+    flex: 1; /* Give less space to the Short Code */
+    max-width: 100px; /* Limit the width for Short Code */
+    text-align: left; /* Align text to the left */
+  }
+  
+  .marketname-input {
+    flex: 3; /* Give more space to Market Name */
+    text-align: left; /* Align text to the left */
+  }
+  
+  /* Divider between Short Code and Market Name */
+  .divider {
+    height: 100%;
+    width: 1px;
+    background-color: #c4cfd9; /* Color for the divider */
+    margin: 0 10px; /* Spacing around the divider */
+  }
+  
+  /* Tag button styling */
+  .tag-button {
+    background-color: transparent;
+    border: none;
+    color: #007bff; /* Primary color */
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .tag-button i {
+    margin-right: 5px;
+  }
+  
+  /* Long Code input styling */
+  .longcode-input {
+    padding: 10px;
+    border: 1px solid #c4cfd9;
+    border-radius: 8px;
+    width: 100%; /* Full width for long code */
+    font-size: 14px;
+    background-color: #fff;
+  }
+  
+  /* Focus state for input containers */
+  .shortcode-marketname-container:focus-within,
+  .longcode-input:focus {
+    border-color: #007bff; /* Change border color when focused */
+  }
+  
+  /* Submit Button */
+  .submit-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    display: inline-block;
+  }
+  
+  .submit-button[disabled] {
+    background-color: #aaa; /* Disabled state */
+    cursor: not-allowed;
+  }
+  
+  /* Media Query for responsive design */
+  @media (max-width: 768px) {
+    .shortcode-marketname-container {
+      flex-direction: column;
+    }
+  
+    .divider {
+      display: none; /* Hide divider on small screens */
+    }
+  
+    .shortcode-input,
+    .marketname-input {
+      width: 100%;
+    }
+  
+    .region-options {
+      flex-direction: column; /* Stack radio buttons vertically on small screens */
+    }
+  }
+  

@@ -33,7 +33,7 @@
 .add-market-button {
     display: flex;
     align-items: center;
-    background-color: #0a55a4;
+    background-color: var(--primary-navy-color);
     border: none;
     color: white;
     padding: 10px 20px;
