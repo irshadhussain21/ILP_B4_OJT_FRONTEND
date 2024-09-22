@@ -43,3 +43,6 @@
     margin: 0;
     font-family: var(--font-primary);
 }
+body {
+    padding-top: 60px; /* Add padding to the body to prevent content from hiding under the navbar */
+  }

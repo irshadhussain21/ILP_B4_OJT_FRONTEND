@@ -1,46 +1,94 @@
 /* Main container for the Create Market form */
 .create-market-container {
-    max-width: 700px;
-    margin: 0 auto; /* Center the form horizontally */
+    max-width: 100vw;
+    margin: 0; /* Remove centering and align container to the left */
     padding: 20px;
     font-family: 'DM Sans', sans-serif;
     background-color: #fff; /* Background for the form */
-    border: 1px solid #e1e5eb;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Optional box shadow for depth */
-  }
-  
-  h1 {
+    text-align: left; /* Align contents to the left */
+    height: 100vh; /* Full height */
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
-  }
-  
-  .form-section {
+    text-align: left; /* Ensure heading is left-aligned */
+}
+
+hr {
+    margin-bottom: 10px;
+}
+
+/* Scrollable content container */
+.scrollable-content {
+    overflow-y: auto; /* Make this container scrollable */
+    flex: 1; /* Allow it to take up the remaining space */
+    padding-right: 10px; /* Optional padding to avoid scroll bar overlapping the content */
     margin-bottom: 20px;
-  }
-  
-  .form-label {
+}
+
+/* Retain all your existing styles below this point */
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-label {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 5px;
     display: block;
-  }
-  
-  .region-options {
+    text-align: left; /* Ensure labels are left-aligned */
+}
+.asterik {
+    color: red;
+}
+.region-options {
     display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
     gap: 10px;
     margin-top: 10px;
-  }
-  
-  .shortcode-section {
+}
+
+.region-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border: 1px solid #d1d5db; /* Light gray border */
+    border-radius: 20px; /* Rounded corners */
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow */
+    cursor: pointer; /* Make it look clickable */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth hover effect */
+}
+
+.region-option:hover {
+    border-color: #007bff; /* Change border color on hover */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
+}
+
+.region-option .p-radiobutton {
+    margin-right: 10px; /* Space between the radio button and label */
+}
+
+.region-option label {
+    font-size: 14px; /* Adjust font size */
+    color: #333; /* Text color */
+    cursor: pointer;
+}
+
+.shortcode-section {
     display: flex;
     align-items: center;
     gap: 10px;
-  }
-  
-  /* Shortcode and Market Name container styling */
-  .shortcode-marketname-container {
+    text-align: left; /* Ensure section is left-aligned */
+}
+
+/* Shortcode and Market Name container styling */
+.shortcode-marketname-container {
     display: flex;
     align-items: center;
     border: 1px solid #c4cfd9; /* Light gray border */
@@ -49,40 +97,38 @@
     background-color: #fff;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* Slight shadow */
     width: 100%; /* Make the container full width */
-  }
-  
-  /* Inputs for Short Code and Market Name */
-  .shortcode-input,
-  .marketname-input {
+}
+
+.shortcode-input,
+.marketname-input {
     border: none;
     padding: 0 10px;
     font-size: 14px;
     font-family: 'DM Sans', sans-serif;
     outline: none; /* Remove default outline */
     background-color: transparent; /* Match background with the container */
-  }
-  
-  .shortcode-input {
+    text-align: left; /* Align text to the left */
+}
+
+.shortcode-input {
     flex: 1; /* Give less space to the Short Code */
     max-width: 100px; /* Limit the width for Short Code */
     text-align: left; /* Align text to the left */
-  }
-  
-  .marketname-input {
+}
+
+.marketname-input {
     flex: 3; /* Give more space to Market Name */
     text-align: left; /* Align text to the left */
-  }
-  
-  /* Divider between Short Code and Market Name */
-  .divider {
+}
+
+.divider {
     height: 100%;
     width: 1px;
     background-color: #c4cfd9; /* Color for the divider */
     margin: 0 10px; /* Spacing around the divider */
-  }
-  
-  /* Tag button styling */
-  .tag-button {
+}
+
+.tag-button {
     background-color: transparent;
     border: none;
     color: #007bff; /* Primary color */
@@ -90,30 +136,29 @@
     font-size: 16px;
     display: flex;
     align-items: center;
-  }
-  
-  .tag-button i {
+    text-align: left; /* Ensure text is left-aligned */
+}
+
+.tag-button i {
     margin-right: 5px;
-  }
-  
-  /* Long Code input styling */
-  .longcode-input {
+}
+
+.longcode-input {
     padding: 10px;
     border: 1px solid #c4cfd9;
     border-radius: 8px;
     width: 100%; /* Full width for long code */
     font-size: 14px;
     background-color: #fff;
-  }
-  
-  /* Focus state for input containers */
-  .shortcode-marketname-container:focus-within,
-  .longcode-input:focus {
+    text-align: left; /* Align input text to the left */
+}
+
+.shortcode-marketname-container:focus-within,
+.longcode-input:focus {
     border-color: #007bff; /* Change border color when focused */
-  }
-  
-  /* Submit Button */
-  .submit-button {
+}
+
+.submit-button {
     padding: 10px 20px;
     background-color: #007bff;
     color: #fff;
@@ -123,30 +168,29 @@
     font-size: 16px;
     margin-top: 20px;
     display: inline-block;
-  }
-  
-  .submit-button[disabled] {
+    text-align: left; /* Align button text to the left */
+}
+
+.submit-button[disabled] {
     background-color: #aaa; /* Disabled state */
     cursor: not-allowed;
-  }
-  
-  /* Media Query for responsive design */
-  @media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
     .shortcode-marketname-container {
-      flex-direction: column;
+        flex-direction: column;
     }
-  
+
     .divider {
-      display: none; /* Hide divider on small screens */
+        display: none; /* Hide divider on small screens */
     }
-  
+
     .shortcode-input,
     .marketname-input {
-      width: 100%;
+        width: 100%;
     }
-  
+
     .region-options {
-      flex-direction: column; /* Stack radio buttons vertically on small screens */
+        flex-direction: column; /* Stack radio buttons vertically on small screens */
     }
-  }
-  
+}
