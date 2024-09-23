@@ -5,6 +5,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Tooltip, TooltipModule } from 'primeng/tooltip';
 
 interface Market {
   longcode: string;
@@ -24,14 +26,17 @@ interface Market {
     HttpClientModule, 
     InputTextModule, 
     CommonModule,
-    TagModule,RouterLink
+    TooltipModule,
+    TagModule,RouterLink,FormsModule
   ],
   templateUrl: './marketlist.component.html',
   styleUrls: ['./marketlist.component.css']
 })
 export class MarketlistComponent implements OnInit {
   markets!: Market[];
+  filteredMarkets!: Market[];
   selectedMarket!: Market;  // Updated type to Market
+  searchText: string = ''; 
 
   constructor() {}
   sortField: string = '';
@@ -81,6 +86,25 @@ export class MarketlistComponent implements OnInit {
         country: 'Brazil'
       }
     ];
+    this.filteredMarkets = this.markets;
   }
+  filterMarkets() {
+    if (this.searchText) {
+      this.filteredMarkets = this.markets.filter(market => 
+        market.longcode.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        market.marketcode.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        market.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        market.region.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        market.subregion.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        market.country.toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    } else {
+      this.filteredMarkets = this.markets;  // Show all markets if search text is empty
+    }
+  }
+  clearFilter() {
+    this.searchText = ''; // Clear the search text
+    this.filterMarkets(); // Call the filter method to refresh the displayed markets
+}
 
 }

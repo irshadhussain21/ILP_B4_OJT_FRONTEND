@@ -58,9 +58,49 @@
     
 }
 
+/* Search bar styling */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.p-input-icon-left input {
+    padding-left: 35px; /* Adjust padding-left to make space for the icon */
+    padding-right: 12px; /* Optional: extra padding on the right */
+    padding-top: 10px; 
+    padding-bottom: 10px;
+    font-size: 16px; /* Larger font size */
+    border-radius: 8px; /* Rounded corners */
+    width: 300px; /* Increase width of the search bar */
+    box-sizing: border-box; /* Ensure the padding is included in the element’s width */
+}
+
+.p-input-icon-left i {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.p-input-icon-left {
+    position: relative;
+}
+.p-input-icon-left .pi-search {
+    left: 10px; /* Position for search icon */
+}
+
+.p-input-icon-left .pi-times {
+    right: 10px; /* Position for close icon */
+    font-size: 18px; /* Adjust icon size */
+    color: #a0a0a0; /* Color for the close icon */
+}
+.p-input-icon-left input:focus {
+    outline: none; /* Remove default outline */
+    box-shadow: 0 4px 8px rgb(34, 130, 241);; /* Blue shadow */
+}
+
 /* Table layout adjustments */
 .p-table-container {
-    overflow-x: auto; /* Horizontal scroll enabled */
+    overflow-x: scroll; /* Horizontal scroll enabled */
+    overflow-y: scroll;
 }
 .p-table {
     width: 100%;
