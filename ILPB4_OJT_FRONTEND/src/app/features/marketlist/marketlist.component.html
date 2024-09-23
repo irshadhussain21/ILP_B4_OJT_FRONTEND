@@ -3,8 +3,16 @@
         <h2>Markets</h2>
         <button class="add-market-button" [routerLink]="['/marketlist/create']" routerLinkActive="router-link-active" ><i class="pi pi-plus"></i> Create Market</button>
     </div>
-    <div class="card">
-        <p-table [value]="markets" [tableStyle]="{'min-width': '60rem'}" sortMode="single" (onSort)="onSort($event)">
+
+   <div class="search-container">
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input type="text" pInputText placeholder="Search markets..." [(ngModel)]="searchText" (input)="filterMarkets()" />
+                <i class="pi pi-times" *ngIf="searchText" (click)="clearFilter()" style="cursor: pointer;"></i> <!-- Close icon -->
+            </span>
+        </div>
+        <div class="p-table-container">
+        <p-table [value]="markets" scrollable="true" [tableStyle]="{'min-width': '60rem'}" sortMode="single" (onSort)="onSort($event)">
             <ng-template pTemplate="header">
                 <tr class="custom-header">
                     <th pSortableColumn="longcode" style="width:25%">
@@ -39,8 +47,8 @@
             </ng-template>
             <ng-template pTemplate="body" let-market>
                 <tr>
-                    <td>{{ market.longcode }}</td>
-                    <td>{{ market.code }}</td>
+                    <td [pTooltip]="market.longcode" tooltipPosition="top">{{ market.longcode }}</td>
+                    <td>{{ market.marketcode }}</td>
                     <td>{{ market.name }}</td>
                     <td>{{ market.subgroups }}</td>
                     <td>{{ market.region }}</td>
