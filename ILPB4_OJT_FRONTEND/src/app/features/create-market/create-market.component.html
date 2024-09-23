@@ -7,7 +7,7 @@
       <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
           <!-- Region Selection -->
           <label for="region" class="form-label">Region <span class="asterik">*</span></label>
-          <p>Select a Region</p>
+          <p class="form-sub-label">Select a Region</p>
           <div class="region-options">
               <div class="region-option" *ngFor="let region of regions">
                   <p-radioButton [label]="region.name" [value]="region.value" formControlName="region"></p-radioButton>
@@ -17,7 +17,7 @@
           <!-- Short Code / Market Name -->
           <div class="form-section">
               <label class="form-label">Short Code/Market Name <span class="asterik">*</span></label>
-              <p>Enter a two-letter Market Code, a Market Name</p>
+              <p class="form-sub-label">Enter a two-letter Market Code, a Market Name</p>
 
               <!-- Short Code and Market Name as combined input with divider -->
               <div class="shortcode-marketname-container">
@@ -30,7 +30,7 @@
           <!-- Long Code -->
           <div class="form-section">
               <label for="longCode" class="form-label">Long Code <span class="asterik">*</span></label>
-              <p>Enter Long Market Code in the defined format</p>
+              <p class="form-sub-label">Enter Long Market Code in the defined format</p>
               <input formControlName="longCode" type="text" class="longcode-input" />
           </div>
 
