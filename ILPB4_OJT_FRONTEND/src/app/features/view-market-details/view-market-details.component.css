@@ -1,0 +1,68 @@
+/* Style for the entire card */
+.card {
+   
+    padding: 20px;
+  
+    border-radius: 6px;
+    background-color: white;
+    font-family: 'Arial', sans-serif;
+}
+.header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+.panel {
+    margin-bottom: 20px;
+}
+.panel-header {
+    font-weight:normal;
+    font-size: 12px;
+    color: #898f91;
+    margin-bottom: 5px;
+}
+.panel-content {
+    font-size: 14px;
+    color: #666;
+    /* border-bottom: 1px dashed #d3d3d3; */
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+
+}
+.subgrouppanel-contt
+{
+    font-size: 14px;
+    color: #666;
+    border-bottom: 1px dashed #d3d3d3;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+/* Style for the tag elements */
+.tag {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #f0f4f7;
+    border-radius: 3px;
+    font-size: 13px;
+    color: #555;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+::ng-deep .p-chip {
+    background-color: #e9f1f4; 
+    border-radius: 12px;      
+    padding: 4px 10px;       
+    color: #333;              
+    font-size: 14px;          
+    margin-right: 8px;       
+    border: none;             
+}
+
+::ng-deep .p-chip-text {
+    color: #333;              
+    font-family: Arial, sans-serif;
+}
+

@@ -1,40 +1,59 @@
-<p-card>
+<div class="card">
     <div class="header">
-      <h1>{{ marketDetails.marketCode }} - {{ marketDetails.marketName }}</h1>
+        <h1>AA - Antarctica</h1>
     </div>
     
-    <p-panel header="Region">
-      {{ marketDetails.region }}
-    </p-panel>
-  
-    <p-panel header="Subregion">
-      {{ marketDetails.subregion }}
-    </p-panel>
-  
-    <p-panel header="Market Name">
-      {{ marketDetails.marketName }}
-    </p-panel>
-  
-    <p-panel header="Long Code">
-      {{ marketDetails.longCode }}
-    </p-panel>
-  
-    <p-panel header="Market Tags">
-      <div *ngFor="let tag of marketDetails.tags">
-        <p-tag>{{ tag }}</p-tag>
-      </div>
-    </p-panel>
-  
-    <p-panel header="Subgroup(s)">
-      <div *ngFor="let subgroup of marketDetails.subgroups">
-        <p>{{ subgroup.name }}</p>
-        <div *ngIf="subgroup.tags && subgroup.tags.length">
-          <p-tag *ngFor="let tag of subgroup.tags">{{ tag }}</p-tag>
+    <div class="panel">
+        <div class="panel-header">Region</div>
+        <div class="panel-content">
+            LAAPA – Latin America, Asia Pacific and Africa
         </div>
-        <div *ngIf="!subgroup.tags || subgroup.tags.length === 0">
-          <p>No tags added</p>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">Subregion</div>
+        <div class="pancontentel-content">
+            Africa and Middle East
         </div>
-      </div>
-    </p-panel>
-  </p-card>
-  
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">Market Name</div>
+        <div class="panel-content">
+            Antarctica
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">Long Code</div>
+        <div class="panel-content">
+            L-AQ.AA.AA
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">Market Tags</div>
+        <div class="panel-content">
+            <p-chip label="Nandana Marketing tag1"></p-chip>
+            <p-chip label="Nandana Marketing tag2 ha ha ha"></p-chip>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">Subgroup(s)</div>
+        <div class="subgrouppanel-contt">
+            <p>AAF - ff</p>
+            <p>No tags added</p>
+        </div>
+
+        <div class="subgrouppanel-contt">en
+            <p>AAQ - Q Island</p>
+            <p>No tags added</p>
+        </div>
+
+        <div class="panel-content">
+            <p>AAR - Ross Island</p>
+            <span class="tag">Coast</span>
+        </div>
+    </div>
+</div>
