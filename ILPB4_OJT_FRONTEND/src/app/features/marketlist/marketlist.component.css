@@ -1,8 +1,7 @@
 .container{
-    margin: 10px;
-    
-    
+    margin: 10px; 
 }
+
 .market-header {
     display: flex;
     justify-content: space-between;
@@ -26,9 +25,6 @@
 .custom-header th:last-child {
     border-right: none; /* Remove right border for the last header cell */
 }
-
-
-
 
 .add-market-button {
     display: flex;
@@ -63,11 +59,23 @@
 }
 
 /* Table layout adjustments */
+.p-table-container {
+    overflow-x: auto; /* Horizontal scroll enabled */
+}
 .p-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
-   
+    white-space: nowrap;  /* Prevent text from wrapping to the next line */
+}
+.p-table td {
+    white-space: nowrap;  /* Prevent text from wrapping */
+    overflow: hidden;     /* Hide the overflow */
+    text-overflow: ellipsis;  /* Add ellipsis (...) when text overflows */
+    max-width: 150px;     /* Set a maximum width for the column */
+}
+.p-table th {
+    max-width: 150px;  /* Match the width of the td cells */
 }
 
 /* Header styling */
@@ -79,16 +87,7 @@
     border-bottom: 2px solid #dee2e6;
 }
 
-/* Body row styling */
-.p-table tbody td {
-    padding: 10px;
-    border-bottom: 1px solid #dee2e6;
-}
 
-/* Alternate row background color */
-.p-table tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
 
 /* Hover effect for table rows */
 .p-table tbody tr:hover {

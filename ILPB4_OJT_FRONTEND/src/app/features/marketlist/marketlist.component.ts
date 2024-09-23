@@ -4,11 +4,15 @@ import { HttpClientModule } from '@angular/common/http';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 interface Market {
-  code: string;
+  longcode: string;
+  marketcode: string;
   name: string;
   subgroups: string[];
+  region: string;
+  subregion: string;
   country: string;
 }
 
@@ -19,6 +23,7 @@ interface Market {
     TableModule, 
     HttpClientModule, 
     InputTextModule, 
+    CommonModule,
     TagModule,RouterLink
   ],
   templateUrl: './marketlist.component.html',
@@ -40,27 +45,39 @@ export class MarketlistComponent implements OnInit {
   ngOnInit() {
     this.markets = [
       {
-        code: 'MK001',
+        longcode:'L-ANL-ES',
+        marketcode: 'MK001',
         name: 'North American Market',
         subgroups: ['Retail', 'Wholesale', 'Online'],
+        region:'los angeles',
+        subregion:'la',
         country: 'USA'
       },
       {
-        code: 'MK002',
+        longcode:'L-ANS-ES',
+        marketcode: 'MK002',
         name: 'European Market',
         subgroups: ['Retail', 'Wholesale'],
+        region:'los angeles',
+        subregion:'la',
         country: 'Germany'
       },
       {
-        code: 'MK003',
+        longcode:'L-ANS-ES',
+        marketcode: 'MK003',
         name: 'Asian Market',
         subgroups: ['Online', 'Export'],
+        region:'los angeles',
+        subregion:'la',
         country: 'Japan'
       },
       {
-        code: 'MK004',
+        longcode:'L-ANS-ES',
+        marketcode: 'MK004',
         name: 'South American Market',
         subgroups: ['Retail', 'Export'],
+        region:'los angeles',
+        subregion:'la',
         country: 'Brazil'
       }
     ];

@@ -4,7 +4,8 @@
         <button class="add-market-button" [routerLink]="['/marketlist/create']" routerLinkActive="router-link-active" ><i class="pi pi-plus"></i> Create Market</button>
     </div>
     <div class="card">
-        <p-table [value]="markets" [tableStyle]="{'min-width': '60rem'}" sortMode="single" (onSort)="onSort($event)">
+        <div class="p-table-container">
+        <p-table [value]="markets" scrollable="true" [tableStyle]="{'min-width': '60rem'}" sortMode="single" (onSort)="onSort($event)">
             <ng-template pTemplate="header">
                 <tr class="custom-header">
                     <th pSortableColumn="longcode" style="width:25%">
@@ -40,7 +41,7 @@
             <ng-template pTemplate="body" let-market>
                 <tr>
                     <td>{{ market.longcode }}</td>
-                    <td>{{ market.code }}</td>
+                    <td>{{ market.marketcode }}</td>
                     <td>{{ market.name }}</td>
                     <td>{{ market.subgroups }}</td>
                     <td>{{ market.region }}</td>
@@ -49,5 +50,6 @@
                 </tr>
             </ng-template>
         </p-table>
+    </div>
     </div>
 </div>
