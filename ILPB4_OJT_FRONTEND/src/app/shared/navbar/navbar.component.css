@@ -4,7 +4,13 @@
   align-items: center;
   background-color: var(--primary-navy-color);
   padding: 10px 20px;
+  position: fixed; /* Make the navbar fixed */
+  top: 0; /* Stick to the top of the page */
+  width: 100%; /* Full width */
+  z-index: 1000; /* Ensure it's above other elements */
 }
+
+
 
 .navbar-left {
   display: flex;
