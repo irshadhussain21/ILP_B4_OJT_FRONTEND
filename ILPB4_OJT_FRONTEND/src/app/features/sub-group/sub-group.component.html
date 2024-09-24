@@ -1,0 +1,60 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" style="width: 50%;">
+    <p-confirmDialog></p-confirmDialog>
+  
+    <p-table [value]="rows.controls" formArrayName="rows" class="p-mb-3">
+      <!-- Table Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Code</th>
+          <th>Name</th>
+        </tr>
+      </ng-template>
+  
+      <!-- Table Body -->
+      <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+        <tr [formGroupName]="rowIndex">
+          <!-- Code Column: Market Code and Subgroup Code -->
+          <td>
+            <p-inputGroup>
+              <!-- Market Code Input -->
+              <input type="text" placeholder="" pInputText formControlName="marketCode" maxlength="2" class="market-input" readonly/>
+              <p-divider layout="vertical"></p-divider>
+  
+              <!-- Subgroup Code Input -->
+              <input type="text" placeholder="Subgroup Code" pInputText formControlName="subgroupCode" maxlength="1" class="subgroup-input" (blur)="validateSubgroupCode(row)" />
+            </p-inputGroup>
+          </td>
+  
+          <!-- Name Column: Market Name, Tag Dropdown, and Delete Icon -->
+          <td>
+            <div class="form-inline">
+              <!-- Market Name Input -->
+              <input type="text" placeholder="Market Name" pInputText formControlName="marketName" class="name-input" (blur)="validateMarketName(row)" />
+  
+              <!-- Delete Icon -->
+              <i style="cursor: pointer;" class="fa fa-trash-can delete-icon p-ml-2" (click)="deleteRow(rowIndex)"></i>
+            </div>
+          </td>
+        </tr>
+  
+        <!-- Validation Errors -->
+        <tr>
+          <td colspan="2">
+            <small class="p-error" *ngIf="row.get('subgroupCode')?.hasError('pattern')">Invalid Subgroup Code format.</small>
+            <small class="p-error" *ngIf="row.get('subgroupCode')?.hasError('duplicateSubgroupCode')">Subgroup Code already exists for this market.</small>
+            <small class="p-error" *ngIf="row.get('marketName')?.hasError('duplicateMarketName')">Market Name already exists.</small>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  
+    <!-- Add Subgroup Button -->
+    <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true" (click)="addRow()" [disabled]="isFormInvalid()"></button>
+  
+    <!-- Submit Button -->
+    <button type="submit" pButton label="Submit" class="p-button-success p-mt-3" [disabled]="isFormInvalid()"></button>
+  
+    <!-- Cancel Button -->
+    <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button>
+  </form>
+  
