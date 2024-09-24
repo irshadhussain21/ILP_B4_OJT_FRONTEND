@@ -6,11 +6,39 @@
       <!-- Form for creating a market -->
       <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
           <!-- Region Selection -->
-          <label for="region" class="form-label">Region <span class="asterik">*</span></label>
-          <p class="form-sub-label">Select a Region</p>
-          <div class="region-options">
-              <div class="region-option" *ngFor="let region of regions">
-                  <p-radioButton [label]="region.name" [value]="region.value" formControlName="region"></p-radioButton>
+          <div class="form-section">
+              <label for="region" class="form-label">Region <span class="asterik">*</span></label>
+              <p class="form-sub-label">Select a Region</p>
+              <div class="region-options">
+                <div class="region-option" *ngFor="let region of regions">
+                  <p-radioButton 
+                    [name]="'region'" 
+                    [label]="region.name" 
+                    [inputId]="region.value" 
+                    [value]="region.value" 
+                    formControlName="region" 
+                    (onClick)="onRegionSelect(region.value)">
+                  </p-radioButton>
+                  <label [for]="region.value">{{ region.name }}</label> <!-- Label linked to radio button -->
+                </div>
+              </div>
+          </div>
+
+          <!-- Subregion Selection: Display only when a region is selected -->
+          <div *ngIf="subregions && subregions.length > 0" class="form-section">
+              <label for="subregion" class="form-label">Subregion <span class="asterik">*</span></label>
+              <p class="form-sub-label">Select a Subregion</p>
+              <div class="subregion-options">
+                  <div class="subregion-option" *ngFor="let subregion of subregions">
+                      <p-checkbox 
+                        [binary]="true" 
+                        [inputId]="subregion.value" 
+                        [label]="subregion.name" 
+                        (onChange)="onSubregionChange($event, subregion.value)"
+                          >
+                      </p-checkbox>
+                      <label [for]="subregion.value">{{ subregion.name }}</label> <!-- Label linked to checkbox -->
+                  </div>
               </div>
           </div>
 
@@ -21,7 +49,7 @@
 
               <!-- Short Code and Market Name as combined input with divider -->
               <div class="shortcode-marketname-container">
-                  <input formControlName="shortCode" type="text" placeholder="Code" class="shortcode-input" />
+                  <input formControlName="marketCode" type="text" placeholder="Code" class="shortcode-input" />
                   <span class="divider"></span>
                   <input formControlName="marketName" type="text" placeholder="Name" class="marketname-input" />
               </div>
@@ -31,7 +59,7 @@
           <div class="form-section">
               <label for="longCode" class="form-label">Long Code <span class="asterik">*</span></label>
               <p class="form-sub-label">Enter Long Market Code in the defined format</p>
-              <input formControlName="longCode" type="text" class="longcode-input" />
+              <input formControlName="longCode" type="text" class="longcode-input" maxlength="6" />
           </div>
 
           <!-- Subgroups Section -->
