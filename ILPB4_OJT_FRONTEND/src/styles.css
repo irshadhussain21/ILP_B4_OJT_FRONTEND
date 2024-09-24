@@ -10,6 +10,7 @@
     --accent-color: #4caf50;      /* Accent color for buttons, highlights, etc. */
     --grey-1: rgb(102, 109, 112);
     --red-alert: rgb(255, 72, 94);
+    --light-blue-1: rgb(229, 250, 255);
     /* Typography */
     --font-primary: 'DM Sans', sans-serif;
     --font-secondary: system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", 
