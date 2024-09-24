@@ -1,8 +1,7 @@
 .container{
-    margin: 10px;
-    
-    
+    margin: 10px; 
 }
+
 .market-header {
     display: flex;
     justify-content: space-between;
@@ -26,9 +25,6 @@
 .custom-header th:last-child {
     border-right: none; /* Remove right border for the last header cell */
 }
-
-
-
 
 .add-market-button {
     display: flex;
@@ -62,12 +58,64 @@
     
 }
 
+/* Search bar styling */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.p-input-icon-left input {
+    padding-left: 35px; /* Adjust padding-left to make space for the icon */
+    padding-right: 12px; /* Optional: extra padding on the right */
+    padding-top: 10px; 
+    padding-bottom: 10px;
+    font-size: 16px; /* Larger font size */
+    border-radius: 8px; /* Rounded corners */
+    width: 300px; /* Increase width of the search bar */
+    box-sizing: border-box; /* Ensure the padding is included in the element’s width */
+}
+
+.p-input-icon-left i {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.p-input-icon-left {
+    position: relative;
+}
+.p-input-icon-left .pi-search {
+    left: 10px; /* Position for search icon */
+}
+
+.p-input-icon-left .pi-times {
+    right: 10px; /* Position for close icon */
+    font-size: 18px; /* Adjust icon size */
+    color: #a0a0a0; /* Color for the close icon */
+}
+.p-input-icon-left input:focus {
+    outline: none; /* Remove default outline */
+    box-shadow: 0 4px 8px rgb(34, 130, 241);; /* Blue shadow */
+}
+
 /* Table layout adjustments */
+.p-table-container {
+    overflow-x: scroll; /* Horizontal scroll enabled */
+    overflow-y: scroll;
+}
 .p-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
-   
+    white-space: nowrap;  /* Prevent text from wrapping to the next line */
+}
+.p-table td {
+    white-space: nowrap;  /* Prevent text from wrapping */
+    overflow: hidden;     /* Hide the overflow */
+    text-overflow: ellipsis;  /* Add ellipsis (...) when text overflows */
+    max-width: 150px;     /* Set a maximum width for the column */
+}
+.p-table th {
+    max-width: 150px;  /* Match the width of the td cells */
 }
 
 /* Header styling */
@@ -79,16 +127,7 @@
     border-bottom: 2px solid #dee2e6;
 }
 
-/* Body row styling */
-.p-table tbody td {
-    padding: 10px;
-    border-bottom: 1px solid #dee2e6;
-}
 
-/* Alternate row background color */
-.p-table tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
 
 /* Hover effect for table rows */
 .p-table tbody tr:hover {
