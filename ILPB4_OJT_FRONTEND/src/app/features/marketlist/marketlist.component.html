@@ -1,1 +1,61 @@
-<p>marketlist works!</p>
+<div class="container">
+    <div class="market-header">
+        <h2>Markets</h2>
+        <button class="add-market-button" [routerLink]="['/marketlist/create']" routerLinkActive="router-link-active" ><i class="pi pi-plus"></i> Create Market</button>
+    </div>
+
+   <div class="search-container">
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input type="text" pInputText placeholder="Search markets..." [(ngModel)]="searchText" (input)="filterMarkets()" />
+                <i class="pi pi-times" *ngIf="searchText" (click)="clearFilter()" style="cursor: pointer;"></i> <!-- Close icon -->
+            </span>
+        </div>
+        <div class="p-table-container">
+        <p-table [value]="markets" scrollable="true" [tableStyle]="{'min-width': '60rem'}" sortMode="single" (onSort)="onSort($event)">
+            <ng-template pTemplate="header">
+                <tr class="custom-header">
+                    <th pSortableColumn="longcode" style="width:25%">
+                        Long Code 
+                        <p-sortIcon field="longcode" *ngIf="sortField === 'longcode'"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="code" style="width:25%">
+                        Market Code 
+                        <p-sortIcon field="code" *ngIf="sortField === 'code'"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="name" style="width:25%">
+                        Market Name 
+                        <p-sortIcon field="name" *ngIf="sortField === 'name'"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="subgroups" style="width:25%">
+                        Subgroups 
+                        <p-sortIcon field="subgroups" *ngIf="sortField === 'subgroups'"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="region" style="width:25%">
+                        Region 
+                        <p-sortIcon field="region" *ngIf="sortField === 'region'"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="subregion" style="width:25%">
+                        Subregion 
+                        <p-sortIcon field="subregion" *ngIf="sortField === 'subregion'"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="country" style="width:25%">
+                        Country 
+                        <p-sortIcon field="country" *ngIf="sortField === 'country'"></p-sortIcon>
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-market>
+                <tr>
+                    <td [pTooltip]="market.longcode" tooltipPosition="top">{{ market.longcode }}</td>
+                    <td>{{ market.marketcode }}</td>
+                    <td>{{ market.name }}</td>
+                    <td>{{ market.subgroups }}</td>
+                    <td>{{ market.region }}</td>
+                    <td>{{ market.subregion }}</td>
+                    <td>{{ market.country }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

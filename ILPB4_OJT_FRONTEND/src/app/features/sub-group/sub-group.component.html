@@ -1,5 +1,8 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" style="width: 50%;">
-    <p-confirmDialog></p-confirmDialog>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="form-container">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+
   
     <p-table [value]="rows.controls" formArrayName="rows" class="p-mb-3">
       <!-- Table Header -->
@@ -57,4 +60,4 @@
     <!-- Cancel Button -->
     <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button>
   </form>
-  
+</div>

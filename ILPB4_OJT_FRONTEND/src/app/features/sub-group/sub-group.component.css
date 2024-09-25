@@ -1,9 +1,29 @@
 
-  .name-input {
-    width: 250px;
+
+  ::ng-deep .name-input {
+    width: 400px;
     margin-right: 10px;
   }
-  
+
+  ::ng-deep .p-datatable-tbody > tr {
+    border-top: none;   /* Remove top border */
+    border-bottom: none; /* Remove bottom border */
+  }
+  ::ng-deep .p-datatable-tbody > tr > td {
+    border: none; /* Remove all borders for the table cells */
+  }
+
+
+  ::ng-deep .p-confirm-dialog-accept.p-button {
+    margin-left: 10px;  /* Adds space between the accept and reject buttons */
+  }
+
+
+  ::ng-deep .p-datatable-thead > tr > th,
+  ::ng-deep .p-datatable-tfoot > tr > td {
+  border: none; /* Remove borders in the header and footer */
+  }
+
   
   /* Adjust the delete button styling */
   .delete-btn {
@@ -18,7 +38,7 @@
   
   /* General button styling for uniformity */
   button.p-button {
-    margin-right: 10px;
+    margin: 0px 10px;
   }
   
   .p-mt-3 {

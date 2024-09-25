@@ -1,0 +1,132 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--primary-navy-color);
+  padding: 10px 20px;
+  position: fixed; /* Make the navbar fixed */
+  top: 0; /* Stick to the top of the page */
+  width: 100%; /* Full width */
+  z-index: 1000; /* Ensure it's above other elements */
+}
+
+
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.navbar-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  position: relative;
+  margin-right: 20px;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 10px 15px;
+}
+
+.nav-link:hover {
+  color: #ddd;
+}
+
+.dropdown-menu {
+  position: absolute;
+  background-color: #fff;
+  top: 100%;
+  left: 0;
+  display: none;
+  flex-direction: column;
+}
+
+.dropdown-menu a {
+  padding: 10px;
+  color: #333;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f0f0f0;
+}
+
+.nav-item:hover .dropdown-menu {
+  display: flex;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  color: #fff;
+  margin-right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.notification {
+  position: relative;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+.profile-dropdown {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.user-avatar {
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.profile-dropdown .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-dropdown:hover .dropdown-menu {
+  display: flex;
+}
+
+.profile-dropdown .dropdown-menu a {
+  padding: 10px;
+  color: #333;
+  text-decoration: none;
+}
+
+.profile-dropdown .dropdown-menu a:hover {
+  background-color: #f0f0f0;
+}
