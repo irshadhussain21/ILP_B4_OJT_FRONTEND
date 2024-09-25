@@ -99,14 +99,23 @@
 
 /* Table layout adjustments */
 .p-table-container {
-    overflow-x: scroll; /* Horizontal scroll enabled */
-    overflow-y: scroll;
+   
+    white-space: nowrap; /* Prevent text wrapping in table cells */
+    padding-bottom: 10px;
+    overflow: auto;
+    
 }
 .p-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
+    table-layout: auto;
     white-space: nowrap;  /* Prevent text from wrapping to the next line */
+}
+.truncate {
+    white-space: nowrap; /* Prevent line breaks */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis (...) for overflow */
+    max-width: 100%; /* Limit to the width of the cell */
 }
 .p-table td {
     white-space: nowrap;  /* Prevent text from wrapping */
@@ -140,6 +149,14 @@
     text-align: left;
     vertical-align: middle;
 }
+.p-table td, .p-table th {
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflow content */
+    text-overflow: ellipsis; /* Show ellipsis (...) when content overflows */
+    padding: 10px; /* Add padding for better spacing */
+    border-bottom: 1px solid #ddd; /* Border for rows */
+    max-width: 150px; /* Set a maximum width for columns */
+}
 
 /* Responsive table */
 @media (max-width: 768px) {
@@ -155,3 +172,6 @@
 .p-table {
     margin-bottom: 1.5rem;
 }
+
+
+

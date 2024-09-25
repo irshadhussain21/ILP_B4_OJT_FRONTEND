@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
-import { HttpClientModule } from '@angular/common/http';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Tooltip, TooltipModule } from 'primeng/tooltip';
+import { TooltipModule } from 'primeng/tooltip';
+import { MarketlistService } from '../../services/marketlist.service';
 
-interface Market {
+export interface Market {
   longcode: string;
   marketcode: string;
   name: string;
@@ -23,14 +23,13 @@ interface Market {
   standalone: true,
   imports: [
     TableModule, 
-    HttpClientModule, 
     InputTextModule, 
     CommonModule,
     TooltipModule,
     TagModule,RouterLink,FormsModule
   ],
-  templateUrl: './marketlist.component.html',
-  styleUrls: ['./marketlist.component.css']
+  templateUrl: './market-list.component.html',
+  styleUrls: ['./market-list.component.css']
 })
 export class MarketlistComponent implements OnInit {
   markets!: Market[];
@@ -38,7 +37,7 @@ export class MarketlistComponent implements OnInit {
   selectedMarket!: Market;  // Updated type to Market
   searchText: string = ''; 
 
-  constructor() {}
+  constructor(private marketlistService: MarketlistService) {}
   sortField: string = '';
   sortOrder: number = 1;
 
@@ -48,46 +47,19 @@ export class MarketlistComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.markets = [
-      {
-        longcode:'L-ANL-ES',
-        marketcode: 'MK001',
-        name: 'North American Market',
-        subgroups: ['Retail', 'Wholesale', 'Online'],
-        region:'los angeles',
-        subregion:'la',
-        country: 'USA'
-      },
-      {
-        longcode:'L-ANS-ES',
-        marketcode: 'MK002',
-        name: 'European Market',
-        subgroups: ['Retail', 'Wholesale'],
-        region:'los angeles',
-        subregion:'la',
-        country: 'Germany'
-      },
-      {
-        longcode:'L-ANS-ES',
-        marketcode: 'MK003',
-        name: 'Asian Market',
-        subgroups: ['Online', 'Export'],
-        region:'los angeles',
-        subregion:'la',
-        country: 'Japan'
-      },
-      {
-        longcode:'L-ANS-ES',
-        marketcode: 'MK004',
-        name: 'South American Market',
-        subgroups: ['Retail', 'Export'],
-        region:'los angeles',
-        subregion:'la',
-        country: 'Brazil'
-      }
-    ];
-    this.filteredMarkets = this.markets;
-  }
+      // Fetch markets from the backend
+      this.marketlistService.getMarkets().subscribe(
+        (data: Market[]) => {
+          console.log('Fetched markets:', data); // Debugging line
+          this.markets = data;
+          this.filteredMarkets = data;  // Initialize filtered markets
+        },
+        (error) => {
+          console.error('Error fetching markets:', error);
+        }
+      );
+    }
+
   filterMarkets() {
     if (this.searchText) {
       this.filteredMarkets = this.markets.filter(market => 
