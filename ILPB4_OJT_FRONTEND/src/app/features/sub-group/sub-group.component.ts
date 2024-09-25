@@ -40,8 +40,8 @@ export class SubGroupComponent implements OnInit {
    * Holds a list of existing subgroups to validate against for duplicate entries during form submission.
    */
   existingSubgroups = [
-    { marketCode: 'AA', subgroupCode: 'A', marketName: 'MARKET A' },
-    { marketCode: 'BB', subgroupCode: 'B', marketName: 'MARKET B' }
+    { marketCode: 'AA', subgroupCode: 'A', subgroupName: 'MARKET A' },
+    { marketCode: 'BB', subgroupCode: 'B', subgroupName: 'MARKET B' }
   ];
 
   constructor(
@@ -73,15 +73,15 @@ export class SubGroupComponent implements OnInit {
 
   /** 
    * @method createRow
-   * Creates a new form group (row) with controls for marketCode, subgroupCode, and marketName.
-   * Adds real-time transformation to uppercase for subgroupCode and marketName fields.
+   * Creates a new form group (row) with controls for marketCode, subgroupCode, and subgroupName.
+   * Adds real-time transformation to uppercase for subgroupCode and subgroupName fields.
    * @returns {FormGroup} A new form group representing a row in the form.
    */
   createRow(): FormGroup {
     const row = this.fb.group({
       marketCode: ['BB', [Validators.required, Validators.pattern('[A-Za-z]{2}')]], // Two-letter code
       subgroupCode: ['', [Validators.required, Validators.pattern('[A-Za-z0-9]{1}')]], // One alphanumeric
-      marketName: ['', Validators.required], // Market name is required
+      subgroupName: ['', Validators.required], // Subgroup name is required
     });
 
     // Convert subgroupCode to uppercase on value change
@@ -91,10 +91,10 @@ export class SubGroupComponent implements OnInit {
       }
     });
 
-    // Convert marketName to uppercase on value change
-    row.get('marketName')?.valueChanges.subscribe(value => {
+    // Convert subgroupName to uppercase on value change
+    row.get('subgroupName')?.valueChanges.subscribe(value => {
       if (value) {
-        row.get('marketName')?.setValue(value.toUpperCase(), { emitEvent: false });
+        row.get('subgroupName')?.setValue(value.toUpperCase(), { emitEvent: false });
       }
     });
 
@@ -163,46 +163,46 @@ export class SubGroupComponent implements OnInit {
   }
   
   /** 
-   * @method validateMarketName
-   * Validates marketName fields for duplicates across the form and against existing subgroups.
+   * @method validateSubgroupName
+   * Validates subgroupName fields for duplicates across the form and against existing subgroups.
    * @param {AbstractControl} row The row form group being validated.
    */
-  validateMarketName(row: AbstractControl): void {
+  validateSubgroupName(row: AbstractControl): void {
     const formGroup = row as FormGroup;
     const marketCode = formGroup.get('marketCode')?.value;
-    const marketName = formGroup.get('marketName')?.value;
+    const subgroupName = formGroup.get('subgroupName')?.value;
   
-    if (!marketName || !marketCode) {
+    if (!subgroupName || !marketCode) {
       return; // Don't proceed if the fields are not filled
     }
   
-    // Clear market name errors for all rows first
+    // Clear subgroup name errors for all rows first
     this.rows.controls.forEach(r => {
-      r.get('marketName')?.setErrors(null);
+      r.get('subgroupName')?.setErrors(null);
     });
   
     // Now validate for duplicates
     this.rows.controls.forEach((r, index) => {
       const rowMarketCode = (r as FormGroup).get('marketCode')?.value;
-      const rowMarketName = (r as FormGroup).get('marketName')?.value;
+      const rowSubgroupName = (r as FormGroup).get('subgroupName')?.value;
   
-      if (rowMarketName && rowMarketCode) {
+      if (rowSubgroupName && rowMarketCode) {
         // Check if this row has duplicates in other rows
-        const duplicateMarketRows = this.rows.controls.filter((otherRow, otherIndex) =>
+        const duplicateSubgroupRows = this.rows.controls.filter((otherRow, otherIndex) =>
           otherIndex !== index &&
-          (otherRow as FormGroup).get('marketName')?.value === rowMarketName &&
+          (otherRow as FormGroup).get('subgroupName')?.value === rowSubgroupName &&
           (otherRow as FormGroup).get('marketCode')?.value === rowMarketCode
         );
   
-        // Check if the market name already exists in the pre-existing subgroups
+        // Check if the subgroup name already exists in the pre-existing subgroups
         const existsInExistingSubgroups = this.existingSubgroups.some(
-          subgroup => subgroup.marketCode === rowMarketCode && subgroup.marketName === rowMarketName
+          subgroup => subgroup.marketCode === rowMarketCode && subgroup.subgroupName === rowSubgroupName
         );
   
         // If duplicates found in other rows or in existing subgroups
-        if (duplicateMarketRows.length > 0 || existsInExistingSubgroups) {
-          r.get('marketName')?.setErrors({ duplicateMarketName: true });
-          duplicateMarketRows.forEach(duplicateRow => (duplicateRow as FormGroup).get('marketName')?.setErrors({ duplicateMarketName: true }));
+        if (duplicateSubgroupRows.length > 0 || existsInExistingSubgroups) {
+          r.get('subgroupName')?.setErrors({ duplicateSubgroupName: true });
+          duplicateSubgroupRows.forEach(duplicateRow => (duplicateRow as FormGroup).get('subgroupName')?.setErrors({ duplicateSubgroupName: true }));
         }
       }
     });
@@ -244,7 +244,7 @@ export class SubGroupComponent implements OnInit {
         this.rows.push(this.fb.group({
           marketCode: [{ value: row.marketCode, disabled: true }, [Validators.required, Validators.pattern('[A-Za-z]{2}')]],
           subgroupCode: [row.subgroupCode, [Validators.required, Validators.pattern('[A-Za-z0-9]{1}')]],
-          marketName: [row.marketName, Validators.required]
+          subgroupName: [row.subgroupName, Validators.required]
         }));
       });
     }
@@ -255,7 +255,7 @@ export class SubGroupComponent implements OnInit {
  * Manages the cancellation process when the user attempts to leave the form with unsaved changes.
  * 1. Triggers a confirmation dialog using ConfirmationService.
  * 2. If the user accepts the confirmation:
- *    - Clears the values of `subgroupCode` and `marketName` for each row, while keeping `marketCode` intact.
+ *    - Clears the values of `subgroupCode` and `subgroupName` for each row, while keeping `marketCode` intact.
  * 3. If the user rejects the confirmation, no actions are taken, and the form remains unchanged.
  */
   onCancel(): void {
@@ -264,11 +264,11 @@ export class SubGroupComponent implements OnInit {
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-      // Clear only subgroupCode and marketName for each row, keeping marketCode intact
+      // Clear only subgroupCode and subgroupName for each row, keeping marketCode intact
       this.rows.controls.forEach((control: AbstractControl) => {
         const row = control as FormGroup; // Cast to FormGroup
         row.get('subgroupCode')?.setValue('');
-        row.get('marketName')?.setValue('');     
+        row.get('subgroupName')?.setValue('');     
       });
       }
     });
@@ -280,7 +280,7 @@ export class SubGroupComponent implements OnInit {
       this.rows.controls.some((row) => 
       row.invalid ||  
       !row.get('subgroupCode')?.value || 
-      !row.get('marketName')?.value
+      !row.get('subgroupName')?.value
     );    
   }
 }

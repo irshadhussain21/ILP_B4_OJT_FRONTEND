@@ -28,11 +28,11 @@
             </p-inputGroup>
           </td>
   
-          <!-- Name Column: Market Name, Tag Dropdown, and Delete Icon -->
+          <!-- Name Column: Market Name, Delete Icon -->
           <td>
             <div class="form-inline">
               <!-- Market Name Input -->
-              <input type="text" placeholder="Market Name" pInputText formControlName="marketName" class="name-input" (blur)="validateMarketName(row)" />
+              <input type="text" placeholder="Subgroup Name" pInputText formControlName="subgroupName" class="name-input" (blur)="validateSubgroupName(row)" />
   
               <!-- Delete Icon -->
               <i style="cursor: pointer;" class="fa fa-trash-can delete-icon p-ml-2" (click)="deleteRow(rowIndex)"></i>
@@ -45,7 +45,7 @@
           <td colspan="2">
             <small class="p-error" *ngIf="row.get('subgroupCode')?.hasError('pattern')">Invalid Subgroup Code format.</small>
             <small class="p-error" *ngIf="row.get('subgroupCode')?.hasError('duplicateSubgroupCode')">Subgroup Code already exists for this market.</small>
-            <small class="p-error" *ngIf="row.get('marketName')?.hasError('duplicateMarketName')">Market Name already exists.</small>
+            <small class="p-error" *ngIf="row.get('subgroupName')?.hasError('duplicateSubgroupName')">Subgroup Name already exists.</small>
           </td>
         </tr>
       </ng-template>
