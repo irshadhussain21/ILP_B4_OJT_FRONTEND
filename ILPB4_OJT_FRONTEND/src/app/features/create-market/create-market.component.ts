@@ -1,69 +1,38 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RadioButtonModule } from 'primeng/radiobutton';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RadioButtonModule } from 'primeng/radiobutton';
 import { CheckboxModule } from 'primeng/checkbox';
+import { MarketService } from '../../core/services/market.service';
+import { RegionService } from '../../core/services/region.service';
+import { Market } from '../../core/models/market';
+import { Region } from '../../core/models/region'; // Make sure to import the correct Region interface
 
 @Component({
   selector: 'app-create-market',
   standalone: true,
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, RadioButtonModule, CommonModule, CheckboxModule]
+  imports: [ReactiveFormsModule, RadioButtonModule, CommonModule, CheckboxModule], 
 })
 export class CreateMarketComponent implements OnInit {
-
-  /**
-   * Represents the reactive form group for creating a market.
-   */
   marketForm!: FormGroup;
-
-  /**
-   * Holds a list of available regions for selection.
-   */
-  regions = [
-    { name: 'EUROPE', value: 'EURO' },
-    { name: 'Latin America, Asia Pacific, and Africa', value: 'LAAPA' },
-    { name: 'North America', value: 'NOAM' }
-  ];
-
-  /**
-   * Will be populated with subregions based on the selected region.
-   */
-  subregions: any[] = [];
-
-  /**
-   * The currently selected region value.
-   */
-  selectedRegion: string | null = null;
-
-  /**
-   * The currently selected subregion value.
-   */
+  regions: Region[] = [];
+  subregions: Region[] = [];
+  selectedRegion: number | null = null;
   selectedSubregion: string | null = null;
 
   /**
-   * Contains predefined subregions for each region.
+   * Initializes the component with necessary services.
    */
-  allSubregions: Record<'EURO' | 'LAAPA' | 'NOAM', { name: string; value: string }[]> = {
-    EURO: [{ name: 'Europe', value: 'Europe' }],
-    LAAPA: [
-      { name: 'Latin America', value: 'LatinAmerica' },
-      { name: 'Asia Pacific', value: 'AsiaPacific' },
-      { name: 'Africa', value: 'Africa' }
-    ],
-    NOAM: [{ name: 'North America', value: 'NorthAmerica' }]
-  };
+  constructor(
+    private fb: FormBuilder,
+    private marketService: MarketService,
+    private regionService: RegionService
+  ) {}
 
   /**
-   * Initializes the component and sets up the FormBuilder.
-   * 
-   * @param fb The form builder used to create and manage form controls.
-   */
-  constructor(private fb: FormBuilder) {}
-
-  /**
-   * Lifecycle hook that initializes the form group with necessary form controls and validators.
+   * Angular lifecycle hook that initializes the form and loads regions.
    */
   ngOnInit(): void {
     this.marketForm = this.fb.group({
@@ -73,39 +42,73 @@ export class CreateMarketComponent implements OnInit {
       region: ['', Validators.required],
       subregion: ['']
     });
+
+    this.loadRegions();
   }
 
   /**
-   * Handles the selection of a region and updates the subregions array accordingly.
-   * 
-   * @param regionValue The selected region value.
+   * Fetches all regions from the RegionService and assigns them to the `regions` array.
    */
-  onRegionSelect(regionValue: string): void {
-    this.selectedRegion = regionValue; // Set the selected region
-    const regionKey = regionValue as keyof typeof this.allSubregions;
-
-    if (regionKey in this.allSubregions) {
-      this.subregions = this.allSubregions[regionKey] || [];
-      this.selectedSubregion = null; // Clear selected subregion when region changes
-    }
+  loadRegions(): void {
+    this.regionService.getAllRegions().subscribe(
+      (regions: Region[]) => {
+        this.regions = regions; // No need to map since it already matches your interface structure
+      },
+      error => {
+        console.error('Error loading regions:', error);
+      }
+    );
   }
 
   /**
-   * Handles the selection of a subregion and sets it as the currently selected subregion.
-   * 
-   * @param event The event triggered by selecting a subregion.
-   * @param subregionValue The value of the subregion being selected.
+   * Handles the selection of a region, sets the selected region, updates the form value,
+   * and fetches subregions for the selected region.
    */
-  onSubregionChange(event: any, subregionValue: string): void {
-    this.selectedSubregion = subregionValue; // Set the selected subregion
-    this.marketForm.get('subregion')?.setValue(subregionValue);
+  onRegionSelect(regionId: number): void {
+    this.selectedRegion = regionId;
+    this.marketForm.get('region')?.setValue(regionId);
+
+    this.regionService.getSubRegionsByRegion(regionId).subscribe(
+      (subregions: Region[]) => {
+        this.subregions = subregions; // No need to map since it already matches your interface structure
+        this.selectedSubregion = null; // Clear the selected subregion
+      },
+      error => {
+        console.error('Error loading subregions:', error);
+      }
+    );
   }
 
   /**
-   * Called when the form is submitted. Combines the form data with the selected subregions and logs the complete data.
+   * Handles the selection of a subregion, sets the selected subregion, and updates the form value.
+   */
+  onSubregionChange(event: any, subregionId: number): void {
+    this.selectedSubregion = subregionId.toString();
+    this.marketForm.get('subregion')?.setValue(subregionId);
+  }
+
+  /**
+   * Handles the form submission by calling the MarketService to create a new market entry.
    */
   onSubmit(): void {
-    const formData = { ...this.marketForm.value, subregions: this.selectedSubregion };
-    console.log('Form submitted:', formData);
+    if (this.marketForm.valid) {
+      const marketData: Market = {
+        name: this.marketForm.value.marketName,
+        code: this.marketForm.value.marketCode,
+        longMarketCode: this.marketForm.value.longCode,
+        region: this.marketForm.value.region,
+        subRegion: this.marketForm.value.subregion
+      };
+
+      this.marketService.createMarket(marketData).subscribe(
+        (response: number) => {
+          console.log('Market created successfully:', response);
+          this.marketForm.reset();
+        },
+        error => {
+          console.error('Error creating market:', error);
+        }
+      );
+    }
   }
 }
