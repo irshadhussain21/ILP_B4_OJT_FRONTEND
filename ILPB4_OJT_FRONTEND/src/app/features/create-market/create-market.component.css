@@ -117,15 +117,15 @@ hr {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Selected styling */
+
 .region-option.selected, 
 .subregion-option.selected {
-  border: 1px solid #00AEEF; /* Change border color */
+  border: 1px solid #00AEEF; 
   background-color: var(--light-blue-1);
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Slight shadow for emphasis */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-/* Adjust the margin between the radio button and text */
+
 .region-option .p-radiobutton, 
 .subregion-option .p-radiobutton {
   margin-right: 4px;
@@ -159,6 +159,7 @@ hr {
   outline: none;
   background-color: transparent;
   text-align: left;
+  text-transform: uppercase;
 }
 
 .shortcode-input {
@@ -222,7 +223,24 @@ hr {
 .submit-button[disabled] {
   background-color: #aaa;
   cursor: not-allowed;
+} 
+
+
+.error-message {
+  color: #FF4D4F;
+  font-size: 14px; 
+  margin-top: 4px; 
+  display: flex; 
+  align-items: center;
+  padding-left: 5px; 
 }
+
+
+.error-icon {
+  margin-right: 5px; 
+  font-size: 16px; 
+}
+
 
 @media (max-width: 768px) {
   .shortcode-marketname-container {
