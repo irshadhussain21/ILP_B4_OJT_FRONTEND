@@ -2,18 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { CheckboxModule } from 'primeng/checkbox';
 import { MarketService } from '../../core/services/market.service';
 import { RegionService } from '../../core/services/region.service';
+import { Region } from '../../core/models/region';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
-import { Region } from '../../core/models/region'; // Make sure to import the correct Region interface
 
 @Component({
   selector: 'app-create-market',
-  standalone: true,
+  standalone: true, // Ensures this component is treated as standalone
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, RadioButtonModule, CommonModule, CheckboxModule], 
+  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule], // Import necessary modules
 })
 export class CreateMarketComponent implements OnInit {
   marketForm!: FormGroup;
@@ -21,6 +21,8 @@ export class CreateMarketComponent implements OnInit {
   subregions: Region[] = [];
   selectedRegion: number | null = null;
   selectedSubregion: string | null = null;
+  codeExistsError: boolean = false; // Flag to indicate if the market code already exists
+  nameExistsError: boolean = false; // Flag to indicate if the market name already exists
 
   /**
    * Initializes the component with necessary services.
@@ -52,6 +54,7 @@ export class CreateMarketComponent implements OnInit {
    *    - region: Required
    *    - subregion: Optional
    * 2. Calls `loadRegions()` to fetch available regions.
+   * 3. Sets up value change subscriptions to check if the market code and name already exist.
    */
   ngOnInit(): void {
     this.marketForm = this.fb.group({
@@ -63,6 +66,34 @@ export class CreateMarketComponent implements OnInit {
     });
 
     this.loadRegions();
+
+    // Check for market code existence
+    this.marketForm.get('marketCode')?.valueChanges
+      .pipe(
+        debounceTime(300), // Wait 300ms after the user stops typing
+        distinctUntilChanged(), // Ensure the value has actually changed
+        switchMap(code => this.marketService.checkMarketCodeExists(code))
+      )
+      .subscribe(exists => {
+        this.codeExistsError = exists;
+        if (exists) {
+          this.marketForm.get('marketCode')?.setErrors({ exists: true });
+        }
+      });
+
+    // Check for market name existence
+    this.marketForm.get('marketName')?.valueChanges
+      .pipe(
+        debounceTime(300), // Wait 300ms after the user stops typing
+        distinctUntilChanged(), // Ensure the value has actually changed
+        switchMap(name => this.marketService.checkMarketNameExists(name))
+      )
+      .subscribe(exists => {
+        this.nameExistsError = exists;
+        if (exists) {
+          this.marketForm.get('marketName')?.setErrors({ exists: true });
+        }
+      });
   }
 
   /**
@@ -79,7 +110,7 @@ export class CreateMarketComponent implements OnInit {
   loadRegions(): void {
     this.regionService.getAllRegions().subscribe(
       (regions: Region[]) => {
-        this.regions = regions; // No need to map since it already matches your interface structure
+        this.regions = regions;
       },
       error => {
         console.error('Error loading regions:', error);
@@ -108,8 +139,8 @@ export class CreateMarketComponent implements OnInit {
 
     this.regionService.getSubRegionsByRegion(regionId).subscribe(
       (subregions: Region[]) => {
-        this.subregions = subregions; // No need to map since it already matches your interface structure
-        this.selectedSubregion = null; // Clear the selected subregion
+        this.subregions = subregions; 
+        this.selectedSubregion = null; 
       },
       error => {
         console.error('Error loading subregions:', error);
@@ -161,6 +192,8 @@ export class CreateMarketComponent implements OnInit {
         (response: number) => {
           console.log('Market created successfully:', response);
           this.marketForm.reset();
+          this.codeExistsError = false; 
+          this.nameExistsError = false; 
         },
         error => {
           console.error('Error creating market:', error);
