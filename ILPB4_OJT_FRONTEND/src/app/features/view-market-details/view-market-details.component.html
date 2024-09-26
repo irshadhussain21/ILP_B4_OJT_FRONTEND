@@ -45,15 +45,16 @@
       </div>
   
       <!-- Subgroup(s) Panel -->
-      <div class="panel">
+      <div class=" Subgrouppanel">
         <div class="panel-header">Subgroup(s)</div>
-        <div class="subgrouppanel-contt">
-          <p *ngFor="let subgroup of marketDetails?.marketSubGroups">
-            {{ subgroup.subGroupCode }} - {{ subgroup.subGroupName }}
+        <div *ngFor="let subgroup of marketDetails?.marketSubGroups" class="subgrouppanel-contt">
+          <p>
+            {{ marketDetails?.marketCode }}{{ subgroup.subGroupCode }} - {{ subgroup.subGroupName }}
           </p>
-          <p *ngIf="!marketDetails?.marketSubGroups?.length">No subgroups available</p>
         </div>
+        <p *ngIf="!marketDetails?.marketSubGroups?.length">No subgroups available</p>
       </div>
+      
     </div>
   </div>
   
