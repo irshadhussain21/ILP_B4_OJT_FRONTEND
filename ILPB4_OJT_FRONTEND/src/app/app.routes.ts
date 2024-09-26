@@ -18,7 +18,7 @@ export const routes: Routes = [
     component:CreateMarketComponent
   },
   {
-    path:"marketlist/market",
+    path: 'marketlist/market/:marketId',
     component:ViewMarketDetailsComponent
   }
 ];

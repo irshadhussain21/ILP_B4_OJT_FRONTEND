@@ -23,7 +23,7 @@ import { MarketlistComponent } from "./features/marketlist/marketlist.component"
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { ViewMarketDetailsComponent } from "./features/view-market-details/view-market-details.component";
 
-
+import { HttpClient, HttpClientModule } from '@angular/common/http'; 
 
 
 
@@ -31,10 +31,11 @@ import { ViewMarketDetailsComponent } from "./features/view-market-details/view-
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet, 
+    RouterOutlet,
     MarketlistComponent, 
     NavbarComponent, 
     ViewMarketDetailsComponent,
+    HttpClientModule
 
   ],
   templateUrl: './app.component.html',
