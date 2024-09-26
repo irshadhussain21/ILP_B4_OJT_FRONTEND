@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MarketService } from '../../core/services/market.service';
 import { RegionService } from '../../core/services/region.service';
-import { Region } from '../../core/models/region';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
+import { Region } from '../../core/models/region';
 
 @Component({
   selector: 'app-create-market',
@@ -72,12 +72,21 @@ export class CreateMarketComponent implements OnInit {
       .pipe(
         debounceTime(300), // Wait 300ms after the user stops typing
         distinctUntilChanged(), // Ensure the value has actually changed
-        switchMap(code => this.marketService.checkMarketCodeExists(code))
+        switchMap(code => {
+          this.codeExistsError = false; // Reset the error flag when the value changes
+          if (!code) {
+            this.marketForm.get('marketCode')?.setErrors(null); // Clear error if the input is empty
+            return [false]; // Return an observable with false to avoid further processing
+          }
+          return this.marketService.checkMarketCodeExists(code);
+        })
       )
       .subscribe(exists => {
         this.codeExistsError = exists;
         if (exists) {
           this.marketForm.get('marketCode')?.setErrors({ exists: true });
+        } else {
+          this.marketForm.get('marketCode')?.setErrors(null); // Clear the error if the code does not exist
         }
       });
 
@@ -86,12 +95,21 @@ export class CreateMarketComponent implements OnInit {
       .pipe(
         debounceTime(300), // Wait 300ms after the user stops typing
         distinctUntilChanged(), // Ensure the value has actually changed
-        switchMap(name => this.marketService.checkMarketNameExists(name))
+        switchMap(name => {
+          this.nameExistsError = false; // Reset the error flag when the value changes
+          if (!name) {
+            this.marketForm.get('marketName')?.setErrors(null); // Clear error if the input is empty
+            return [false]; // Return an observable with false to avoid further processing
+          }
+          return this.marketService.checkMarketNameExists(name);
+        })
       )
       .subscribe(exists => {
         this.nameExistsError = exists;
         if (exists) {
           this.marketForm.get('marketName')?.setErrors({ exists: true });
+        } else {
+          this.marketForm.get('marketName')?.setErrors(null); // Clear the error if the name does not exist
         }
       });
   }
@@ -118,21 +136,7 @@ export class CreateMarketComponent implements OnInit {
     );
   }
 
-  /**
-   * Handles the selection of a region, sets the selected region, updates the form value,
-   * and fetches subregions for the selected region.
-   * 
-   * @param regionId The ID of the selected region.
-   * @returns void
-   * 
-   * LLD:
-   * 1. Sets `selectedRegion` to the selected `regionId`.
-   * 2. Updates the `region` form control with the selected `regionId`.
-   * 3. Calls `getSubRegionsByRegion(regionId)` from `RegionService` to fetch subregions for the selected region.
-   * 4. Subscribes to the response:
-   *    - On success: Updates the `subregions` array with the fetched subregions and resets `selectedSubregion`.
-   *    - On error: Logs the error in the console.
-   */
+  // Rest of your existing methods...
   onRegionSelect(regionId: number): void {
     this.selectedRegion = regionId;
     this.marketForm.get('region')?.setValue(regionId);
@@ -148,36 +152,11 @@ export class CreateMarketComponent implements OnInit {
     );
   }
 
-  /**
-   * Handles the selection of a subregion, sets the selected subregion, and updates the form value.
-   * 
-   * @param event The event triggered when a subregion is selected.
-   * @param subregionId The ID of the selected subregion.
-   * @returns void
-   * 
-   * LLD:
-   * 1. Converts `subregionId` to a string and assigns it to `selectedSubregion`.
-   * 2. Updates the `subregion` form control with the selected `subregionId`.
-   */
   onSubregionChange(event: any, subregionId: number): void {
     this.selectedSubregion = subregionId.toString();
     this.marketForm.get('subregion')?.setValue(subregionId);
   }
 
-  /**
-   * Handles the form submission by calling the MarketService to create a new market entry.
-   * 
-   * @returns void
-   * 
-   * LLD:
-   * 1. Checks if `marketForm` is valid.
-   * 2. If valid:
-   *    - Constructs `marketData` object containing `name`, `code`, `longMarketCode`, `region`, and `subRegion` from form values.
-   *    - Calls `createMarket()` method of `MarketService` with `marketData`.
-   *    - Subscribes to the response:
-   *      - On success: Logs the success message and resets the form.
-   *      - On error: Logs the error in the console.
-   */
   onSubmit(): void {
     if (this.marketForm.valid) {
       const marketData: Market = {
