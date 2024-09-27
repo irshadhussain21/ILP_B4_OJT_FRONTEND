@@ -1,47 +1,107 @@
 <div class="create-market-container">
   <h1>Create Market</h1>
   <hr>
+
   <!-- Scrollable Content Wrapper -->
   <div class="scrollable-content">
-      <!-- Form for creating a market -->
-      <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
-          <!-- Region Selection -->
-          <label for="region" class="form-label">Region <span class="asterik">*</span></label>
-          <p class="form-sub-label">Select a Region</p>
-          <div class="region-options">
-              <div class="region-option" *ngFor="let region of regions">
-                  <p-radioButton [label]="region.name" [value]="region.value" formControlName="region"></p-radioButton>
-              </div>
+    <!-- Form for creating a market -->
+    <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
+      <!-- Region Selection -->
+      <div class="form-section">
+        <label for="region" class="form-label">Region <span class="asterik">*</span></label>
+        <p class="form-sub-label">Select a Region</p>
+        <div class="region-options">
+          <div 
+            class="region-option" 
+            *ngFor="let region of regions" 
+            [ngClass]="{'selected': selectedRegion === region.key}"
+            (click)="onRegionSelect(region.key)">
+            <p-radioButton 
+              [name]="'region'" 
+              [label]="region.value" 
+              [inputId]="region.key.toString()" 
+              [value]="region.key" 
+              formControlName="region">
+            </p-radioButton>
+            <label class="check-box-labels" [for]="region.key.toString()">- {{ region.value }}</label>
           </div>
+        </div>
+      </div>
 
-          <!-- Short Code / Market Name -->
-          <div class="form-section">
-              <label class="form-label">Short Code/Market Name <span class="asterik">*</span></label>
-              <p class="form-sub-label">Enter a two-letter Market Code, a Market Name</p>
-
-              <!-- Short Code and Market Name as combined input with divider -->
-              <div class="shortcode-marketname-container">
-                  <input formControlName="shortCode" type="text" placeholder="Code" class="shortcode-input" />
-                  <span class="divider"></span>
-                  <input formControlName="marketName" type="text" placeholder="Name" class="marketname-input" />
-              </div>
+      <!-- Subregion Selection -->
+      <div *ngIf="subregions.length > 0" class="form-section">
+        <label for="subregion" class="form-label">Subregion <span class="asterik">*</span></label>
+        <p class="form-sub-label">Select a Subregion</p>
+        <div class="subregion-options">
+          <div 
+            class="subregion-option" 
+            *ngFor="let subregion of subregions" 
+            [ngClass]="{'selected': selectedSubregion === subregion.key.toString()}"
+            (click)="onSubregionChange($event, subregion.key)">
+              <p-radioButton 
+                [name]="'subregion'" 
+                [label]="subregion.value" 
+                [inputId]="subregion.key.toString()" 
+                [value]="subregion.key" 
+                formControlName="subregion">
+              </p-radioButton>
+              <label class="check-box-labels" [for]="subregion.key.toString()">{{ subregion.value }}</label>
           </div>
+        </div>
+      </div>
 
-          <!-- Long Code -->
-          <div class="form-section">
-              <label for="longCode" class="form-label">Long Code <span class="asterik">*</span></label>
-              <p class="form-sub-label">Enter Long Market Code in the defined format</p>
-              <input formControlName="longCode" type="text" class="longcode-input" />
-          </div>
+      <!-- Short Code / Market Name -->
+      <div class="form-section">
+        <label class="form-label">Short Code/Market Name <span class="asterik">*</span></label>
+        <p class="form-sub-label">Enter a two-letter Market Code, a Market Name</p>
+        <div class="shortcode-marketname-container">
+            <input 
+                formControlName="marketCode" 
+                type="text" 
+                placeholder="Code" 
+                class="shortcode-input" 
+                maxlength="2"  
+                autocapitalize="on"
+            />
+            <span class="divider"></span>
+            <input 
+                formControlName="marketName" 
+                type="text" 
+                placeholder="Name" 
+                class="marketname-input" 
+            />
+        </div>
+        
+        <!-- Error message for market code -->
+        <p *ngIf="codeExistsError" class="error-message">
+            <span class="error-icon">❗</span> Entered market code already exists.
+        </p>
+        
+        <!-- Error message for market name -->
+        <p *ngIf="nameExistsError" class="error-message">
+            <span class="error-icon">❗</span> Entered market name already exists.
+        </p>
+      </div>
 
-          <!-- Subgroups Section -->
-          <div class="form-section">
-              <label class="form-label">Subgroup(s)</label>
-              <!-- Subgroup list and actions will go here -->
-          </div>
+      <!-- Long Code -->
+      <div class="form-section">
+        <label for="longCode" class="form-label">Long Code <span class="asterik">*</span></label>
+        <p class="form-sub-label">Enter Long Market Code in the defined format</p>
+        <input 
+          formControlName="longCode" 
+          type="text" 
+          class="longcode-input" 
+          maxlength="6" 
+        />
+      </div>
 
-          <!-- Submit Button -->
-          <button type="submit" class="submit-button" [disabled]="marketForm.invalid">Submit</button>
-      </form>
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="submit-button" 
+        [disabled]="marketForm.invalid">
+        Submit
+      </button>
+    </form>
   </div>
 </div>
