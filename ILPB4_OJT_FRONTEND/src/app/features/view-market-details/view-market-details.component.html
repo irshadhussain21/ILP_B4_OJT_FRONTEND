@@ -1,22 +1,17 @@
-  <!-- Use the HeaderComponent and pass the title -->
 <app-header [title]="marketDetails?.marketCode + ' - ' + marketDetails?.marketName">
-    
-    <button class="edit-button">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-        <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7.5 18.5l-4 1 1-4 12-12z"></path>
-      </svg>
-      Edit
-      <span class="notification-dot"></span>
-    </button>
+  
+  <button class="edit-button">
+    <img src="assets/edit-icon.svg" alt="Edit Icon" width="16" height="16" />
+    Edit
+    <span class="notification-dot"></span>
+  </button>
 
-    <button class="options-button">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="1"></circle>
-        <circle cx="19" cy="12" r="1"></circle>
-        <circle cx="5" cy="12" r="1"></circle>
-      </svg>
-    </button>
-  </app-header>
+
+  <button class="options-button">
+    <img src="assets/options-icon.svg" alt="Options Icon" width="16" height="16" />
+  </button>
+
+</app-header>
 
 <div class="container">  
     <div class="card">
@@ -45,7 +40,7 @@
       </div>
   
       <!-- Subgroup(s) Panel -->
-      <div class=" Subgrouppanel">
+      <div class="Subgrouppanel">
         <div class="panel-header">Subgroup(s)</div>
         <div *ngFor="let subgroup of marketDetails?.marketSubGroups" class="subgrouppanel-contt">
           <p>
@@ -56,5 +51,4 @@
       </div>
       
     </div>
-  </div>
-  
+</div>

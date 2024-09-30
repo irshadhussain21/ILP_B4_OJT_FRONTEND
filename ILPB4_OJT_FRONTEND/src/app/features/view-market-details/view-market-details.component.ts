@@ -14,24 +14,45 @@ import { MarketService } from '../../services/market.service';
 import { MarketDetails } from '../../core/market-details';
 
 /**
- * @class ViewMarketDetailsComponent
+ * LLD
  * 
- * @description
- * Displays market details by fetching data using `MarketService`. It retrieves the `marketId` from the route parameters.
+ * This component is used to display details of the selected market.
  * 
- * @selector `app-view-market-details`
+ * Execution Flow:
+ *  - On initialization, the market ID is fetched from the route parameters.
+ *  - The `MarketService` is used to fetch market details using the retrieved `marketId`.
+ *  - The market details are then displayed using Primeng components.
  * 
- * @implements `OnInit`
+ * This screen contains the following actions:
+ *  - Fetch Market Details: Retrieves the market details based on `marketId`.
+ *  - Error Handling: Logs errors if the market ID is missing or the API call fails.
  * 
- * @imports
- * - `CommonModule`, `NgFor`: Angular directives.
- * - PrimeNG modules (`CardModule`, `PanelModule`, `TagModule`, etc.) for UI components.
- * - `HeaderComponent`: Custom header for the page.
+ * API Endpoints:
+ *  - `GET https://localhost:7058/api/Market/1/details`: Fetches details for a specific market.
  * 
- * @dependencies
- * - `ActivatedRoute`: To access route parameters.
- * - `MarketService`: To fetch market data.
+ * Sample API Response:
+ *  {
+ *    "marketId": 1,
+ *    "marketName": "Antarctica",
+ *    "marketCode": "AA",
+ *    "longMarketCode": "L-AQ.AA.AA",
+ *    "region": "LAAPA",
+ *    "subRegion": "Africa",
+ *    "marketSubGroups": [
+ *      {
+ *        "subGroupId": 1,
+ *        "subGroupName": "Q-Island",
+ *        "subGroupCode": "Q"
+ *      },
+ *      {
+ *        "subGroupId": 2,
+ *        "subGroupName": "Ross Island",
+ *        "subGroupCode": "R"
+ *      }
+ *    ]
+ *  }
  */
+
 @Component({
   selector: 'app-view-market-details',
   standalone: true,
@@ -45,59 +66,33 @@ import { MarketDetails } from '../../core/market-details';
 })
 export class ViewMarketDetailsComponent implements OnInit {
 
-  /**
-   @property {MarketDetails | null} marketDetails
-   * Stores the fetched market details after calling the API.
-   */
-   marketDetails: MarketDetails | null = null;
-
-  /**
-   * @property {number | undefined} marketId
-   * Stores the market ID obtained from the route parameters.
-   */
+  marketDetails: MarketDetails | null = null;
   marketId: number | undefined;
 
-  /**
-   * @constructor
-   * Injects `ActivatedRoute` to access route parameters and `MarketService` to fetch market data.
-   * 
-   * @param route 
-   * @param marketService 
-   */
   constructor(private route: ActivatedRoute, private marketService: MarketService) {}
 
-  /**
-   * @method ngOnInit
-   * Retrieves the `marketId` from the route and calls `fetchMarketDetails` if the ID is valid.
-   */
   ngOnInit() {
-    this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);  // Parse marketId from the route
+    this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);
     
-    // Fetch market details using the marketId from the route
     if (this.marketId) {
       this.fetchMarketDetails(this.marketId);
     } else {
-      console.error('Market ID not found in the route');  // Error handling if marketId is missing
+      console.error('Market ID not found in the route');
     }
   }
 
   /**
-   * @method fetchMarketDetails
-   * Fetches market details by calling the `MarketService` with the provided `marketId`.
+   * Fetches market details from the backend.
    * 
-   * @param {number} marketId
-   * @returns void
-   * 
-   * @errorHandling
-   * Logs an error if the API call fails.
+   * @param marketId The ID of the market to fetch details for.
    */
   fetchMarketDetails(marketId: number) {
     this.marketService.getMarketById(marketId).subscribe({
       next: (data) => {
-        this.marketDetails = data;  // Assign fetched data to marketDetails
+        this.marketDetails = data;
       },
       error: (err) => {
-        console.error('Failed to fetch market details', err);  // Error handling for API failure
+        console.error('Failed to fetch market details', err);
       }
     });
   }
