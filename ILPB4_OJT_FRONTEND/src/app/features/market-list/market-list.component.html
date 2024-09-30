@@ -52,7 +52,7 @@
                 <tr>
                     <td [pTooltip]="market.longMarketCode" tooltipPosition="top">{{ market.longMarketCode }}</td>
                     <td>{{ market.code }}</td>
-                    <td [pTooltip]="market.name" tooltipPosition="top" class="truncate">{{ market.name }}</td>
+                    <td [pTooltip]="market.name" tooltipPosition="top" class="truncate"><a [routerLink]="['/marketlist', market.id]" class="market-link">{{ market.name }}</a></td>
                     <td>{{ market.marketSubGroups.join(', ')}}</td> <!-- Joining subgroups array -->
                     <td>{{ market.region }}</td>
                     <td>{{ market.subRegion }}</td>

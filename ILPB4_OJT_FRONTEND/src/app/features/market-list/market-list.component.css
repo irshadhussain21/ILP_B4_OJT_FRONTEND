@@ -172,6 +172,11 @@
 .p-table {
     margin-bottom: 1.5rem;
 }
+.market-link {
+    text-decoration: none;  /* Remove underline */
+    color: inherit;
+    cursor: pointer;
+}
 
 
 
