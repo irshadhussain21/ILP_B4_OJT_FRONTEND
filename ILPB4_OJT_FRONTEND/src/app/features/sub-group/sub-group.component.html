@@ -1,9 +1,9 @@
 <p-confirmDialog></p-confirmDialog>
 
 <div class="form-container">
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-  
+
     <p-table [value]="rows.controls" formArrayName="rows" class="p-mb-3">
       <!-- Table Header -->
       <ng-template pTemplate="header">
@@ -12,7 +12,7 @@
           <th>Name</th>
         </tr>
       </ng-template>
-  
+
       <!-- Table Body -->
       <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
         <tr [formGroupName]="rowIndex">
@@ -20,43 +20,66 @@
           <td>
             <p-inputGroup>
               <!-- Market Code Input -->
-              <input type="text" placeholder="" pInputText formControlName="marketCode" maxlength="2" class="market-input" readonly/>
+              <input type="text" placeholder="" pInputText formControlName="marketCode" maxlength="2"
+                class="market-input" readonly />
               <p-divider layout="vertical"></p-divider>
-  
+
               <!-- Subgroup Code Input -->
-              <input type="text" placeholder="Subgroup Code" pInputText formControlName="subgroupCode" maxlength="1" class="subgroup-input" (blur)="validateSubgroupCode(row)" />
+              <input type="text" placeholder="Subgroup Code" pInputText formControlName="subgroupCode" maxlength="1"
+                class="subgroup-input" (blur)="row.get('subgroupCode')?.markAsTouched()" />
             </p-inputGroup>
           </td>
-  
+
           <!-- Name Column: Market Name, Delete Icon -->
           <td>
             <div class="form-inline">
               <!-- Market Name Input -->
-              <input type="text" placeholder="Subgroup Name" pInputText formControlName="subgroupName" class="name-input" (blur)="validateSubgroupName(row)" />
-  
+              <input type="text" placeholder="Subgroup Name" pInputText formControlName="subgroupName"
+                class="name-input" (blur)="row.get('subgroupName')?.markAsTouched()" />
+
               <!-- Delete Icon -->
               <i style="cursor: pointer;" class="fa fa-trash-can delete-icon p-ml-2" (click)="deleteRow(rowIndex)"></i>
             </div>
           </td>
         </tr>
-  
+
         <!-- Validation Errors -->
         <tr>
           <td colspan="2">
-            <small class="p-error" *ngIf="row.get('subgroupCode')?.hasError('pattern')">Invalid Subgroup Code format.</small>
-            <small class="p-error" *ngIf="row.get('subgroupCode')?.hasError('duplicateSubgroupCode')">Subgroup Code already exists for this market.</small>
-            <small class="p-error" *ngIf="row.get('subgroupName')?.hasError('duplicateSubgroupName')">Subgroup Name already exists.</small>
+            <div *ngIf="row.get('subgroupCode')?.invalid && row.get('subgroupCode')?.touched">
+              <!-- Error message for invalid format (special characters or more than one character) -->
+              <small class="p-error" *ngIf="row.get('subgroupCode')?.hasError('pattern')">
+                Invalid code format. Only a single alphanumeric character is allowed.
+              </small>
+            </div>
+            <small class="p-error"
+              *ngIf="row.get('subgroupCode')?.hasError('required') && row.get('subgroupCode')?.touched">
+              Subgroup Code is required.
+            </small>
+            <small class="p-error"
+              *ngIf="row.get('subgroupName')?.hasError('required') && row.get('subgroupName')?.touched">
+              Subgroup Name is required.
+            </small>
+            <small class="p-error"
+              *ngIf="row.get('subgroupCode')?.hasError('duplicateSubgroupCode') && row.get('subgroupCode')?.touched">
+              Subgroup Code already exists for this market.
+            </small>
+            <small class="p-error"
+              *ngIf="row.get('subgroupName')?.hasError('duplicateSubgroupName') && row.get('subgroupName')?.touched">
+              Subgroup Name already exists.
+            </small>
           </td>
         </tr>
       </ng-template>
     </p-table>
-  
+
     <!-- Add Subgroup Button -->
-    <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true" (click)="addRow()" [disabled]="isFormInvalid()"></button>
-  
+    <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true" (click)="addRow()"
+      [disabled]="!canAddSubgroup()"></button>
+
     <!-- Submit Button -->
-    <button type="submit" pButton label="Submit" class="p-button-success p-mt-3" [disabled]="isFormInvalid()"></button>
-  
+    <button type="submit" pButton label="Submit" class="p-button-success p-mt-3" [disabled]="!canSubmit()"></button>
+
     <!-- Cancel Button -->
     <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button>
   </form>
