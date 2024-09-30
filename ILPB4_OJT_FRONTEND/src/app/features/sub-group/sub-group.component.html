@@ -25,8 +25,8 @@
               <p-divider layout="vertical"></p-divider>
 
               <!-- Subgroup Code Input -->
-              <input type="text" placeholder="Subgroup Code" pInputText formControlName="subgroupCode" maxlength="1"
-                class="subgroup-input" (blur)="row.get('subgroupCode')?.markAsTouched()" />
+              <input type="text" placeholder="Subgroup Code" pInputText formControlName="subGroupCode" maxlength="1"
+                class="subgroup-input" (blur)="row.get('subGroupCode')?.markAsTouched()" />
             </p-inputGroup>
           </td>
 
@@ -34,8 +34,8 @@
           <td>
             <div class="form-inline">
               <!-- Market Name Input -->
-              <input type="text" placeholder="Subgroup Name" pInputText formControlName="subgroupName"
-                class="name-input" (blur)="row.get('subgroupName')?.markAsTouched()" />
+              <input type="text" placeholder="Subgroup Name" pInputText formControlName="subGroupName"
+                class="name-input" (blur)="row.get('subGroupName')?.markAsTouched()" />
 
               <!-- Delete Icon -->
               <i style="cursor: pointer;" class="fa fa-trash-can delete-icon p-ml-2" (click)="deleteRow(rowIndex)"></i>
@@ -46,26 +46,24 @@
         <!-- Validation Errors -->
         <tr>
           <td colspan="2">
-            <div *ngIf="row.get('subgroupCode')?.invalid && row.get('subgroupCode')?.touched">
-              <!-- Error message for invalid format (special characters or more than one character) -->
-              <small class="p-error" *ngIf="row.get('subgroupCode')?.hasError('pattern')">
-                Invalid code format. Only a single alphanumeric character is allowed.
-              </small>
-            </div>
             <small class="p-error"
-              *ngIf="row.get('subgroupCode')?.hasError('required') && row.get('subgroupCode')?.touched">
+            *ngIf="row.get('subGroupCode')?.hasError('invalidFormat') && row.get('subGroupCode')?.touched">
+              Invalid code format. Only a single alphanumeric character is allowed.
+            </small>
+            <small class="p-error"
+              *ngIf="row.get('subGroupCode')?.hasError('required') && row.get('subGroupCode')?.touched">
               Subgroup Code is required.
             </small>
             <small class="p-error"
-              *ngIf="row.get('subgroupName')?.hasError('required') && row.get('subgroupName')?.touched">
+              *ngIf="row.get('subGroupName')?.hasError('required') && row.get('subGroupName')?.touched">
               Subgroup Name is required.
             </small>
             <small class="p-error"
-              *ngIf="row.get('subgroupCode')?.hasError('duplicateSubgroupCode') && row.get('subgroupCode')?.touched">
+              *ngIf="row.get('subGroupCode')?.hasError('duplicateSubgroupCode') && row.get('subGroupCode')?.touched">
               Subgroup Code already exists for this market.
             </small>
             <small class="p-error"
-              *ngIf="row.get('subgroupName')?.hasError('duplicateSubgroupName') && row.get('subgroupName')?.touched">
+              *ngIf="row.get('subGroupName')?.hasError('duplicateSubgroupName') && row.get('subGroupName')?.touched">
               Subgroup Name already exists.
             </small>
           </td>
@@ -78,7 +76,7 @@
       [disabled]="!canAddSubgroup()"></button>
 
     <!-- Submit Button -->
-    <button type="submit" pButton label="Submit" class="p-button-success p-mt-3" [disabled]="!canSubmit()"></button>
+    <button type="submit" pButton label="Submit" class="p-button-success p-mt-3" [disabled]="!canSubmit()" (click)="onSubmit()"></button>
 
     <!-- Cancel Button -->
     <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button>
