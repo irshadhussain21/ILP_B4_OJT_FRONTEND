@@ -179,22 +179,43 @@ export class SubGroupComponent implements OnInit {
    * Deletes a row from the FormArray by its index.
    * @param {number} index The index of the row to be deleted.
    */
-  deleteRow(index: number): void {
-    const subGroupId = this.rows.at(index).value.id;
-    if (subGroupId) {
-      this.marketSubgroupService.deleteSubgroup(subGroupId).subscribe({
-        next: () => {
-          console.log('Subgroup deleted');
-          this.rows.removeAt(index);
-        },
-        error: (error: HttpErrorResponse) => {
-          console.error('Error deleting subgroup:', error.message);
-        }
-      });
-    } else {
-      this.rows.removeAt(index);
+
+  deleteRow(rowIndex: number, subGroupId: number): void {
+    // First, safely cast the 'rows' control to a FormArray.
+    const rowsArray = this.form.get('rows') as FormArray | null;
+    
+    // Check if 'rowsArray' is not null before proceeding
+    if (!rowsArray) {
+      console.error('Form array "rows" does not exist');
+      return;
     }
+  
+    // Trigger confirmation dialog
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this subgroup?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        // If the user clicks 'Yes', proceed with deletion
+        if (subGroupId) {
+          this.marketSubgroupService.deleteSubgroup(subGroupId).subscribe({
+            next: () => {
+              rowsArray.removeAt(rowIndex); // Remove the row from the form after successful deletion
+            },
+            error: (error: HttpErrorResponse) => {
+              console.error('Error deleting subgroup:', error.message);
+            }
+          });
+        } else {
+          rowsArray.removeAt(rowIndex);
+        }
+      },
+      reject: () => {
+          
+      }
+    });
   }
+  
 
 
 // Validate Subgroup Code
