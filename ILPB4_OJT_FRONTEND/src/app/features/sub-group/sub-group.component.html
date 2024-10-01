@@ -5,7 +5,7 @@
 
 
     <p-table [value]="rows.controls" formArrayName="rows" class="p-mb-3">
-      <!-- Table Header -->
+
       <ng-template pTemplate="header">
         <tr>
           <th>Code</th>
@@ -13,37 +13,31 @@
         </tr>
       </ng-template>
 
-      <!-- Table Body -->
+
       <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
         <tr [formGroupName]="rowIndex">
-          <!-- Code Column: Market Code and Subgroup Code -->
+
           <td>
             <p-inputGroup>
-              <!-- Market Code Input -->
               <input type="text" placeholder="" pInputText formControlName="marketCode" maxlength="2"
                 class="market-input" readonly />
               <p-divider layout="vertical"></p-divider>
 
-              <!-- Subgroup Code Input -->
               <input type="text" placeholder="Subgroup Code" pInputText formControlName="subGroupCode" maxlength="1"
                 class="subgroup-input" (blur)="row.get('subGroupCode')?.markAsTouched()" />
             </p-inputGroup>
           </td>
 
-          <!-- Name Column: Market Name, Delete Icon -->
           <td>
             <div class="form-inline">
-              <!-- Market Name Input -->
               <input type="text" placeholder="Subgroup Name" pInputText formControlName="subGroupName"
                 class="name-input" (blur)="row.get('subGroupName')?.markAsTouched()" />
 
-              <!-- Delete Icon -->
               <i style="cursor: pointer;" class="fa fa-trash-can delete-icon p-ml-2" (click)="deleteRow(rowIndex, row.get('subGroupId').value)"></i>
             </div>
           </td>
         </tr>
 
-        <!-- Validation Errors -->
         <tr>
           <td colspan="2">
             <small class="p-error"
@@ -71,15 +65,12 @@
       </ng-template>
     </p-table>
 
-    <!-- Add Subgroup Button -->
     <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true" (click)="addRow()"
       [disabled]="!canAddSubgroup()"></button>
 
-    <!-- Submit Button -->
     <button type="submit" pButton label="Submit" class="p-button-success p-mt-3" [disabled]="!canSubmit()"
       (click)="onSubmit()"></button>
 
-    <!-- Cancel Button -->
     <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button>
   </form>
 </div>
