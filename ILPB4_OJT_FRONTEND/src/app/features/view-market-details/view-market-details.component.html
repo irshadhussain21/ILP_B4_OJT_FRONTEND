@@ -1,0 +1,54 @@
+<app-header [title]="marketDetails?.marketCode + ' - ' + marketDetails?.marketName">
+  
+  <button class="edit-button">
+    <img src="assets/edit-icon.svg" alt="Edit Icon" width="16" height="16" />
+    Edit
+    <span class="notification-dot"></span>
+  </button>
+
+
+  <button class="options-button">
+    <img src="assets/options-icon.svg" alt="Options Icon" width="16" height="16" />
+  </button>
+
+</app-header>
+
+<div class="container">  
+    <div class="card">
+      <!-- Region Panel -->
+      <div class="panel">
+        <div class="panel-header">Region</div>
+        <div class="panel-content">{{ marketDetails?.region }}</div>
+      </div>
+  
+      <!-- Subregion Panel -->
+      <div class="panel">
+        <div class="panel-header">Subregion</div>
+        <div class="panel-content">{{ marketDetails?.subRegion }}</div>
+      </div>
+  
+      <!-- Market Name Panel -->
+      <div class="panel">
+        <div class="panel-header">Market Name</div>
+        <div class="panel-content">{{ marketDetails?.marketName }}</div>
+      </div>
+  
+      <!-- Long Code Panel -->
+      <div class="panel">
+        <div class="panel-header">Long Code</div>
+        <div class="panel-content">{{ marketDetails?.longMarketCode }}</div>
+      </div>
+  
+      <!-- Subgroup(s) Panel -->
+      <div class="Subgrouppanel">
+        <div class="panel-header">Subgroup(s)</div>
+        <div *ngFor="let subgroup of marketDetails?.marketSubGroups" class="subgrouppanel-contt">
+          <p>
+            {{ marketDetails?.marketCode }}{{ subgroup.subGroupCode }} - {{ subgroup.subGroupName }}
+          </p>
+        </div>
+        <p *ngIf="!marketDetails?.marketSubGroups?.length">No subgroups available</p>
+      </div>
+      
+    </div>
+</div>

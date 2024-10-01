@@ -85,14 +85,18 @@
 
       <!-- Long Code -->
       <div class="form-section">
-        <label for="longCode" class="form-label">Long Code <span class="asterik">*</span></label>
-        <p class="form-sub-label">Enter Long Market Code in the defined format</p>
-        <input 
-          formControlName="longCode" 
-          type="text" 
-          class="longcode-input" 
-          maxlength="6" 
-        />
+        <label class="form-label">Long Market Code <span class="asterik">*</span></label>
+        <p class="form-sub-label">The format will be automatically set based on selections</p>
+        <div class="input-wrapper">
+          <input 
+            formControlName="longCode" 
+            type="text" 
+            class="longcode-input" 
+            maxlength="7" 
+          
+          />
+          <div class="placeholder-overlay">_-___.__</div>
+        </div>
       </div>
 
       <!-- Submit Button -->
