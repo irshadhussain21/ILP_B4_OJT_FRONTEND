@@ -352,8 +352,7 @@ validateSubgroupName(row: AbstractControl): void {
   
         // Wait for all requests to complete
         Promise.all(createSubgroupPromises)
-          .then((responses) => {
-            console.log('Subgroups created:', responses);
+          .then(() => {
             this.loadSubGroups();
           })
           .catch((error) => {
