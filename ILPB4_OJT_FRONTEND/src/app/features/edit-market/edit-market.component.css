@@ -1,0 +1,247 @@
+/* Main container for the Edit Market form */
+.edit-market-container {
+    max-width: 100vw;
+    margin: 0;
+    padding: 20px;
+    font-family: 'DM Sans', sans-serif;
+    background-color: #fff;
+    border-radius: 8px;
+    height: 100vh; /* Full height */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent screen overflow */
+    position: relative; /* Ensure relative positioning for the fixed elements */
+  }
+  
+  h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    text-align: left;
+    position: fixed;
+    top: 80px;
+    left: 20px;
+    background-color: #fff;
+    z-index: 10;
+    width: calc(100% - 40px);
+    padding: 10px 0;
+  }
+  
+  hr {
+    position: fixed;
+    top: 120px;
+    left: 20px;
+    width: calc(100% - 40px);
+    margin: 0;
+    background-color: #000;
+    z-index: 10;
+  }
+  
+  /* Scrollable content container */
+  .scrollable-content {
+    overflow-y: auto;
+    flex: 1;
+    margin-top: 60px;
+    padding-right: 10px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    max-height: calc(100vh - 60px);
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  
+  .scrollable-content::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollable-content::-webkit-scrollbar-thumb {
+    background-color: #c4cfd9;
+    border-radius: 10px;
+  }
+  
+  .scrollable-content:hover::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+  }
+  
+  /* Form-section padding */
+  .form-section {
+    margin-bottom: 20px;
+    padding: 10px 0;
+  }
+  
+  .form-label {
+    font-size: var(--text-lg);
+    font-family: var(--font-primary);
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    text-align: left;
+  }
+  
+  .form-sub-label {
+    font-family: var(--font-secondary);
+    font-size: var(--text-sm-plus);
+    color: var(--grey-1);
+  }
+  
+  .asterik {
+    color: var(--red-alert);
+  }
+  
+  .region-options,
+  .subregion-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  /* Styling for region and subregion options */
+  .region-option, 
+  .subregion-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border: 1px solid #d1d5db; 
+    border-radius: 20px; 
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    cursor: pointer; 
+    transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+    gap: 4px;
+  }
+  
+  .region-option:hover, 
+  .subregion-option:hover {
+    border-color: #007bff; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Selected styling */
+  .region-option.selected, 
+  .subregion-option.selected {
+    border: 1px solid #00AEEF; /* Change border color */
+    background-color: var(--light-blue-1);
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Slight shadow for emphasis */
+  }
+  
+  /* Adjust the margin between the radio button and text */
+  .region-option .p-radiobutton, 
+  .subregion-option .p-radiobutton {
+    margin-right: 4px;
+  }
+  
+  .region-option label, 
+  .subregion-option label {
+    font-size: 14px; 
+    color: #333; 
+    cursor: pointer;
+    margin: 0;
+  }
+  
+  /* Short Code and Market Name container styling */
+  .shortcode-marketname-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #c4cfd9;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+  }
+  
+  .shortcode-input,
+  .marketname-input {
+    border: none;
+    padding: 0 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    background-color: transparent;
+    text-align: left;
+  }
+  
+  .shortcode-input {
+    flex: 1;
+    max-width: 100px;
+    text-align: left;
+  }
+  
+  .marketname-input {
+    flex: 3;
+    text-align: left;
+  }
+  
+  .divider {
+    height: 100%;
+    width: 1px;
+    background-color: #c4cfd9;
+    margin: 0 10px;
+  }
+  
+  .longcode-input {
+    padding: 10px 15px;
+    border: 1px solid #c4cfd9;
+    border-radius: 8px;
+    width: auto;
+    max-width: 300px;
+    font-size: 16px;
+    background-color: #f7f9fc;
+    text-align: left;
+    color: #333;
+    letter-spacing: 0.15rem;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    box-sizing: border-box;
+    margin-left: 0;
+  }
+  
+  .longcode-input:focus {
+    border-color: #007bff;
+    background-color: #f0f4f8;
+  }
+  
+  .shortcode-marketname-container:focus-within,
+  .longcode-input:focus {
+    border-color: #007bff;
+  }
+  
+  .submit-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    display: inline-block;
+    text-align: left;
+  }
+  
+  .submit-button[disabled] {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  
+  @media (max-width: 768px) {
+    .shortcode-marketname-container {
+      flex-direction: column;
+    }
+  
+    .divider {
+      display: none;
+    }
+  
+    .shortcode-input,
+    .marketname-input {
+      width: 100%;
+    }
+  
+    .region-options,
+    .subregion-options {
+      flex-direction: column;
+    }
+  }
+  

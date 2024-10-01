@@ -75,18 +75,18 @@ export class ViewMarketDetailsComponent implements OnInit {
     this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);
     
     if (this.marketId) {
-      this.fetchMarketDetails(this.marketId);
+      this.getMarketDetails(this.marketId);
     } else {
       console.error('Market ID not found in the route');
     }
   }
 
   /**
-   * Fetches market details from the backend.
+   * get market details from the backend.
    * 
    * @param marketId The ID of the market to fetch details for.
    */
-  fetchMarketDetails(marketId: number) {
+  getMarketDetails(marketId: number) {
     this.marketService.getMarketById(marketId).subscribe({
       next: (data) => {
         this.marketDetails = data;
