@@ -7,16 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { MarketlistService } from '../../services/marketlist.service';
-
-export interface Market {
-  longcode: string;
-  marketcode: string;
-  name: string;
-  subgroups: string[];
-  region: string;
-  subregion: string;
-  country: string;
-}
+import { Market } from '../../core/models/market';
 
 @Component({
   selector: 'app-marketlist',
@@ -63,12 +54,11 @@ export class MarketlistComponent implements OnInit {
   filterMarkets() {
     if (this.searchText) {
       this.filteredMarkets = this.markets.filter(market => 
-        market.longcode.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        market.marketcode.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        market.longMarketCode.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        market.code.toLowerCase().includes(this.searchText.toLowerCase()) ||
         market.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
         market.region.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        market.subregion.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        market.country.toLowerCase().includes(this.searchText.toLowerCase())
+        market.subRegion.toLowerCase().includes(this.searchText.toLowerCase())
       );
     } else {
       this.filteredMarkets = this.markets;  // Show all markets if search text is empty

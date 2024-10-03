@@ -12,6 +12,7 @@ import { ButtonModule } from 'primeng/button';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { MarketService } from '../../services/market.service';
 import { MarketDetails } from '../../core/market-details';
+import { Market } from '../market-list/market-list.component';
 
 /**
  * LLD
@@ -68,6 +69,7 @@ export class ViewMarketDetailsComponent implements OnInit {
 
   marketDetails: MarketDetails | null = null;
   marketId: number | undefined;
+  market!: Market;
 
   constructor(private route: ActivatedRoute, private marketService: MarketService) {}
 
@@ -79,6 +81,15 @@ export class ViewMarketDetailsComponent implements OnInit {
     } else {
       console.error('Market ID not found in the route');
     }
+
+    this.marketService.getMarketById(this.marketId).subscribe(
+      (data: Market) => {
+        this.market = data;
+      },
+      (error) => {
+        console.error('Error fetching market details:', error);
+      }
+    );
   }
 
   /**

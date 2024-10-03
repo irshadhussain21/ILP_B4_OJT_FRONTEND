@@ -1,7 +1,7 @@
 <div class="container">
     <div class="market-header">
         <h2>Markets</h2>
-        <button class="add-market-button" [routerLink]="['/marketlist/create']" routerLinkActive="router-link-active">
+        <button class="add-market-button" [routerLink]="['/marketlist/create']" routerLinkActive="router-link-active" id="create-market">
             <i class="pi pi-plus"></i> Create Market
         </button>
     </div>
@@ -42,21 +42,16 @@
                         Subregion 
                         <p-sortIcon field="subregion" *ngIf="sortField === 'subregion'"></p-sortIcon>
                     </th>
-                    <th pSortableColumn="country" style="width:25%">
-                        Country 
-                        <p-sortIcon field="country" *ngIf="sortField === 'country'"></p-sortIcon>
-                    </th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-market>
                 <tr>
                     <td [pTooltip]="market.longMarketCode" tooltipPosition="top">{{ market.longMarketCode }}</td>
                     <td>{{ market.code }}</td>
-                    <td [pTooltip]="market.name" tooltipPosition="top" class="truncate"><a [routerLink]="['/marketlist', market.id]" class="market-link">{{ market.name }}</a></td>
+                    <td [pTooltip]="market.name" tooltipPosition="top" class="truncate"><a [routerLink]="['/marketlist/market', market.id]" class="market-link">{{ market.name }}</a></td>
                     <td>{{ market.marketSubGroups.join(', ')}}</td> <!-- Joining subgroups array -->
                     <td>{{ market.region }}</td>
                     <td>{{ market.subRegion }}</td>
-                    <td>{{ market.country }}</td>
                 </tr>
             </ng-template>
         </p-table>
