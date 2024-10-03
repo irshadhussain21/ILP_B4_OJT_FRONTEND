@@ -13,6 +13,8 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { TranslateModule } from '@ngx-translate/core';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 /**
  * LLD
@@ -51,7 +53,14 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule,TranslateModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    RadioButtonModule,
+    TranslateModule,
+    ToastModule,
+  ],
+  providers: [MessageService],
 })
 export class CreateMarketComponent implements OnInit {
   /**
@@ -80,7 +89,8 @@ export class CreateMarketComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private marketService: MarketService,
-    private regionService: RegionService
+    private regionService: RegionService,
+    private messageService: MessageService
   ) {}
 
   /**
@@ -275,13 +285,21 @@ export class CreateMarketComponent implements OnInit {
 
       this.marketService.createMarket(marketData).subscribe(
         (response: number) => {
-          console.log('Market created successfully:', response);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Market is Successfully added',
+          });
           this.marketForm.reset();
           this.codeExistsError = false;
           this.nameExistsError = false;
         },
         (error) => {
-          console.error('Error creating market:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'An error occurred while adding the market',
+          });
         }
       );
     }
