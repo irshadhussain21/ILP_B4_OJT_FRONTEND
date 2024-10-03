@@ -22,9 +22,9 @@ export class MarketSubgroupService {
     return this.http.put<SubGroup>(`${this.apiUrl}/${id}`, subGroup);
   }
 
-  // Retrieve all subgroups
-  getSubgroups(): Observable<SubGroup[]> {
-    return this.http.get<SubGroup[]>(`${this.apiUrl}`);
+  // Retrieve subgroups related to the existing market code
+  getSubgroups(marketCode: string): Observable<SubGroup[]> {
+    return this.http.get<SubGroup[]>(`${this.apiUrl}?marketCode=${marketCode}`);
   }
 
   // Retrieve a specific subgroup by ID

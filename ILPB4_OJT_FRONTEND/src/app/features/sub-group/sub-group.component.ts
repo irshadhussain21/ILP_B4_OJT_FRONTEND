@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -14,7 +15,7 @@ import { MarketSubgroupService } from '../../core/services/subgroup.service';
 import { SubGroup } from '../../core/models/subgroup';
 
 import { HttpErrorResponse } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime } from 'rxjs/operators'; // Import debounceTime for performance optimization
 
 /** LLD
  * SubGroupComponent:
@@ -91,6 +92,11 @@ import { firstValueFrom } from 'rxjs';
 })
 export class SubGroupComponent implements OnInit {
 
+  // Accept the marketCode as an input from the parent component
+  @Input() marketCode: string = '';
+
+  @Output() subGroupsChanged = new EventEmitter<SubGroup[]>();
+
   isInitialLoad = true; // Initially, the Add Subgroup button is enabled.
   submitting = false; // Add this flag to track the form submission status
 
@@ -110,10 +116,35 @@ export class SubGroupComponent implements OnInit {
    * from the backend service to populate the form.
    */
   ngOnInit(): void {
+    this.marketCode = this.marketCode.toUpperCase();
+    console.log('Market Code in SubGroupComponent:', this.marketCode);
     this.form = this.fb.group({
       rows: this.fb.array([]) // FormArray to manage rows
     });
-    this.loadSubGroups();
+      // Fetch subgroups based on the passed marketCode
+      if (this.marketCode) {
+        this.loadSubGroups(); 
+      } else {
+        this.addRow(); // If no marketCode, add an empty row by default
+      }
+
+      // Track changes to the form array and emit valid subgroups
+      this.form.valueChanges.pipe(
+        debounceTime(300) // Emit changes after 300ms of inactivity
+      ).subscribe(() => {
+        this.emitValidSubGroups();
+      });
+  }
+
+  emitValidSubGroups(): void {
+    // Filter out only valid rows
+    const validSubGroups = this.rows.controls
+      .filter(row => row.valid) // Only emit if the row is valid
+      .map(row => row.value); // Extract the values of valid rows
+
+      console.log('Emitting valid subgroups:', validSubGroups);
+    // Emit the valid subgroups
+    this.subGroupsChanged.emit(validSubGroups);
   }
 
   /**
@@ -122,12 +153,16 @@ export class SubGroupComponent implements OnInit {
    * Handles error logging if the request fails.
    */
   loadSubGroups(): void {
-    this.marketSubgroupService.getSubgroups().subscribe({
+    this.marketSubgroupService.getSubgroups(this.marketCode).subscribe({
       next: (subGroups: SubGroup[]) => {
-        this.form.setControl('rows', this.fb.array(subGroups.map(subGroup => this.createRow(subGroup))));
+        if (subGroups.length > 0) {
+          this.form.setControl('rows', this.fb.array(subGroups.map(subGroup => this.createRow(subGroup))));
+        } else {
+          this.addRow(); // If no subgroups are returned, add an empty row by default
+        }
       },
       error: (error: HttpErrorResponse) => {
-        console.error('Error fetching subgroups:', error.message);
+        console.error('Error fetching subgroupsfor market:', this.marketCode, error.message);
       }
     });
 
@@ -188,7 +223,7 @@ export class SubGroupComponent implements OnInit {
     const row = this.fb.group({
       subGroupId: [subGroup?.subGroupId || null],
       marketId: [subGroup?.marketId],
-      marketCode: [subGroup?.marketCode || 'FL'],
+      marketCode: [this.marketCode],
       subGroupCode: [subGroup?.subGroupCode || '', Validators.required],
       subGroupName: [subGroup?.subGroupName || '', Validators.required]
     });
@@ -323,50 +358,16 @@ validateSubgroupName(row: AbstractControl): void {
   }
 }
 
-/**
- * @method onSubmit
- * Submits the form data to the backend after validation. Only new subgroups are created. 
- * Prevents multiple submissions while the form is being processed.
- */
-  onSubmit(): void {
-    // Prevent multiple submissions
-    if (this.submitting) {
-      return;
-    }
+  
+  // private emitSubGroups(): void {
+  //   const subGroupValues = this.form.value.rows.map((subGroup: SubGroup) => ({
+  //     subGroupName: subGroup.subGroupName,
+  //     subGroupCode: subGroup.subGroupCode,
+  //     marketCode: subGroup.marketCode,
+  //   }));
 
-    if (this.form.valid) {
-      const formValues = this.form.value.rows;
-  
-      const newSubGroups = formValues.filter((subGroup: SubGroup) => !subGroup.subGroupId);
-  
-      if (newSubGroups.length > 0) {
-        this.submitting = true; // Mark the form as submitting to avoid multiple calls
-        const createSubgroupPromises = newSubGroups.map((subGroup: SubGroup) => {
-          const payload = {
-            subGroupName: subGroup.subGroupName,
-            subGroupCode: subGroup.subGroupCode,
-            marketCode: subGroup.marketCode
-          };
-          return firstValueFrom(this.marketSubgroupService.createSubgroup(payload));
-        });
-  
-        // Wait for all requests to complete
-        Promise.all(createSubgroupPromises)
-          .then(() => {
-            this.loadSubGroups();
-          })
-          .catch((error) => {
-            console.error('Error creating subgroups:', error);
-          })
-          .finally(() => {
-            this.submitting = false; // Reset the submitting flag after the process is complete
-          });
-      }
-    } else {
-      this.form.markAllAsTouched(); // Marks all controls as touched to trigger validation errors
-    }
-  }
-  
+  //   this.subGroupsChanged.emit(subGroupValues);
+  // }
 /**
  * @method onCancel
  * Resets the form and reloads the existing subgroups, after confirming with the user.
@@ -398,18 +399,6 @@ validateSubgroupName(row: AbstractControl): void {
    const hasInvalidRow = this.rows.controls.some(row => row.invalid);
 
    return !hasInvalidRow && !this.isInitialLoad;
-  }
-  
-/**
- * @method canSubmit
- * Determines if the form can be submitted based on:
- * - The form being valid.
- * - At least one row present.
- * - The initial load being complete.
- * @returns {boolean} - True if the form can be submitted; otherwise, false.
- */
-  canSubmit(): boolean {
-    return this.form.valid && this.rows.length > 0 && !this.isInitialLoad;
   }
   
 }

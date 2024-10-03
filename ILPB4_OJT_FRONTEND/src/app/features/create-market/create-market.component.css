@@ -259,6 +259,22 @@ hr {
   cursor: not-allowed;
 } 
 
+button.p-button {
+  margin: 0px 10px;
+}
+
+
+.error-template {
+  display: flex;
+  flex-direction: column; /* Allows stacking the image and text */
+  align-items: center;    /* Horizontally centers the content */
+  justify-content: center; /* Vertically centers the content */
+  height: 100%;            /* Take full height of the parent container */
+  text-align: center;      /* Center text */
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
 
 .error-message {
   color: #FF4D4F;

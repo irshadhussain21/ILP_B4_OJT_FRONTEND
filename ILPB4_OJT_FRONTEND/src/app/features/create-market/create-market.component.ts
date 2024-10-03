@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -6,15 +6,16 @@ import { MarketService } from '../../core/services/market.service';
 import { SubGroupComponent } from "../sub-group/sub-group.component";
 import { RegionService } from '../../core/services/region.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { Market } from '../../core/models/market';
+import { Market, SubGroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
+import { ButtonModule } from 'primeng/button'; 
 
 @Component({
   selector: 'app-create-market',
   standalone: true, 
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule], 
+  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule, SubGroupComponent, ButtonModule], 
 })
 export class CreateMarketComponent implements OnInit {
   /**
@@ -51,6 +52,13 @@ export class CreateMarketComponent implements OnInit {
    * Flag to indicate if the market name already exists.
    */
   nameExistsError: boolean = false;
+
+  /**
+   * Flag to display Subgroup form
+   */
+  showSubgroupComponent: boolean = false;
+
+  subGroups: SubGroup[] = []; // Store subgroups data
 
   /**
    * Initializes the component with necessary services.
@@ -141,7 +149,12 @@ export class CreateMarketComponent implements OnInit {
           this.marketForm.get('marketName')?.setErrors(null);
         }
       });
-  }
+    }
+    
+    // Function to show the <app-sub-group> component
+    showSubgroup() {
+      this.showSubgroupComponent = true;
+    }
 
   /**
    * Updates the longCode field based on the selected region and market code.
@@ -223,6 +236,13 @@ export class CreateMarketComponent implements OnInit {
     this.marketForm.get('subregion')?.setValue(subregionId);
   }
 
+
+  onSubGroupsChanged(subGroups: SubGroup[]): void {
+    console.log('Received subgroups from child:', subGroups);
+    this.subGroups = subGroups; // Update the parent component's subGroups array
+  }
+
+
   /**
    * Submits the market creation form, validates the form data, and sends it to the MarketService.
    * 
@@ -240,20 +260,34 @@ export class CreateMarketComponent implements OnInit {
         code: this.marketForm.value.marketCode,
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
-        subRegion: this.marketForm.value.subregion
+        subRegion: this.marketForm.value.subregion,
+        subGroups: this.subGroups.map(subGroup => ({
+          subGroupName: subGroup.subGroupName,
+          subGroupCode: subGroup.subGroupCode,
+          marketCode: this.marketForm.value.marketCode
+        }))
       };
-
-      this.marketService.createMarket(marketData).subscribe(
-        (response: number) => {
+  
+      this.marketService.createMarket(marketData).subscribe({
+        next: (response: number) => {
           console.log('Market created successfully:', response);
           this.marketForm.reset();
           this.codeExistsError = false; 
           this.nameExistsError = false; 
+          this.subGroups = [];
         },
-        error => {
-          console.error('Error creating market:', error);
+        error: (err) => {
+          console.error('Error creating market:', err);
+        },
+        complete: () => {
+          console.log('Market creation process completed.');
         }
-      );
+      });
+      
+
+      const formData = this.marketForm.value;
+      console.log('Form Data:', formData);
     }
   }
+  
 }

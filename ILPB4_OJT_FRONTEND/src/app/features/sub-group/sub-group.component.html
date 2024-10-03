@@ -1,7 +1,7 @@
 <p-confirmDialog></p-confirmDialog>
 
 <div class="form-container">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form">
 
 
     <p-table [value]="rows.controls" formArrayName="rows" class="p-mb-3">
@@ -42,23 +42,23 @@
           <td colspan="2">
             <small class="p-error"
               *ngIf="row.get('subGroupCode')?.hasError('invalidFormat') && row.get('subGroupCode')?.touched">
-              Invalid code format. Only a single alphanumeric character is allowed.
+              <span class="error-icon">❗</span>Invalid code format. Only a single alphanumeric character is allowed.
             </small>
             <small class="p-error"
               *ngIf="row.get('subGroupCode')?.hasError('required') && row.get('subGroupCode')?.touched">
-              Subgroup Code is required.
+              <span class="error-icon">❗</span>Subgroup Code is required.
             </small>
             <small class="p-error"
               *ngIf="row.get('subGroupName')?.hasError('required') && row.get('subGroupName')?.touched">
-              Subgroup Name is required.
+              <span class="error-icon">❗</span>Subgroup Name is required.
             </small>
             <small class="p-error"
               *ngIf="row.get('subGroupCode')?.hasError('duplicateSubgroupCode') && row.get('subGroupCode')?.touched">
-              Subgroup Code already exists for this market.
+              <span class="error-icon">❗</span>Subgroup Code already exists for this market.
             </small>
             <small class="p-error"
               *ngIf="row.get('subGroupName')?.hasError('duplicateSubgroupName') && row.get('subGroupName')?.touched">
-              Subgroup Name already exists.
+              <span class="error-icon">❗</span>Subgroup Name already exists.
             </small>
           </td>
         </tr>
@@ -67,9 +67,6 @@
 
     <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true" (click)="addRow()"
       [disabled]="!canAddSubgroup()"></button>
-
-    <button type="submit" pButton label="Submit" class="p-button-success p-mt-3" [disabled]="!canSubmit()"
-      (click)="onSubmit()"></button>
 
     <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button>
   </form>
