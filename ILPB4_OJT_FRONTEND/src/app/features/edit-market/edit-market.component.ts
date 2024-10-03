@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 /**
  * LLD
@@ -66,7 +67,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   standalone: true, 
   templateUrl: './edit-market.component.html',
   styleUrls: ['./edit-market.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule], 
+  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule,TranslateModule], 
 })
 export class EditMarketComponent implements OnInit {
   marketForm!: FormGroup;

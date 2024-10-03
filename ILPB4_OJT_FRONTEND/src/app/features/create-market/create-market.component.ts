@@ -12,6 +12,7 @@ import { RegionService } from '../../services/region.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
 import { Region } from '../../core/models/region';
+import { TranslateModule } from '@ngx-translate/core';
 
 /**
  * LLD
@@ -50,7 +51,7 @@ import { Region } from '../../core/models/region';
   standalone: true,
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule],
+  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule,TranslateModule],
 })
 export class CreateMarketComponent implements OnInit {
   /**
