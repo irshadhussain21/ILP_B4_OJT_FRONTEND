@@ -10,9 +10,10 @@ import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 
 import { HeaderComponent } from '../../shared/header/header.component';
+
+
 import { MarketService } from '../../services/market.service';
-import { MarketDetails } from '../../core/market-details';
-import { Market } from '../market-list/market-list.component';
+import { Market, MarketDetails } from '../../core/models/market';
 
 /**
  * LLD
