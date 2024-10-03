@@ -67,13 +67,7 @@ import { MarketDetails } from '../../core/models/market';
   styleUrls: ['./view-market-details.component.css']
 })
 export class ViewMarketDetailsComponent implements OnInit {
-  navigateToEdit() {
-    if (this.marketId) {
-      this.router.navigate([`/marketlist/edit/${this.marketId}`]);
-    } else {
-      console.error('Market ID is not defined');
-    }
-  }
+ 
 
   marketDetails: MarketDetails | null = null;
   marketId: number | undefined;
@@ -104,5 +98,13 @@ export class ViewMarketDetailsComponent implements OnInit {
         console.error('Failed to fetch market details', err);
       }
     });
+  }
+
+  navigateToEdit() {
+    if (this.marketId) {
+      this.router.navigate([`/marketlist/edit/${this.marketId}`]);
+    } else {
+      console.error('Market ID is not defined');
+    }
   }
 }

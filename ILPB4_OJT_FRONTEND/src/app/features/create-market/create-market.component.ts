@@ -4,7 +4,6 @@ import {
   FormGroup,
   Validators,
   ReactiveFormsModule,
-  
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -13,6 +12,7 @@ import { RegionService } from '../../services/region.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
 import { Region } from '../../core/models/region';
+import { InputMaskModule } from 'primeng/inputmask';
 
 /**
  * LLD
@@ -51,7 +51,7 @@ import { Region } from '../../core/models/region';
   standalone: true,
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule],
+  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule,InputMaskModule],
 })
 export class CreateMarketComponent implements OnInit {
   /**
@@ -176,11 +176,12 @@ export class CreateMarketComponent implements OnInit {
    * 3. Update the `longCode` form control without emitting change events.
    */
   private updateLongCode(): void {
+  
     const region = this.regions.find(
       (r) => r.key === this.marketForm.get('region')?.value
     );
     const marketCode = this.marketForm.get('marketCode')?.value || '';
-
+    console.log('Market Code:', marketCode);
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
       const newLongCode = `${firstChar}XXXX${marketCode}`;
@@ -251,6 +252,19 @@ export class CreateMarketComponent implements OnInit {
   onSubregionChange(event: any, subregionId: number): void {
     this.selectedSubregion = subregionId.toString();
     this.marketForm.get('subregion')?.setValue(subregionId);
+  }
+
+  setCursorToEditable(event: any) {
+    const inputElement = event.target;
+  
+    // Set the cursor position to the start of the editable part (the first `__`)
+    const start = 2; // Position just after the first fixed part (`X-`)
+    const end = 8;   // Position before the last fixed part (`XX`)
+  
+    // Use setSelectionRange to highlight the editable part (__) for user focus
+    setTimeout(() => {
+      inputElement.setSelectionRange(start, start); // Move the cursor to the start
+    }, 0);
   }
 
   /**
