@@ -1,6 +1,8 @@
+
+<app-header [title]="'Create Market'"></app-header>
 <div class="create-market-container">
-  <h1>Create Market</h1>
-  <hr />
+
+ 
 
   <div class="scrollable-content">
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
@@ -104,16 +106,10 @@
           The format will be automatically set based on selections
         </p>
         <div class="input-wrapper">
-          <!-- <input
-            formControlName="longCode"
-            type="text"
-            class="longcode-input"
-            maxlength="7"
-          />
-          <div class="placeholder-overlay">_-___.__</div> -->
+        
           <p-inputMask 
           formControlName="longCode" 
-          mask="a-aa.aa.aa" 
+          [mask]="longCodeMask"
 
           (focus)="setCursorToEditable($event)"
           placeholder="_-__.__.__"

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -13,6 +13,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { InputMaskModule } from 'primeng/inputmask';
+import { HeaderComponent } from "../../shared/header/header.component";
 
 /**
  * LLD
@@ -51,12 +52,13 @@ import { InputMaskModule } from 'primeng/inputmask';
   standalone: true,
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule,InputMaskModule],
+  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule, InputMaskModule, HeaderComponent],
 })
 export class CreateMarketComponent implements OnInit {
   /**
    * Represents the reactive form group for creating a market.
    */
+  @Input() title: string = '';
   marketForm!: FormGroup;
 
   regions: Region[] = [];
@@ -70,6 +72,8 @@ export class CreateMarketComponent implements OnInit {
   codeExistsError: boolean = false;
 
   nameExistsError: boolean = false;
+
+  longCodeMask: string = 'a-aa.aa.aa';
 
   /**
    * Initializes the component with necessary services.
@@ -180,10 +184,11 @@ export class CreateMarketComponent implements OnInit {
     const region = this.regions.find(
       (r) => r.key === this.marketForm.get('region')?.value
     );
-    const marketCode = this.marketForm.get('marketCode')?.value || '';
-    console.log('Market Code:', marketCode);
+    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase()|| '';
+    
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
+     
       const newLongCode = `${firstChar}XXXX${marketCode}`;
       this.marketForm
         .get('longCode')
@@ -196,6 +201,19 @@ export class CreateMarketComponent implements OnInit {
     } else {
       this.marketForm.get('longCode')?.setValue('', { emitEvent: false });
     }
+  }
+
+ 
+
+  setCursorToEditable(event: any): void {
+    const inputElement = event.target;
+    
+    // Move cursor to the start of the editable part (first __)
+    const editableStart = 2; // Start position after "X-"
+    
+    setTimeout(() => {
+      inputElement.setSelectionRange(editableStart, editableStart);
+    }, 0);
   }
 
   /**
@@ -254,18 +272,18 @@ export class CreateMarketComponent implements OnInit {
     this.marketForm.get('subregion')?.setValue(subregionId);
   }
 
-  setCursorToEditable(event: any) {
-    const inputElement = event.target;
+  // setCursorToEditable(event: any) {
+  //   const inputElement = event.target;
   
-    // Set the cursor position to the start of the editable part (the first `__`)
-    const start = 2; // Position just after the first fixed part (`X-`)
-    const end = 8;   // Position before the last fixed part (`XX`)
+  //   // Set the cursor position to the start of the editable part (the first `__`)
+  //   const start = 2; // Position just after the first fixed part (`X-`)
+  //   const end = 8;   // Position before the last fixed part (`XX`)
   
-    // Use setSelectionRange to highlight the editable part (__) for user focus
-    setTimeout(() => {
-      inputElement.setSelectionRange(start, start); // Move the cursor to the start
-    }, 0);
-  }
+  //   // Use setSelectionRange to highlight the editable part (__) for user focus
+  //   setTimeout(() => {
+  //     inputElement.setSelectionRange(start, start); // Move the cursor to the start
+  //   }, 0);
+  // }
 
   /**
    * Submits the market creation form, validates the form data, and sends it to the MarketService.
