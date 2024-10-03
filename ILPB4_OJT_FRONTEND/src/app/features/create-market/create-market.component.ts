@@ -1,19 +1,57 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { MarketService } from '../../core/services/market.service';
-import { RegionService } from '../../core/services/region.service';
+import { MarketService } from '../../services/market.service';
+import { RegionService } from '../../services/region.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 
+/**
+ * LLD
+ *
+ * This component is used to create a new market with the specified details.
+ *
+ * Execution Flow:
+ *  - On initialization, the `marketForm` is created to capture market details.
+ *  - Regions are fetched using the `RegionService` and populated in the form.
+ *  - The `MarketService` is used to validate if the market code or name already exists.
+ *  - The long market code is generated based on the selected region and market code.
+ *  - On form submission, the entered data is sent to the backend to create a new market.
+ *
+ * This screen contains the following actions:
+ *  - Create New Market: Captures details like market name, code, region, and subregion.
+ *  - Fetch Regions: Loads available regions from the backend.
+ *  - Fetch Subregions: Loads subregions based on the selected region.
+ *  - Error Handling: Validates market code and name for uniqueness and handles API errors.
+ *
+ * API Endpoints:
+ *  - `POST https://localhost:7058/api/Market`: Creates a new market.
+ *  - `GET https://localhost:7058/api/Regions`: Fetches all regions.
+ *  - `GET https://localhost:7058/api/Regions/{regionId}/subregions`: Fetches subregions for a specific region.
+ *  - `GET https://localhost:7058/api/Market/checkCodeExists/{code}`: Checks if a market code exists.
+ *  - `GET https://localhost:7058/api/Market/checkNameExists/{name}`: Checks if a market name exists.
+ *
+ * Sample API Response (Create Market):
+ *  {
+ *    "marketId": 1,
+ *    "message": "Market created successfully"
+ *  }
+ */
+
 @Component({
   selector: 'app-create-market',
-  standalone: true, 
+  standalone: true,
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule], 
+  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule],
 })
 export class CreateMarketComponent implements OnInit {
   /**
@@ -21,34 +59,16 @@ export class CreateMarketComponent implements OnInit {
    */
   marketForm!: FormGroup;
 
-  /**
-   * Holds a list of available regions for selection.
-   */
   regions: Region[] = [];
 
-  /**
-   * Will be populated with subregions based on the selected region.
-   */
   subregions: Region[] = [];
 
-  /**
-   * The currently selected region ID.
-   */
   selectedRegion: number | null = null;
 
-  /**
-   * The currently selected subregion value.
-   */
   selectedSubregion: string | null = null;
 
-  /**
-   * Flag to indicate if the market code already exists.
-   */
   codeExistsError: boolean = false;
 
-  /**
-   * Flag to indicate if the market name already exists.
-   */
   nameExistsError: boolean = false;
 
   /**
@@ -66,9 +86,9 @@ export class CreateMarketComponent implements OnInit {
   /**
    * Lifecycle hook that initializes the form and sets up value change subscriptions.
    * This method also loads regions and sets up validators for checking market code and name existence.
-   * 
+   *
    * @returns void
-   * 
+   *
    * LLD:
    * 1. Initialize the `marketForm` with controls for `marketName`, `marketCode`, `longCode`, `region`, and `subregion`.
    * 2. Load available regions by calling `loadRegions()`.
@@ -79,28 +99,33 @@ export class CreateMarketComponent implements OnInit {
     this.marketForm = this.fb.group({
       marketName: ['', Validators.required],
       marketCode: ['', [Validators.required, Validators.maxLength(2)]],
-      longCode: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(7)]], 
+      longCode: [
+        '',
+        [Validators.required, Validators.minLength(7), Validators.maxLength(7)],
+      ],
       region: ['', Validators.required],
-      subregion: ['']
+      subregion: [''],
     });
 
     this.loadRegions();
 
     // Listen to changes in marketCode and region to auto-update longCode
-    this.marketForm.get('marketCode')?.valueChanges
-      .pipe(debounceTime(300), distinctUntilChanged())
+    this.marketForm
+      .get('marketCode')
+      ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
-    this.marketForm.get('region')?.valueChanges
-      .pipe(distinctUntilChanged())
+    this.marketForm
+      .get('region')
+      ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
-    // Check if market code exists
-    this.marketForm.get('marketCode')?.valueChanges
-      .pipe(
-        debounceTime(300), 
-        distinctUntilChanged(), 
-        switchMap(code => {
+    this.marketForm
+      .get('marketCode')
+      ?.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((code) => {
           this.codeExistsError = false;
           if (!code) {
             this.marketForm.get('marketCode')?.setErrors(null);
@@ -109,7 +134,7 @@ export class CreateMarketComponent implements OnInit {
           return this.marketService.checkMarketCodeExists(code);
         })
       )
-      .subscribe(exists => {
+      .subscribe((exists) => {
         this.codeExistsError = exists;
         if (exists) {
           this.marketForm.get('marketCode')?.setErrors({ exists: true });
@@ -118,12 +143,12 @@ export class CreateMarketComponent implements OnInit {
         }
       });
 
-    // Check if market name exists
-    this.marketForm.get('marketName')?.valueChanges
-      .pipe(
-        debounceTime(300), 
-        distinctUntilChanged(), 
-        switchMap(name => {
+    this.marketForm
+      .get('marketName')
+      ?.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((name) => {
           this.nameExistsError = false;
           if (!name) {
             this.marketForm.get('marketName')?.setErrors(null);
@@ -132,7 +157,7 @@ export class CreateMarketComponent implements OnInit {
           return this.marketService.checkMarketNameExists(name);
         })
       )
-      .subscribe(exists => {
+      .subscribe((exists) => {
         this.nameExistsError = exists;
         if (exists) {
           this.marketForm.get('marketName')?.setErrors({ exists: true });
@@ -144,23 +169,29 @@ export class CreateMarketComponent implements OnInit {
 
   /**
    * Updates the longCode field based on the selected region and market code.
-   * 
+   *
    * LLD:
    * 1. Fetch the selected region from the `regions` array using the region key.
    * 2. Concatenate the first character of the region value with 'XXXXX' and the `marketCode` to form the `longCode`.
    * 3. Update the `longCode` form control without emitting change events.
    */
   private updateLongCode(): void {
-    const region = this.regions.find(r => r.key === this.marketForm.get('region')?.value);
+    const region = this.regions.find(
+      (r) => r.key === this.marketForm.get('region')?.value
+    );
     const marketCode = this.marketForm.get('marketCode')?.value || '';
 
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
-      const newLongCode = `${firstChar}XXXXX${marketCode}`;
-      this.marketForm.get('longCode')?.setValue(newLongCode, { emitEvent: false });
+      const newLongCode = `${firstChar}XXXX${marketCode}`;
+      this.marketForm
+        .get('longCode')
+        ?.setValue(newLongCode, { emitEvent: false });
     } else if (region) {
       const firstChar = region.value.charAt(0).toUpperCase();
-      this.marketForm.get('longCode')?.setValue(firstChar, { emitEvent: false });
+      this.marketForm
+        .get('longCode')
+        ?.setValue(firstChar, { emitEvent: false });
     } else {
       this.marketForm.get('longCode')?.setValue('', { emitEvent: false });
     }
@@ -169,7 +200,7 @@ export class CreateMarketComponent implements OnInit {
   /**
    * Fetches all regions from the RegionService and assigns them to the `regions` array.
    * Handles any errors during the fetch process.
-   * 
+   *
    * @returns void
    */
   loadRegions(): void {
@@ -177,7 +208,7 @@ export class CreateMarketComponent implements OnInit {
       (regions: Region[]) => {
         this.regions = regions;
       },
-      error => {
+      (error) => {
         console.error('Error loading regions:', error);
       }
     );
@@ -185,10 +216,10 @@ export class CreateMarketComponent implements OnInit {
 
   /**
    * Handles the selection of a region and fetches corresponding subregions.
-   * 
+   *
    * @param {number} regionId - The ID of the selected region.
    * @returns void
-   * 
+   *
    * LLD:
    * 1. Set `selectedRegion` to `regionId` and update the `region` form control.
    * 2. Call `updateLongCode()` to adjust the `longCode` based on the selected region.
@@ -201,10 +232,10 @@ export class CreateMarketComponent implements OnInit {
 
     this.regionService.getSubRegionsByRegion(regionId).subscribe(
       (subregions: Region[]) => {
-        this.subregions = subregions; 
-        this.selectedSubregion = null; 
+        this.subregions = subregions;
+        this.selectedSubregion = null;
       },
-      error => {
+      (error) => {
         console.error('Error loading subregions:', error);
       }
     );
@@ -212,7 +243,7 @@ export class CreateMarketComponent implements OnInit {
 
   /**
    * Handles the change event when a subregion is selected.
-   * 
+   *
    * @param {any} event - The event object triggered by the selection change.
    * @param {number} subregionId - The ID of the selected subregion.
    * @returns void
@@ -224,7 +255,7 @@ export class CreateMarketComponent implements OnInit {
 
   /**
    * Submits the market creation form, validates the form data, and sends it to the MarketService.
-   * 
+   *
    * LLD:
    * 1. Validate the form to ensure all required data is present.
    * 2. Construct a `Market` object from the form values.
@@ -239,17 +270,17 @@ export class CreateMarketComponent implements OnInit {
         code: this.marketForm.value.marketCode,
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
-        subRegion: this.marketForm.value.subregion
+        subRegion: this.marketForm.value.subregion,
       };
 
       this.marketService.createMarket(marketData).subscribe(
         (response: number) => {
           console.log('Market created successfully:', response);
           this.marketForm.reset();
-          this.codeExistsError = false; 
-          this.nameExistsError = false; 
+          this.codeExistsError = false;
+          this.nameExistsError = false;
         },
-        error => {
+        (error) => {
           console.error('Error creating market:', error);
         }
       );

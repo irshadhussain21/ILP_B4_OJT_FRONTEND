@@ -84,20 +84,22 @@
       </div>
 
       <!-- Long Code -->
-      <div class="form-section">
-        <label class="form-label">Long Market Code <span class="asterik">*</span></label>
-        <p class="form-sub-label">The format will be automatically set based on selections</p>
-        <div class="input-wrapper">
-          <input 
-            formControlName="longCode" 
-            type="text" 
-            class="longcode-input" 
-            maxlength="7" 
-          
-          />
-          <div class="placeholder-overlay">_-___.__</div>
-        </div>
-      </div>
+    <!-- Long Code -->
+<div class="form-section">
+  <label class="form-label">Long Market Code <span class="asterik">*</span></label>
+  <p class="form-sub-label">The format will be automatically set based on selections</p>
+  <div class="input-wrapper">
+    <p-inputMask 
+      formControlName="longCode" 
+      mask="a-99.99.99" 
+      [unmask]="true" 
+      (focus)="setCursorToEditable($event)"
+      class="longcode-input">
+    </p-inputMask>
+  </div>
+</div>
+
+      
 
       <!-- Submit Button -->
       <button 
