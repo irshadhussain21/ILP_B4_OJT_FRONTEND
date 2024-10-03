@@ -51,7 +51,7 @@
 
 /* Global resets and base styles */
 * {
-    padding: 0;
+    /* padding: 0; */
     margin: 0;
     font-family: var(--font-primary); /* Apply primary font family */
 }

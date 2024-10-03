@@ -3,9 +3,7 @@
   <h1>{{ 'PAGE.LABELS.CREATE_MARKET' | translate }}</h1>
   <hr>
 
-  <!-- Scrollable Content Wrapper -->
   <div class="scrollable-content">
-    <!-- Form for creating a market -->
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
       
       <!-- Region Selection -->
@@ -13,24 +11,27 @@
         <label for="region" class="form-label">{{ 'PAGE.LABELS.REGION' | translate }} <span class="asterik">*</span></label>
         <p class="form-sub-label">{{ 'PAGE.PLACEHOLDERS.SELECT_REGION' | translate }}</p>
         <div class="region-options">
-          <div 
-            class="region-option" 
-            *ngFor="let region of regions" 
-            [ngClass]="{'selected': selectedRegion === region.key}"
-            (click)="onRegionSelect(region.key)">
-            <p-radioButton 
-              [name]="'region'" 
-              [label]="region.value" 
-              [inputId]="region.key.toString()" 
-              [value]="region.key" 
-              formControlName="region">
+          <div
+            class="region-option"
+            *ngFor="let region of regions"
+            [ngClass]="{ selected: selectedRegion === region.key }"
+            (click)="onRegionSelect(region.key)"
+          >
+            <p-radioButton
+              [name]="'region'"
+              [label]="region.value"
+              [inputId]="region.key.toString()"
+              [value]="region.key"
+              formControlName="region"
+            >
             </p-radioButton>
-            <label class="check-box-labels" [for]="region.key.toString()">- {{ region.value }}</label>
+            <label class="check-box-labels" [for]="region.key.toString()"
+              >- {{ region.value }}</label
+            >
           </div>
         </div>
       </div>
 
-      <!-- Subregion Selection -->
       <div *ngIf="subregions.length > 0" class="form-section">
         <label for="subregion" class="form-label">{{ 'PAGE.LABELS.SUBREGION' | translate }} <span class="asterik">*</span></label>
         <p class="form-sub-label">{{ 'PAGE.PLACEHOLDERS.SELECT_SUBREGION' | translate }}</p>
@@ -52,7 +53,6 @@
         </div>
       </div>
 
-      <!-- Short Code / Market Name -->
       <div class="form-section">
         <label class="form-label">{{ 'PAGE.LABELS.SHORT_CODE_MARKET_NAME' | translate }} <span class="asterik">*</span></label>
         <p class="form-sub-label">{{ 'PAGE.PLACEHOLDERS.ENTER_CODE' | translate }} and {{ 'PAGE.PLACEHOLDERS.ENTER_NAME' | translate }}</p>
@@ -78,14 +78,33 @@
         <p *ngIf="codeExistsError" class="error-message">
             <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS' | translate }}
         </p>
-        
-        <!-- Error message for market name -->
+        <div class="shortcode-marketname-container">
+          <input
+            formControlName="marketCode"
+            type="text"
+            placeholder="Code"
+            class="shortcode-input"
+            maxlength="2"
+            autocapitalize="on"
+          />
+          <span class="divider"></span>
+          <input
+            formControlName="marketName"
+            type="text"
+            placeholder="Name"
+            class="marketname-input"
+          />
+        </div>
+
+        <p *ngIf="codeExistsError" class="error-message">
+          <span class="error-icon">❗</span> Entered market code already exists.
+        </p>
+
         <p *ngIf="nameExistsError" class="error-message">
             <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS' | translate }}
         </p>
       </div>
 
-      <!-- Long Code -->
       <div class="form-section">
         <label class="form-label">{{ 'PAGE.LABELS.LONG_MARKET_CODE' | translate }} <span class="asterik">*</span></label>
         <p class="form-sub-label">The format will be automatically set based on selections</p>
