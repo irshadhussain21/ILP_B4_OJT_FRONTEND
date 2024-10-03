@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 
 import { CardModule } from 'primeng/card';
@@ -65,11 +65,18 @@ import { MarketDetails } from '../../core/market-details';
   styleUrls: ['./view-market-details.component.css']
 })
 export class ViewMarketDetailsComponent implements OnInit {
+  navigateToEdit() {
+    if (this.marketId) {
+      this.router.navigate([`/marketlist/edit/${this.marketId}`]);
+    } else {
+      console.error('Market ID is not defined');
+    }
+  }
 
   marketDetails: MarketDetails | null = null;
   marketId: number | undefined;
 
-  constructor(private route: ActivatedRoute, private marketService: MarketService) {}
+  constructor(private route: ActivatedRoute, private marketService: MarketService, private router: Router,  ) {}
 
   ngOnInit() {
     this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);
