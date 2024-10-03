@@ -25,7 +25,7 @@ import { Market } from '../../core/models/market';
 export class MarketlistComponent implements OnInit {
   markets!: Market[];
   filteredMarkets!: Market[];
-  selectedMarket!: Market;  // Updated type to Market
+  selectedMarket!: Market;  
   searchText: string = ''; 
 
   constructor(private marketService: MarketService) {}
@@ -45,20 +45,20 @@ export class MarketlistComponent implements OnInit {
           this.markets = data;
           this.filteredMarkets = data;  // Initialize filtered markets
         },
-        // (error) => {
-        //   console.error('Error fetching markets:', error);
-        // }
+        (error) => {
+          console.error('Error fetching markets:', error);
+        }
       );
     }
 
   filterMarkets() {
     if (this.searchText) {
       this.filteredMarkets = this.markets.filter(market => 
-        market.longMarketCode.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        market.code.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        market.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        market.region.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        market.subRegion.toLowerCase().includes(this.searchText.toLowerCase())
+        market.longMarketCode.toLowerCase().startsWith(this.searchText.toLowerCase()) ||
+        market.code.toLowerCase().startsWith(this.searchText.toLowerCase()) ||
+        market.name.toLowerCase().startsWith(this.searchText.toLowerCase())
+        // market.region.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        // market.subRegion.toLowerCase().includes(this.searchText.toLowerCase())
       );
     } else {
       this.filteredMarkets = this.markets;  // Show all markets if search text is empty
@@ -67,6 +67,6 @@ export class MarketlistComponent implements OnInit {
   clearFilter() {
     this.searchText = ''; // Clear the search text
     this.filterMarkets(); // Call the filter method to refresh the displayed markets
-}
+  }
 
 }
