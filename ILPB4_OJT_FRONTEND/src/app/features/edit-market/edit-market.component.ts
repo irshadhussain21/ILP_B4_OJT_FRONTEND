@@ -281,7 +281,7 @@ export class EditMarketComponent implements OnInit {
       this.marketService.updateMarket(this.marketId, marketData).subscribe(
         () => {
           console.log('Market updated successfully');
-          this.router.navigate(['/markets']);
+          this.router.navigate(['/marketlist']);
         },
         error => {
           console.error('Error updating market:', error);
