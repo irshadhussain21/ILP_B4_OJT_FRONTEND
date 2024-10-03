@@ -13,7 +13,7 @@ import { HeaderComponent } from '../../shared/header/header.component';
 
 
 import { MarketService } from '../../services/market.service';
-import { MarketDetails } from '../../core/models/market';
+import { Market, MarketDetails } from '../../core/models/market';
 
 /**
  * LLD
@@ -71,6 +71,7 @@ export class ViewMarketDetailsComponent implements OnInit {
 
   marketDetails: MarketDetails | null = null;
   marketId: number | undefined;
+  market!: Market;
 
   constructor(private route: ActivatedRoute, private marketService: MarketService, private router: Router,  ) {}
 
@@ -82,6 +83,15 @@ export class ViewMarketDetailsComponent implements OnInit {
     } else {
       console.error('Market ID not found in the route');
     }
+
+    this.marketService.getMarketById(this.marketId).subscribe(
+      (data: Market) => {
+        this.market = data;
+      },
+      (error) => {
+        console.error('Error fetching market details:', error);
+      }
+    );
   }
 
   /**
