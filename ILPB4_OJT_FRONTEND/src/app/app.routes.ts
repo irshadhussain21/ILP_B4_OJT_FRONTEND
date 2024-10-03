@@ -7,7 +7,7 @@ import { EditMarketComponent } from './features/edit-market/edit-market.componen
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/marketlist',
+    redirectTo: ' marketlist',
     pathMatch: 'full'
   },
   {

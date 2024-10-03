@@ -5,25 +5,21 @@ import { Market } from '../core/models/market';
 import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MarketService {
-
-  /**
-   * The base URL for the API endpoints.
-   */
   private readonly apiUrl = `${environment.apiUrl}/market`;
 
   /**
    * Initializes the MarketService with the necessary dependencies.
-   * 
+   *
    * @param http The Angular HttpClient used for making HTTP requests.
    */
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   /**
    * Creates a new market entry.
-   * 
+   *
    * @param market The Market object containing market data to be created.
    * @returns Observable<number> An observable that emits the ID of the newly created market.
    */
@@ -33,28 +29,27 @@ export class MarketService {
 
   /**
    * Retrieves market details by ID.
-   * 
+   *
    * @param marketId The ID of the market to retrieve.
    * @returns Observable<any> An observable that emits the details of the market.
    */
   getMarketById(marketId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${marketId}/details`);
   }
- 
-    /**
+
+  /**
    * Retrieves market details by ID.
-   * 
+   *
    * @param marketId The ID of the market to retrieve.
    * @returns Observable<any> An observable that emits the details of the market.
    */
-    getMarketDetailsById(marketId: number): Observable<any> {
-      return this.http.get(`${this.apiUrl}/${marketId}`);
-    }
-  
+  getMarketDetailsById(marketId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${marketId}`);
+  }
 
   /**
    * Retrieves all market entries.
-   * 
+   *
    * @returns Observable<Market[]> An observable that emits an array of all Market objects.
    */
   getAllMarkets(): Observable<Market[]> {
@@ -63,35 +58,35 @@ export class MarketService {
 
   /**
    * Checks if a market code already exists.
-   * 
+   *
    * @param marketCode The market code to check for existence.
    * @returns Observable<boolean> An observable that emits true if the market code exists, otherwise false.
    */
   checkMarketCodeExists(marketCode: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/check-code`, {
-      params: { marketCode }
+      params: { marketCode },
     });
   }
 
   /**
    * Checks if a market name already exists.
-   * 
+   *
    * @param marketName The market name to check for existence.
    * @returns Observable<boolean> An observable that emits true if the market name exists, otherwise false.
    */
   checkMarketNameExists(marketName: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/check-name`, {
-      params: { marketName }
+      params: { marketName },
     });
   }
 
   /**
    * Updates an existing market entry.
-   * 
+   *
    * @param marketId The ID of the market to update.
    * @param market The Market object containing updated market data.
    * @returns Observable<any> An observable that emits the response from the update operation.
-   * 
+   *
    * LLD:
    * 1. Uses HttpClient's `put` method to send a PUT request to update a market.
    * 2. The API endpoint URL is constructed using `this.apiUrl` and the market ID.
