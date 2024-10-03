@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { MarketService } from '../../services/market.service';
-import { Market } from '../../core/models/market';
+import { Market, MarketDetails } from '../../core/models/market';
 
 @Component({
   selector: 'app-marketlist',
@@ -44,6 +44,17 @@ export class MarketlistComponent implements OnInit {
           console.log('Fetched markets:', data); // Debugging line
           this.markets = data;
           this.filteredMarkets = data;  // Initialize filtered markets
+
+          this.markets.forEach(market => {
+            this.marketService.getMarketDetailsById(market.id!).subscribe(
+              (details: MarketDetails) => {
+                market.marketSubGroups = details.marketSubGroups;
+              },
+              (error) => {
+                console.error('Error fetching market details:', error);
+              }
+            );
+          });
         },
         (error) => {
           console.error('Error fetching markets:', error);
@@ -67,6 +78,10 @@ export class MarketlistComponent implements OnInit {
   clearFilter() {
     this.searchText = ''; // Clear the search text
     this.filterMarkets(); // Call the filter method to refresh the displayed markets
+  }
+
+  getSubgroupCode(market: Market): string {
+    return market.marketSubGroups ? market.marketSubGroups.map(subgroup => subgroup.subGroupCode).join(' ') : '';
   }
 
 }

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Market } from '../core/models/market';
+import { Market, MarketDetails } from '../core/models/market';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -96,4 +96,5 @@ export class MarketService {
   updateMarket(marketId: number, market: Market): Observable<any> {
     return this.http.put(`${this.apiUrl}/${marketId}`, market);
   }
+
 }

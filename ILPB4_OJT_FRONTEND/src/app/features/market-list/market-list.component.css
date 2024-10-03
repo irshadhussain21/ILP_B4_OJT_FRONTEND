@@ -178,5 +178,16 @@
     cursor: pointer;
 }
 
+.subgroup-badge {
+    display: inline-block;
+    background-color: #e0f0ff; /* Lighter blue background */
+    color: #007bff; /* Blue text (optional, change as needed) */
+    border: 1px solid #007bff; /* Blue border */
+    padding: 4px 8px; /* Padding inside the rectangle */
+    margin-right: 4px; /* Spacing between badges */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 0.875rem; /* Adjust the font size as needed */
+    white-space: nowrap; /* Prevent text wrapping */
+  }
 
 
