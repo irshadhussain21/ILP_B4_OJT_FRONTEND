@@ -61,25 +61,24 @@ export class MarketlistComponent implements OnInit {
         }
       );
     }
-
+  //Filters the list of markets based on the search text entered by the user.
   filterMarkets() {
     if (this.searchText) {
       this.filteredMarkets = this.markets.filter(market => 
         market.longMarketCode.toLowerCase().startsWith(this.searchText.toLowerCase()) ||
         market.code.toLowerCase().startsWith(this.searchText.toLowerCase()) ||
         market.name.toLowerCase().startsWith(this.searchText.toLowerCase())
-        // market.region.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        // market.subRegion.toLowerCase().includes(this.searchText.toLowerCase())
       );
     } else {
-      this.filteredMarkets = this.markets;  // Show all markets if search text is empty
+      this.filteredMarkets = this.markets; 
     }
   }
+  //Clears the current search filter and resets the market list.
   clearFilter() {
-    this.searchText = ''; // Clear the search text
-    this.filterMarkets(); // Call the filter method to refresh the displayed markets
+    this.searchText = ''; 
+    this.filterMarkets(); 
   }
-
+  //Retrieve the sub group code for displaying it in the market list.
   getSubgroupCode(market: Market): string {
     return market.marketSubGroups ? market.marketSubGroups.map(subgroup => subgroup.subGroupCode).join(' ') : '';
   }
