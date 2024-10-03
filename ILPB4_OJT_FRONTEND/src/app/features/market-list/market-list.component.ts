@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
-import { MarketlistService } from '../../services/marketlist.service';
+import { MarketService } from '../../services/market.service';
 import { Market } from '../../core/models/market';
 
 @Component({
@@ -28,7 +28,7 @@ export class MarketlistComponent implements OnInit {
   selectedMarket!: Market;  // Updated type to Market
   searchText: string = ''; 
 
-  constructor(private marketlistService: MarketlistService) {}
+  constructor(private marketService: MarketService) {}
   sortField: string = '';
   sortOrder: number = 1;
 
@@ -39,15 +39,15 @@ export class MarketlistComponent implements OnInit {
 
   ngOnInit() {
       // Fetch markets from the backend
-      this.marketlistService.getMarkets().subscribe(
+      this.marketService.getAllMarkets().subscribe(
         (data: Market[]) => {
           console.log('Fetched markets:', data); // Debugging line
           this.markets = data;
           this.filteredMarkets = data;  // Initialize filtered markets
         },
-        (error) => {
-          console.error('Error fetching markets:', error);
-        }
+        // (error) => {
+        //   console.error('Error fetching markets:', error);
+        // }
       );
     }
 
