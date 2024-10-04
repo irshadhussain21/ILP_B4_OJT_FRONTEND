@@ -98,12 +98,12 @@
 
       <div class="form-section">
         <label class="form-label"
-          >Long Market Code <span class="asterik">*</span></label
+          >Long  Code <span class="asterik">*</span></label
         >
         <p class="form-sub-label">
           The format will be automatically set based on selections
         </p>
-        <div class="input-wrapper">
+        <!-- <div class="input-wrapper">
           <input
             formControlName="longCode"
             type="text"
@@ -111,7 +111,14 @@
             maxlength="7"
           />
           <div class="placeholder-overlay">_-___.__</div>
-        </div>
+        </div> -->
+
+        <p-inputMask 
+        formControlName="longCode" 
+        mask = "a-aa.aa.aa"
+        placeholder="_-__.__.__"
+        class="longcode-input">
+        </p-inputMask>
       </div>
 
       <button

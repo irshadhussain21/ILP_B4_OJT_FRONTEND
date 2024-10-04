@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 
 import { CardModule } from 'primeng/card';
@@ -71,13 +71,14 @@ import { ToastModule } from 'primeng/toast';
   providers: [ConfirmationService,MessageService] 
 })
 export class ViewMarketDetailsComponent implements OnInit {
+ 
 
   marketDetails: MarketDetails | null = null;
   marketId: number | undefined;
   market!: Market;
   items: MenuItem[] | undefined;
 
-  constructor(private route: ActivatedRoute, private marketService: MarketService,private confirmationService: ConfirmationService, private messageService: MessageService) {}
+  constructor(private route: ActivatedRoute, private marketService: MarketService, private router: Router, private confirmationService: ConfirmationService, private messageService: MessageService) {}
 
   ngOnInit() {
     this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);
@@ -167,5 +168,13 @@ export class ViewMarketDetailsComponent implements OnInit {
         console.error('Failed to fetch market details', err);
       }
     });
+  }
+
+  navigateToEdit() {
+    if (this.marketId) {
+      this.router.navigate([`/marketlist/edit/${this.marketId}`]);
+    } else {
+      console.error('Market ID is not defined');
+    }
   }
 }

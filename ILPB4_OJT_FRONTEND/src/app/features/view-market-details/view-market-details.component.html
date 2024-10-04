@@ -1,8 +1,8 @@
 <p-toast></p-toast>
 <app-header [title]="marketDetails?.marketCode + ' - ' + marketDetails?.marketName">
   
-  <button class="edit-button">
-    <img src="../assets/edit-icon.svg" alt="Edit Icon" width="16" height="16" />
+  <button class="edit-button" (click)="navigateToEdit()">
+    <img src="assets/edit-icon.svg" alt="Edit Icon" width="16" height="16" />
     Edit
     <span class="notification-dot"></span>
   </button>
