@@ -17,6 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { HeaderComponent } from '../../shared/header/header.component';
+import { InputMaskModule } from 'primeng/inputmask';
 
 /**
  * LLD
