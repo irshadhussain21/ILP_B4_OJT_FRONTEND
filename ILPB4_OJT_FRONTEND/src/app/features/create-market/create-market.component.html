@@ -1,13 +1,12 @@
 <p-toast></p-toast>
 <div class="create-market-container">
-  <!-- <h1>{{ 'PAGE.LABELS.CREATE_MARKET' | translate }}</h1>
-  <hr> -->
+
   <app-header [title]="title"></app-header>
 
   <div class="scrollable-content">
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
       
-      <!-- Region Selection -->
+      
       <div class="form-section">
         <label for="region" class="form-label">{{ 'PAGE.LABELS.REGION' | translate }} <span class="asterik">*</span></label>
         <p class="form-sub-label">{{ 'PAGE.PLACEHOLDERS.SELECT_REGION' | translate }}</p>
@@ -75,18 +74,18 @@
             />
         </div>
         
-        <!-- Error message for market code -->
+        
         <p *ngIf="codeExistsError" class="error-message">
             <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS' | translate }}
         </p>
 
-        <!-- Error message for market name -->
+      
         <p *ngIf="nameExistsError" class="error-message">
             <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS' | translate }}
         </p>
       </div>
 
-      <!--long market code-->
+      
 
       <div class="form-section">
         <label class="form-label"
@@ -108,7 +107,7 @@
         </div>
       </div>
 
-      <!-- Submit Button -->
+      
       <button 
         type="submit" 
         class="submit-button" 
