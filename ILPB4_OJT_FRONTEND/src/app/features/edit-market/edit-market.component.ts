@@ -17,7 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { HeaderComponent } from '../../shared/header/header.component';
-import { HeaderComponent } from '../../shared/header/header.component';
+
 import { InputMaskModule } from 'primeng/inputmask';
 
 /**
@@ -52,7 +52,7 @@ import { InputMaskModule } from 'primeng/inputmask';
     InputMaskModule,
   ],
   providers: [MessageService],
-  providers: [MessageService],
+  
 })
 export class EditMarketComponent implements OnInit {
   /**
@@ -60,13 +60,7 @@ export class EditMarketComponent implements OnInit {
    */
   title: string = 'Edit Market';
 
-  /**
-   * The reactive form group that holds all the market data fields.
-   */
-  /**
-   * Represents the title of the form.
-   */
-  title: string = 'Edit Market';
+ 
 
   /**
    * The reactive form group that holds all the market data fields.
