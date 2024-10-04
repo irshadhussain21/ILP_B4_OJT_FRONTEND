@@ -19,7 +19,8 @@ import { MessageService } from 'primeng/api';
 import { HeaderComponent } from '../../shared/header/header.component';
 
 import { InputMaskModule } from 'primeng/inputmask';
-import { RegionService } from '../../services/region.service';
+import { RegionService } from '../../core/services/region.service';
+
 
 /**
  * LLD
