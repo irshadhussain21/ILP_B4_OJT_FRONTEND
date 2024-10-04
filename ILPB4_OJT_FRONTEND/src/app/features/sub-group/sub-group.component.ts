@@ -23,7 +23,7 @@ import { debounceTime } from 'rxjs/operators'; // Import debounceTime for perfor
  * dynamically add and delete subgroups, and provides validation for input fields.
  * The component also handles automatic case conversion for subgroup codes and names to 
  * ensure consistent formatting across the application.
- * 
+ * sub group functionalities
  * Core functionalities:
  * - Fetching existing subgroups from the backend service on initialization.
  * - Dynamically creating form rows for adding new subgroups
