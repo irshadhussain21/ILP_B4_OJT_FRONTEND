@@ -42,7 +42,7 @@
 }
 
 .edit-button,
-.options-button {
+.p-button-options-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,7 +60,7 @@
   color: #00506a;
 }
 
-.options-button {
+.p-button-options-btn {
   border-color: var(--primary-navy-color);
   background-color: #fff;
 }
@@ -135,3 +135,11 @@
   color: #333;
   font-family: Arial, sans-serif;
 }
+
+/* Custom class for the Cancel button */
+.custom-cancel-button {
+  background-color: transparent !important; /* No background color */
+  border: none !important;                   /* No border */
+  color: #000 !important;                    /* Change this to your desired text color */
+}
+

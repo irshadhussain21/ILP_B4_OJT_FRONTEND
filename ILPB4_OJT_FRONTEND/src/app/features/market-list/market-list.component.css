@@ -140,8 +140,8 @@
 
 /* Hover effect for table rows */
 .p-table tbody tr:hover {
-    background-color: #e9ecef;
-    transition: background-color 0.3s;
+    background-color: #f0f0f0;
+    
 }
 
 /* Alignments */

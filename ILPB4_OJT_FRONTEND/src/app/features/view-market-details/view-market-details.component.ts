@@ -14,6 +14,9 @@ import { HeaderComponent } from '../../shared/header/header.component';
 
 import { MarketService } from '../../services/market.service';
 import { Market, MarketDetails } from '../../core/models/market';
+import { MenuItem, ConfirmationService,MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
 
 /**
  * LLD
@@ -61,18 +64,20 @@ import { Market, MarketDetails } from '../../core/models/market';
   imports: [
     CardModule, PanelModule, TagModule, ChipModule, 
     MenuModule, ButtonModule, HeaderComponent, NgFor, 
-    CommonModule
+    CommonModule,ConfirmDialogModule,ToastModule
   ],
   templateUrl: './view-market-details.component.html',
-  styleUrls: ['./view-market-details.component.css']
+  styleUrls: ['./view-market-details.component.css'],
+  providers: [ConfirmationService,MessageService] 
 })
 export class ViewMarketDetailsComponent implements OnInit {
 
   marketDetails: MarketDetails | null = null;
   marketId: number | undefined;
   market!: Market;
+  items: MenuItem[] | undefined;
 
-  constructor(private route: ActivatedRoute, private marketService: MarketService) {}
+  constructor(private route: ActivatedRoute, private marketService: MarketService,private confirmationService: ConfirmationService, private messageService: MessageService) {}
 
   ngOnInit() {
     this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);
@@ -86,12 +91,67 @@ export class ViewMarketDetailsComponent implements OnInit {
     this.marketService.getMarketById(this.marketId).subscribe(
       (data: Market) => {
         this.market = data;
+        this.setupMenuItems();
       },
       (error) => {
         console.error('Error fetching market details:', error);
       }
     );
   }
+
+  private setupMenuItems() {
+    this.items = [
+      {
+        items: [
+          {
+            label: 'Delete Market',
+            command: () => this.confirmDeleteMarket(),
+            disabled: !this.market || !this.market.marketSubGroups || this.market.marketSubGroups.length > 0 // Disable if subgroups exist
+          }
+        ]
+      }
+    ];
+  }
+
+  confirmDeleteMarket() {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this market?',
+      header: 'Confirm Delete',
+      acceptLabel: 'Confirm',
+      rejectLabel: 'Cancel',
+      rejectButtonStyleClass:'p-button-transparent',
+      accept: () => {
+        this.deleteMarket();
+      },
+      reject: () => {
+        console.log('Delete action canceled');
+      }
+    });
+  }
+
+  deleteMarket(){
+    if (this.marketId) {
+      this.marketService.deleteMarket(this.marketId).subscribe({
+        next: (response) => {
+          console.log('Market deleted successfully:', response);
+          // Optionally, navigate back or refresh the list after deletion
+          this.messageService.add({ 
+            severity: 'success', 
+            summary: 'Success', 
+            detail: `${this.market.name} market deleted successfully` 
+          });
+        },
+        error: (error) => {
+          console.error('Error deleting market:', error);
+        }
+      });
+    } else {
+      console.error('Market ID is undefined');
+    }
+  }
+
+  
+  
 
   /**
    * get market details from the backend.
