@@ -105,7 +105,7 @@ export class CreateMarketComponent implements OnInit {
       marketCode: ['', [Validators.required, Validators.maxLength(2)]],
       longCode: [
         '',
-        [Validators.required, Validators.minLength(7), Validators.maxLength(7)],
+        [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
       ],
       region: ['', Validators.required],
       subregion: [''],
@@ -179,30 +179,16 @@ export class CreateMarketComponent implements OnInit {
    * 2. Concatenate the first character of the region value with 'XXXXX' and the `marketCode` to form the `longCode`.
    * 3. Update the `longCode` form control without emitting change events.
    */
-  private updateLongCode(): void {
-  
-    const region = this.regions.find(
-      (r) => r.key === this.marketForm.get('region')?.value
-    );
-    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase()|| '';
-    
-    if (region && marketCode.length === 2) {
-      const firstChar = region.value.charAt(0).toUpperCase();
-     
-      const newLongCode = `${firstChar}XXXX${marketCode}`;
-      this.marketForm
-        .get('longCode')
-        ?.setValue(newLongCode, { emitEvent: false });
-    } else if (region) {
-      const firstChar = region.value.charAt(0).toUpperCase();
-      this.marketForm
-        .get('longCode')
-        ?.setValue(firstChar, { emitEvent: false });
-    } else {
-      this.marketForm.get('longCode')?.setValue('', { emitEvent: false });
+  updateLongCode(): void {
+    const regionCode = this.marketForm.get('region')?.value;
+    const shortCode = this.marketForm.get('marketCode')?.value;
+
+    if (regionCode && shortCode) {
+      // The fixed parts of the long code are region and short code
+      const longCode = `${regionCode}-${shortCode.toUpperCase()}.XX.XX`;
+      this.marketForm.get('longCode')?.setValue(longCode, { emitEvent: false });
     }
   }
-
  
 
   // setCursorToEditable(event: any): void {
@@ -274,23 +260,15 @@ export class CreateMarketComponent implements OnInit {
 
  // Ensure only the middle part is editable
  setCursorToEditable(event: any) {
-  console.log('hi')
   const inputElement = event.target;
-  const start = 2; // Position after "X-"
-  const end = 8;   // Before the last fixed part "XX"
 
-  // Move the cursor and restrict changes to middle part
-  setTimeout(() => {
-    inputElement.setSelectionRange(start, start); // Move the cursor to start
-  }, 0);
+  // Prevent default focus behavior (optional)
+  event.preventDefault();
 
-   // Restrict changes to the middle section of the input
-   inputElement.addEventListener('keydown', (e: KeyboardEvent) => {
-    const cursorPosition = inputElement.selectionStart;
-    if (cursorPosition && (cursorPosition < start || cursorPosition > end)) {
-      e.preventDefault(); // Prevent typing outside the editable area
-    }
-  });
+  // Manually set cursor position to where user can start typing
+  // Assuming you want the cursor after the first part (_-)
+  const editablePosition = 3; // adjust this based on your input mask format
+  inputElement.setSelectionRange(editablePosition, editablePosition);
 }
 
   /**
