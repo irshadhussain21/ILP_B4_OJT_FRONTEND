@@ -105,7 +105,7 @@ export class CreateMarketComponent implements OnInit {
       marketCode: ['', [Validators.required, Validators.maxLength(2)]],
       longCode: [
         '',
-        [Validators.required, Validators.minLength(7), Validators.maxLength(7)],
+        [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
       ],
       region: ['', Validators.required],
       subregion: [''],
