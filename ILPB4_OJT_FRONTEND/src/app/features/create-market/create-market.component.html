@@ -100,14 +100,14 @@
 
       <div class="form-section">
         <label class="form-label"
-          >Long Market Code <span class="asterik">*</span></label
+          >Long  Code <span class="asterik">*</span></label
         >
         <p class="form-sub-label">
           The format will be automatically set based on selections
         </p>
         <div class="input-wrapper">
         
-          <p-inputMask 
+          <p-inputMask #longCodeInput
           formControlName="longCode" 
           [mask]="longCodeMask"
 

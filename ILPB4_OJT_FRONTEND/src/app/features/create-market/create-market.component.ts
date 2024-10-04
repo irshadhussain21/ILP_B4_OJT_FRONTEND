@@ -205,16 +205,16 @@ export class CreateMarketComponent implements OnInit {
 
  
 
-  setCursorToEditable(event: any): void {
-    const inputElement = event.target;
+  // setCursorToEditable(event: any): void {
+  //   const inputElement = event.target;
     
-    // Move cursor to the start of the editable part (first __)
-    const editableStart = 2; // Start position after "X-"
+  //   // Move cursor to the start of the editable part (first __)
+  //   const editableStart = 2; // Start position after "X-"
     
-    setTimeout(() => {
-      inputElement.setSelectionRange(editableStart, editableStart);
-    }, 0);
-  }
+  //   setTimeout(() => {
+  //     inputElement.setSelectionRange(editableStart, editableStart);
+  //   }, 0);
+  // }
 
   /**
    * Fetches all regions from the RegionService and assigns them to the `regions` array.
@@ -272,18 +272,26 @@ export class CreateMarketComponent implements OnInit {
     this.marketForm.get('subregion')?.setValue(subregionId);
   }
 
-  // setCursorToEditable(event: any) {
-  //   const inputElement = event.target;
-  
-  //   // Set the cursor position to the start of the editable part (the first `__`)
-  //   const start = 2; // Position just after the first fixed part (`X-`)
-  //   const end = 8;   // Position before the last fixed part (`XX`)
-  
-  //   // Use setSelectionRange to highlight the editable part (__) for user focus
-  //   setTimeout(() => {
-  //     inputElement.setSelectionRange(start, start); // Move the cursor to the start
-  //   }, 0);
-  // }
+ // Ensure only the middle part is editable
+ setCursorToEditable(event: any) {
+  console.log('hi')
+  const inputElement = event.target;
+  const start = 2; // Position after "X-"
+  const end = 8;   // Before the last fixed part "XX"
+
+  // Move the cursor and restrict changes to middle part
+  setTimeout(() => {
+    inputElement.setSelectionRange(start, start); // Move the cursor to start
+  }, 0);
+
+   // Restrict changes to the middle section of the input
+   inputElement.addEventListener('keydown', (e: KeyboardEvent) => {
+    const cursorPosition = inputElement.selectionStart;
+    if (cursorPosition && (cursorPosition < start || cursorPosition > end)) {
+      e.preventDefault(); // Prevent typing outside the editable area
+    }
+  });
+}
 
   /**
    * Submits the market creation form, validates the form data, and sends it to the MarketService.
