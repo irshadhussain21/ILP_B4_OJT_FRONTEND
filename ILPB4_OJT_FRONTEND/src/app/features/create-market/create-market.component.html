@@ -1,71 +1,100 @@
-<p-confirmDialog></p-confirmDialog>
-
-
 <div class="create-market-container">
   <h1>Create Market</h1>
-  <hr />
+  <hr>
 
+  <!-- Scrollable Content Wrapper -->
   <div class="scrollable-content">
+    <!-- Form for creating a market -->
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
+      <!-- Region Selection -->
       <div class="form-section">
         <label for="region" class="form-label">Region <span class="asterik">*</span></label>
         <p class="form-sub-label">Select a Region</p>
         <div class="region-options">
-          <div class="region-option" *ngFor="let region of regions"
-            [ngClass]="{ selected: selectedRegion === region.key }" (click)="onRegionSelect(region.key)">
-            <p-radioButton [name]="'region'" [label]="region.value" [inputId]="region.key.toString()"
-              [value]="region.key" formControlName="region">
+          <div 
+            class="region-option" 
+            *ngFor="let region of regions" 
+            [ngClass]="{'selected': selectedRegion === region.key}"
+            (click)="onRegionSelect(region.key)">
+            <p-radioButton 
+              [name]="'region'" 
+              [label]="region.value" 
+              [inputId]="region.key.toString()" 
+              [value]="region.key" 
+              formControlName="region">
             </p-radioButton>
             <label class="check-box-labels" [for]="region.key.toString()">- {{ region.value }}</label>
           </div>
         </div>
       </div>
 
+      <!-- Subregion Selection -->
       <div *ngIf="subregions.length > 0" class="form-section">
         <label for="subregion" class="form-label">Subregion <span class="asterik">*</span></label>
         <p class="form-sub-label">Select a Subregion</p>
         <div class="subregion-options">
-          <div class="subregion-option" *ngFor="let subregion of subregions" [ngClass]="{
-              selected: selectedSubregion === subregion.key.toString()
-            }" (click)="onSubregionChange($event, subregion.key)">
-            <p-radioButton [name]="'subregion'" [label]="subregion.value" [inputId]="subregion.key.toString()"
-              [value]="subregion.key" formControlName="subregion">
-            </p-radioButton>
-            <label class="check-box-labels" [for]="subregion.key.toString()">{{
-              subregion.value
-              }}</label>
+          <div 
+            class="subregion-option" 
+            *ngFor="let subregion of subregions" 
+            [ngClass]="{'selected': selectedSubregion === subregion.key.toString()}"
+            (click)="onSubregionChange($event, subregion.key)">
+              <p-radioButton 
+                [name]="'subregion'" 
+                [label]="subregion.value" 
+                [inputId]="subregion.key.toString()" 
+                [value]="subregion.key" 
+                formControlName="subregion">
+              </p-radioButton>
+              <label class="check-box-labels" [for]="subregion.key.toString()">{{ subregion.value }}</label>
           </div>
         </div>
       </div>
 
+      <!-- Short Code / Market Name -->
       <div class="form-section">
         <label class="form-label">Short Code/Market Name <span class="asterik">*</span></label>
-        <p class="form-sub-label">
-          Enter a two-letter Market Code, a Market Name
-        </p>
+        <p class="form-sub-label">Enter a two-letter Market Code, a Market Name</p>
         <div class="shortcode-marketname-container">
-          <input formControlName="marketCode" type="text" placeholder="Code" class="shortcode-input" maxlength="2"
-            autocapitalize="on" />
-          <span class="divider"></span>
-          <input formControlName="marketName" type="text" placeholder="Name" class="marketname-input" />
+            <input 
+                formControlName="marketCode" 
+                type="text" 
+                placeholder="Code" 
+                class="shortcode-input" 
+                maxlength="2"  
+                autocapitalize="on"
+            />
+            <span class="divider"></span>
+            <input 
+                formControlName="marketName" 
+                type="text" 
+                placeholder="Name" 
+                class="marketname-input" 
+            />
         </div>
-
+        
+        <!-- Error message for market code -->
         <p *ngIf="codeExistsError" class="error-message">
-          <span class="error-icon">❗</span> Entered market code already exists.
+            <span class="error-icon">❗</span> Entered market code already exists.
         </p>
-
+        
+        <!-- Error message for market name -->
         <p *ngIf="nameExistsError" class="error-message">
-          <span class="error-icon">❗</span> Entered market name already exists.
+            <span class="error-icon">❗</span> Entered market name already exists.
         </p>
       </div>
 
+      <!-- Long Code -->
       <div class="form-section">
         <label class="form-label">Long Market Code <span class="asterik">*</span></label>
-        <p class="form-sub-label">
-          The format will be automatically set based on selections
-        </p>
+        <p class="form-sub-label">The format will be automatically set based on selections</p>
         <div class="input-wrapper">
-          <input formControlName="longCode" type="text" class="longcode-input" maxlength="7" />
+          <input 
+            formControlName="longCode" 
+            type="text" 
+            class="longcode-input" 
+            maxlength="7" 
+          
+          />
           <div class="placeholder-overlay">_-___.__</div>
         </div>
       </div>
@@ -73,32 +102,32 @@
       <!-- Sub Group -->
       <div class="form-section">
         <label class="form-label">Subgroup(s)</label>
-        <!-- Error template or subgroup based on button click -->
-        <ng-container *ngIf="!showSubgroupComponent; else subgroupTemplate">
-          <div class="error-template">
-            <img src="assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
-            <p *ngIf="marketForm.invalid">Enter the Market Code/Name before adding Subgroup(s)</p>
-            <p *ngIf="marketForm.valid">Start adding Subgroup(s) for the Market</p>
+  <!-- Error template or subgroup based on button click -->
+  <ng-container *ngIf="!showSubgroupComponent; else subgroupTemplate">
+    <div class="error-template">
+      <img src="assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
+      <p *ngIf="marketForm.invalid">Enter the Market Code/Name before adding Subgroup(s)</p>
+      <p *ngIf="marketForm.valid">Start adding Subgroup(s) for the Market</p>
 
-            <!-- Add Subgroup Button, enabled only when form is valid -->
-            <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true"
-              (click)="showSubgroup()" [disabled]="marketForm.invalid"></button>
-          </div>
-        </ng-container>
+      <!-- Add Subgroup Button, enabled only when form is valid -->
+      <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true" (click)="showSubgroup()"
+      [disabled]="marketForm.invalid"></button>
+    </div>
+  </ng-container>
 
-        <!-- Subgroup component template -->
-        <ng-template #subgroupTemplate>
-          <app-sub-group [marketCode]="marketForm.get('marketCode')?.value"
-            (subGroupsChanged)="onSubGroupsChanged($event)"></app-sub-group>
-        </ng-template>
+  <!-- Subgroup component template -->
+  <ng-template #subgroupTemplate>
+    <app-sub-group [marketCode]="marketForm.get('marketCode')?.value" (subGroupsChanged)="onSubGroupsChanged($event)"></app-sub-group>
+  </ng-template>
       </div>
 
       <!-- Submit Button -->
-      <button type="submit" class="submit-button" [disabled]="marketForm.invalid">
+      <button 
+        type="submit" 
+        class="submit-button" 
+        [disabled]="marketForm.invalid">
         Submit
       </button>
-
-      <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button>
     </form>
   </div>
 </div>

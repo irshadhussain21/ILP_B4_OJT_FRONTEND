@@ -11,8 +11,8 @@ import { DividerModule } from 'primeng/divider';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 
-import { MarketSubgroupService } from '../../services/subgroup.service';
-import { SubGroup } from '../../core/models/market';
+import { MarketSubgroupService } from '../../core/services/subgroup.service';
+import { SubGroup } from '../../core/models/subgroup';
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { debounceTime } from 'rxjs/operators'; // Import debounceTime for performance optimization
@@ -221,6 +221,8 @@ export class SubGroupComponent implements OnInit {
  */
   createRow(subGroup?: SubGroup): FormGroup {
     const row = this.fb.group({
+      subGroupId: [subGroup?.subGroupId || null],
+      marketId: [subGroup?.marketId],
       marketCode: [this.marketCode],
       subGroupCode: [subGroup?.subGroupCode || '', Validators.required],
       subGroupName: [subGroup?.subGroupName || '', Validators.required]
@@ -366,7 +368,20 @@ validateSubgroupName(row: AbstractControl): void {
 
   //   this.subGroupsChanged.emit(subGroupValues);
   // }
-
+/**
+ * @method onCancel
+ * Resets the form and reloads the existing subgroups, after confirming with the user.
+ */
+  onCancel(): void {
+    this.confirmationService.confirm({
+      message: 'You have unsaved changes. Are you sure you want to proceed?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.loadSubGroups();
+      }
+    });
+  }
 
 /**
  * @method canAddSubgroup

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SubGroup } from '../core/models/market';
-import { environment } from '../../environments/environment';
+import { SubGroup } from '../models/subgroup';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
