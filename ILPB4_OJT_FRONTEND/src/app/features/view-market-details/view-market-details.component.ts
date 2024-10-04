@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 
 import { CardModule } from 'primeng/card';
@@ -10,8 +10,10 @@ import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 
 import { HeaderComponent } from '../../shared/header/header.component';
+
+
 import { MarketService } from '../../services/market.service';
-import { MarketDetails } from '../../core/market-details';
+import { Market, MarketDetails } from '../../core/models/market';
 
 /**
  * LLD
@@ -65,11 +67,13 @@ import { MarketDetails } from '../../core/market-details';
   styleUrls: ['./view-market-details.component.css']
 })
 export class ViewMarketDetailsComponent implements OnInit {
+ 
 
   marketDetails: MarketDetails | null = null;
   marketId: number | undefined;
+  market!: Market;
 
-  constructor(private route: ActivatedRoute, private marketService: MarketService) {}
+  constructor(private route: ActivatedRoute, private marketService: MarketService, private router: Router,  ) {}
 
   ngOnInit() {
     this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);
@@ -79,6 +83,15 @@ export class ViewMarketDetailsComponent implements OnInit {
     } else {
       console.error('Market ID not found in the route');
     }
+
+    this.marketService.getMarketById(this.marketId).subscribe(
+      (data: Market) => {
+        this.market = data;
+      },
+      (error) => {
+        console.error('Error fetching market details:', error);
+      }
+    );
   }
 
   /**
@@ -95,5 +108,13 @@ export class ViewMarketDetailsComponent implements OnInit {
         console.error('Failed to fetch market details', err);
       }
     });
+  }
+
+  navigateToEdit() {
+    if (this.marketId) {
+      this.router.navigate([`/marketlist/edit/${this.marketId}`]);
+    } else {
+      console.error('Market ID is not defined');
+    }
   }
 }

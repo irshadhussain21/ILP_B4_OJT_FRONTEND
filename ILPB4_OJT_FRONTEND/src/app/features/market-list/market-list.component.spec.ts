@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SubGroupComponent } from './sub-group.component';
+import { MarketlistComponent } from './market-list.component';
 
-describe('SubGroupComponent', () => {
-  let component: SubGroupComponent;
-  let fixture: ComponentFixture<SubGroupComponent>;
+describe('MarketlistComponent', () => {
+  let component: MarketlistComponent;
+  let fixture: ComponentFixture<MarketlistComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SubGroupComponent]
+      imports: [MarketlistComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SubGroupComponent);
+    fixture = TestBed.createComponent(MarketlistComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
