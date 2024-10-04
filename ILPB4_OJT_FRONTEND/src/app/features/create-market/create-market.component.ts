@@ -17,6 +17,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { HeaderComponent } from "../../shared/header/header.component";
+import { InputMaskModule } from 'primeng/inputmask';
 
 /**
  * LLD
@@ -61,7 +62,8 @@ import { HeaderComponent } from "../../shared/header/header.component";
     RadioButtonModule,
     TranslateModule,
     ToastModule,
-    HeaderComponent
+    HeaderComponent,
+    InputMaskModule
 ],
   providers: [MessageService],
 })
@@ -118,7 +120,7 @@ export class CreateMarketComponent implements OnInit {
       marketCode: ['', [Validators.required, Validators.maxLength(2)]],
       longCode: [
         '',
-        [Validators.required, Validators.minLength(7), Validators.maxLength(7)],
+        [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
       ],
       region: ['', Validators.required],
       subregion: [''],

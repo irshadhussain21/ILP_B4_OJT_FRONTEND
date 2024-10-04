@@ -95,16 +95,16 @@
         <p class="form-sub-label">
           The format will be automatically set based on selections
         </p>
-        <label class="form-label">{{ 'PAGE.LABELS.LONG_MARKET_CODE' | translate }} <span class="asterik">*</span></label>
-        <p class="form-sub-label">The format will be automatically set based on selections</p>
         <div class="input-wrapper">
-          <input 
-            formControlName="longCode" 
-            type="text" 
-            class="longcode-input" 
-            maxlength="7" 
-          />
-          <div class="placeholder-overlay">_-___.__</div>
+       
+          <p-inputMask #longCodeInput
+          formControlName="longCode"
+          [mask]="longCodeMask"
+ 
+          (focus)="setCursorToEditable($event)"
+          placeholder="_-__.__.__"
+          class="longcode-input">
+          </p-inputMask>
         </div>
       </div>
 

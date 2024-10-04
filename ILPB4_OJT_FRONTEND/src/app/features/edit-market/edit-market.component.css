@@ -96,6 +96,15 @@
     margin-top: 10px;
   }
   
+  
+.error-message {
+  color: #FF4D4F;
+  font-size: 14px; 
+  margin-top: 4px; 
+  display: flex; 
+  align-items: center;
+  padding-left: 5px; 
+}
   /* Styling for region and subregion options */
   .region-option, 
   .subregion-option {

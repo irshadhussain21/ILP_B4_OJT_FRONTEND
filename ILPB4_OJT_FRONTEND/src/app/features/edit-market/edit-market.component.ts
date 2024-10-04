@@ -21,54 +21,15 @@ import { InputMaskModule } from 'primeng/inputmask';
 
 /**
  * LLD
- *
+ * 
  * This component is used to edit the details of an existing market.
- *
+ * 
  * Execution Flow:
  *  - On initialization, the market ID is fetched from the route parameters.
  *  - Regions are loaded from the `RegionService` and populated in the form.
- *  - If an existing market is being edited, the market details are fetched using `marketId` and pre-populated in the form.
- *  - The `MarketService` is used to check if the market name or code already exists.
- *  - If the market code or name already exists, validation errors are shown.
- *  - The `longMarketCode` is dynamically generated based on the selected region and market code.
- *  - On form submission, the updated market data is sent to the backend.
- *
- * This screen contains the following actions:
- *  - Fetch Market Details: Retrieves the market details based on `marketId`.
- *  - Fetch Regions: Loads all available regions from the backend.
- *  - Fetch Subregions: Loads subregions based on the selected region.
- *  - Error Handling: Displays validation errors if the market name or code already exists.
- *  - Submit Updated Market: Sends the updated market data to the backend for saving.
- *
- * API Endpoints:
- *  - `GET https://localhost:7058/api/Market/{id}/details`: Fetches details for a specific market.
- *  - `GET https://localhost:7058/api/Regions`: Fetches all regions.
- *  - `GET https://localhost:7058/api/Regions/{regionId}/subregions`: Fetches subregions for a specific region.
- *  - `PUT https://localhost:7058/api/Market/{id}`: Updates an existing market.
- *  - `GET https://localhost:7058/api/Market/checkCodeExists/{code}`: Checks if a market code exists.
- *  - `GET https://localhost:7058/api/Market/checkNameExists/{name}`: Checks if a market name exists.
- *
- * Sample API Response (Market Details):
- *  {
- *    "marketId": 1,
- *    "marketName": "Antarctica",
- *    "marketCode": "AA",
- *    "longMarketCode": "L-AQ.AA.AA",
- *    "region": "LAAPA",
- *    "subRegion": "Africa",
- *    "marketSubGroups": [
- *      {
- *        "subGroupId": 1,
- *        "subGroupName": "Q-Island",
- *        "subGroupCode": "Q"
- *      },
- *      {
- *        "subGroupId": 2,
- *        "subGroupName": "Ross Island",
- *        "subGroupCode": "R"
- *      }
- *    ]
- *  }
+ *  - The `MarketService` is used to check if the market name or code already exists, but only when the data has been changed by the user.
+ *  - If the market code or name already exists, validation errors are shown only after edits.
+ *  - On form submission, the updated market data is sent to the backend for saving.
  */
 
 @Component({
@@ -83,23 +44,69 @@ import { InputMaskModule } from 'primeng/inputmask';
     TranslateModule,
     ToastModule,
     HeaderComponent,
+    InputMaskModule,
   ],
-  providers:[MessageService]
+  providers: [MessageService],
 })
 export class EditMarketComponent implements OnInit {
-  title:string="Edit Market";
+  /**
+   * Represents the title of the form.
+   */
+  title: string = 'Edit Market';
+
+  /**
+   * The reactive form group that holds all the market data fields.
+   */
   marketForm!: FormGroup;
+
+  /**
+   * List of all regions that will be displayed in the form.
+   */
   regions: Region[] = [];
+
+  /**
+   * List of subregions based on the selected region.
+   */
   subregions: Region[] = [];
+
+  /**
+   * Stores the selected region's key.
+   */
   selectedRegion: number | null = null;
+
+  /**
+   * Stores the selected subregion's key.
+   */
   selectedSubregion: string | null = null;
+
+  /**
+   * Flags to control whether the market code validation error is displayed.
+   */
   codeExistsError: boolean = false;
+
+  /**
+   * Flags to control whether the market name validation error is displayed.
+   */
   nameExistsError: boolean = false;
+
+  /**
+   * Stores the market ID from the route.
+   */
   marketId!: number;
 
+  /**
+   * Flags to check if the user has edited the code.
+   */
   hasEditedCode = false;
+
+  /**
+   * Flags to check if the user has edited the name.
+   */
   hasEditedName = false;
 
+  /**
+   * Constructor to inject the necessary services and initialize the form builder.
+   */
   constructor(
     private fb: FormBuilder,
     private marketService: MarketService,
@@ -109,6 +116,9 @@ export class EditMarketComponent implements OnInit {
     private messageService: MessageService
   ) {}
 
+  /**
+   * Lifecycle hook to initialize the component.
+   */
   ngOnInit(): void {
     this.marketId = +this.route.snapshot.paramMap.get('id')!;
     this.marketForm = this.fb.group({
@@ -116,7 +126,7 @@ export class EditMarketComponent implements OnInit {
       marketCode: ['', [Validators.required, Validators.maxLength(2)]],
       longCode: [
         '',
-        [Validators.required, Validators.minLength(7), Validators.maxLength(7)],
+        [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
       ],
       region: ['', Validators.required],
       subregion: [''],
@@ -125,25 +135,29 @@ export class EditMarketComponent implements OnInit {
     this.loadRegions();
     this.fetchMarketData();
 
+    // Listen for changes in the marketCode field
     this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => {
         this.updateLongCode();
-        this.hasEditedCode = true;
+        this.hasEditedCode = true; // Mark that the code was edited
       });
 
+    // Listen for changes in the region field to update longCode
     this.marketForm
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
+    // Perform code validation only when the user edits the marketCode
     this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((code) => {
+          if (!this.hasEditedCode) return [false];
           this.codeExistsError = false;
           if (!code) {
             this.marketForm.get('marketCode')?.setErrors(null);
@@ -153,20 +167,24 @@ export class EditMarketComponent implements OnInit {
         })
       )
       .subscribe((exists) => {
-        this.codeExistsError = exists;
-        if (exists && this.hasEditedCode) {
-          this.marketForm.get('marketCode')?.setErrors({ exists: true });
-        } else {
-          this.marketForm.get('marketCode')?.setErrors(null);
+        if (this.hasEditedCode) {
+          this.codeExistsError = exists;
+          if (exists) {
+            this.marketForm.get('marketCode')?.setErrors({ exists: true });
+          } else {
+            this.marketForm.get('marketCode')?.setErrors(null);
+          }
         }
       });
 
+    // Perform name validation only when the user edits the marketName
     this.marketForm
       .get('marketName')
       ?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((name) => {
+          if (!this.hasEditedName) return [false];
           this.nameExistsError = false;
           if (!name) {
             this.marketForm.get('marketName')?.setErrors(null);
@@ -176,20 +194,20 @@ export class EditMarketComponent implements OnInit {
         })
       )
       .subscribe((exists) => {
-        this.nameExistsError = exists;
-        if (exists && this.hasEditedName) {
-          this.marketForm.get('marketName')?.setErrors({ exists: true });
-        } else {
-          this.marketForm.get('marketName')?.setErrors(null);
+        if (this.hasEditedName) {
+          this.nameExistsError = exists;
+          if (exists) {
+            this.marketForm.get('marketName')?.setErrors({ exists: true });
+          } else {
+            this.marketForm.get('marketName')?.setErrors(null);
+          }
         }
       });
   }
 
   /**
-   * Fetches all regions from the RegionService and assigns them to the `regions` array.
+   * Fetches all regions from the `RegionService` and assigns them to the regions array.
    * Handles any errors during the fetch process.
-   *
-   * @returns void
    */
   loadRegions(): void {
     this.regionService.getAllRegions().subscribe(
@@ -203,11 +221,9 @@ export class EditMarketComponent implements OnInit {
   }
 
   /**
-   * Fetches existing market data for editing.
+   * Fetches the existing market data for editing.
    * The fetched data is then patched into the form.
    * Handles any errors during the fetch process.
-   *
-   * @returns void
    */
   fetchMarketData(): void {
     this.marketService.getMarketDetailsById(this.marketId).subscribe(
@@ -220,7 +236,6 @@ export class EditMarketComponent implements OnInit {
           subregion: data.subRegion,
         });
         this.onRegionSelect(Number(data.region));
-        console.log(data);
       },
       (error) => {
         console.error('Error fetching market data:', error);
@@ -231,9 +246,6 @@ export class EditMarketComponent implements OnInit {
   /**
    * Updates the selected region in the form and fetches subregions based on the selected region.
    * Dynamically updates the long market code based on the selected region and market code.
-   *
-   * @param regionId The selected region ID.
-   * @returns void
    */
   onRegionSelect(regionId: number): void {
     this.selectedRegion = regionId;
@@ -253,10 +265,6 @@ export class EditMarketComponent implements OnInit {
 
   /**
    * Updates the selected subregion in the form when the user selects a new subregion.
-   *
-   * @param event The change event object.
-   * @param subregionId The selected subregion ID.
-   * @returns void
    */
   onSubregionChange(event: any, subregionId: number): void {
     this.selectedSubregion = subregionId.toString();
@@ -265,18 +273,18 @@ export class EditMarketComponent implements OnInit {
 
   /**
    * Dynamically generates the long market code based on the selected region and market code.
-   *
-   * @returns void
    */
   private updateLongCode(): void {
+  
     const region = this.regions.find(
       (r) => r.key === this.marketForm.get('region')?.value
     );
-    const marketCode = this.marketForm.get('marketCode')?.value || '';
-
+    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase()|| '';
+    
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
-      const newLongCode = `${firstChar}XXXXX${marketCode}`;
+     
+      const newLongCode = `${firstChar}XXXX${marketCode}`;
       this.marketForm
         .get('longCode')
         ?.setValue(newLongCode, { emitEvent: false });
@@ -294,8 +302,6 @@ export class EditMarketComponent implements OnInit {
    * Submits the updated market form to the backend.
    * If the form is valid, the updated data is sent to the backend for saving.
    * Handles any errors during the submission process.
-   *
-   * @returns void
    */
   onSubmit(): void {
     if (this.marketForm.valid) {
@@ -315,7 +321,6 @@ export class EditMarketComponent implements OnInit {
             summary: 'Success',
             detail: 'Market is Successfully Edited',
           });
-          // this.router.navigate(['/marketlist']);
         },
         (error) => {
           this.messageService.add({
