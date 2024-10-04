@@ -156,7 +156,7 @@ hr {
   display: inline-block;
 }
 
-.longcode-input {
+/* .longcode-input {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
@@ -166,7 +166,7 @@ hr {
   background-color: transparent;
   z-index: 1;
   text-transform: uppercase;
-}
+} */
 
 .placeholder-overlay {
   position: absolute;
@@ -214,7 +214,7 @@ hr {
   margin: 0 10px;
 }
 
-.longcode-input {
+/* .longcode-input {
   padding: 10px 15px;
   border: 1px solid #c4cfd9;
   border-radius: 8px;
@@ -229,17 +229,37 @@ hr {
   font-family: 'DM Sans', sans-serif;
   box-sizing: border-box;
   margin-left: 0;
+} */
+
+:host ::ng-deep .p-inputtext {
+  margin-top: 10px;
+  padding: 10px 15px;
+  border: 1px solid #c4cfd9;
+  border-radius: 8px;
+  width: auto;
+  max-width: 300px;
+  font-size: 16px;
+  background-color: #f7f9fc;
+  text-align: left;
+  color: #333;
+  letter-spacing: 0.15rem;
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  box-sizing: border-box;
+  margin-left: 0;
+  text-transform: uppercase;
+  
 }
 
-.longcode-input:focus {
+/* .longcode-input:focus {
   border-color: #007bff;
   background-color: #f0f4f8;
-}
-
+} */
+/* 
 .shortcode-marketname-container:focus-within,
 .longcode-input:focus {
   border-color: #007bff;
-}
+} */
 
 .submit-button {
   padding: 10px 20px;
