@@ -15,6 +15,8 @@ import { Region } from '../../core/models/region';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { HeaderComponent } from "../../shared/header/header.component";
 
 /**
  * LLD
@@ -59,13 +61,15 @@ import { MessageService } from 'primeng/api';
     RadioButtonModule,
     TranslateModule,
     ToastModule,
-  ],
+    HeaderComponent
+],
   providers: [MessageService],
 })
 export class CreateMarketComponent implements OnInit {
   /**
    * Represents the reactive form group for creating a market.
    */
+  title:string="Create Market";
   marketForm!: FormGroup;
 
   regions: Region[] = [];
@@ -90,7 +94,8 @@ export class CreateMarketComponent implements OnInit {
     private fb: FormBuilder,
     private marketService: MarketService,
     private regionService: RegionService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router,
   ) {}
 
   /**
@@ -293,6 +298,7 @@ export class CreateMarketComponent implements OnInit {
           this.marketForm.reset();
           this.codeExistsError = false;
           this.nameExistsError = false;
+          // this.router.navigate(['/marketlist']);
         },
         (error) => {
           this.messageService.add({

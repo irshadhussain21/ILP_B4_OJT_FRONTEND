@@ -1,7 +1,8 @@
 <p-toast></p-toast>
 <div class="create-market-container">
-  <h1>{{ 'PAGE.LABELS.CREATE_MARKET' | translate }}</h1>
-  <hr>
+  <!-- <h1>{{ 'PAGE.LABELS.CREATE_MARKET' | translate }}</h1>
+  <hr> -->
+  <app-header [title]="title"></app-header>
 
   <div class="scrollable-content">
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
@@ -78,28 +79,8 @@
         <p *ngIf="codeExistsError" class="error-message">
             <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS' | translate }}
         </p>
-        <div class="shortcode-marketname-container">
-          <input
-            formControlName="marketCode"
-            type="text"
-            placeholder="Code"
-            class="shortcode-input"
-            maxlength="2"
-            autocapitalize="on"
-          />
-          <span class="divider"></span>
-          <input
-            formControlName="marketName"
-            type="text"
-            placeholder="Name"
-            class="marketname-input"
-          />
-        </div>
 
-        <p *ngIf="codeExistsError" class="error-message">
-          <span class="error-icon">❗</span> Entered market code already exists.
-        </p>
-
+        <!-- Error message for market name -->
         <p *ngIf="nameExistsError" class="error-message">
             <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS' | translate }}
         </p>
@@ -128,4 +109,4 @@
       </button>
     </form>
   </div>
-</div>
+</div>  

@@ -16,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { HeaderComponent } from '../../shared/header/header.component';
 
 /**
  * LLD
@@ -80,9 +81,12 @@ import { MessageService } from 'primeng/api';
     RadioButtonModule,
     TranslateModule,
     ToastModule,
+    HeaderComponent,
   ],
+  providers:[MessageService]
 })
 export class EditMarketComponent implements OnInit {
+  title:string="Edit Market";
   marketForm!: FormGroup;
   regions: Region[] = [];
   subregions: Region[] = [];
@@ -310,7 +314,7 @@ export class EditMarketComponent implements OnInit {
             summary: 'Success',
             detail: 'Market is Successfully Edited',
           });
-          this.router.navigate(['/marketlist']);
+          // this.router.navigate(['/marketlist']);
         },
         (error) => {
           this.messageService.add({
