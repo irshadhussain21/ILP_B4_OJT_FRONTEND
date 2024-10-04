@@ -1,168 +1,388 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RadioButtonModule } from 'primeng/radiobutton';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { CheckboxModule } from 'primeng/checkbox';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { MarketService } from '../../services/market.service';
+
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Market } from '../../core/models/market';
+import { Region } from '../../core/models/region';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { HeaderComponent } from '../../shared/header/header.component';
+
+import { InputMaskModule } from 'primeng/inputmask';
+import { RegionService } from '../../services/region.service';
+
+/**
+ * LLD
+ * 
+ * 
+ * This component is used to edit the details of an existing market.
+ * 
+ * 
+ * Execution Flow:
+ *  - On initialization, the market ID is fetched from the route parameters.
+ *  - Regions are loaded from the `RegionService` and populated in the form.
+ *  - The `MarketService` is used to check if the market name or code already exists, but only when the data has been changed by the user.
+ *  - If the market code or name already exists, validation errors are shown only after edits.
+ *  - On form submission, the updated market data is sent to the backend for saving.
+ */
 
 @Component({
   selector: 'app-edit-market',
   standalone: true,
   templateUrl: './edit-market.component.html',
   styleUrls: ['./edit-market.component.css'],
-  imports: [ReactiveFormsModule, RadioButtonModule, CommonModule, CheckboxModule]
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    RadioButtonModule,
+    TranslateModule,
+    ToastModule,
+    HeaderComponent,
+    InputMaskModule,
+    HeaderComponent,
+    InputMaskModule,
+  ],
+  providers: [MessageService],
+  
 })
 export class EditMarketComponent implements OnInit {
+  /**
+   * Represents the title of the form.
+   */
+  title: string = 'Edit Market';
+
+ 
 
   /**
-   * Represents the reactive form group for editing a market.
+   * The reactive form group that holds all the market data fields.
    */
   marketForm!: FormGroup;
 
   /**
-   * Holds a list of available regions for selection.
+   * List of all regions that will be displayed in the form.
    */
-  regions = [
-    { name: 'EUROPE', value: 'EURO' },
-    { name: 'Latin America, Asia Pacific, and Africa', value: 'LAAPA' },
-    { name: 'North America', value: 'NOAM' }
-  ];
 
   /**
-   * Will be populated with subregions based on the selected region.
+   * List of all regions that will be displayed in the form.
    */
-  subregions: any[] = [];
+  regions: Region[] = [];
 
   /**
-   * The currently selected region value.
+   * List of subregions based on the selected region.
    */
-  selectedRegion: string | null = null;
 
   /**
-   * The currently selected subregion value.
+   * List of subregions based on the selected region.
+   */
+  subregions: Region[] = [];
+
+  /**
+   * Stores the selected region's key.
+   */
+
+  /**
+   * Stores the selected region's key.
+   */
+  selectedRegion: number | null = null;
+
+  /**
+   * Stores the selected subregion's key.
+   */
+
+  /**
+   * Stores the selected subregion's key.
    */
   selectedSubregion: string | null = null;
 
   /**
-   * Contains predefined subregions for each region.
+   * Flags to control whether the market code validation error is displayed.
    */
-  allSubregions: Record<'EURO' | 'LAAPA' | 'NOAM', { name: string; value: string }[]> = {
-    EURO: [{ name: 'Europe', value: 'Europe' }],
-    LAAPA: [
-      { name: 'Latin America', value: 'LatinAmerica' },
-      { name: 'Asia Pacific', value: 'AsiaPacific' },
-      { name: 'Africa', value: 'Africa' }
-    ],
-    NOAM: [{ name: 'North America', value: 'NorthAmerica' }]
-  };
 
   /**
-   * Initializes the component and sets up the FormBuilder.
-   * 
-   * @param fb The form builder used to create and manage form controls.
-   * 
-   * LLD:
-   * - The constructor is used to inject the `FormBuilder` service to manage the reactive form.
+   * Flags to control whether the market code validation error is displayed.
    */
-  constructor(private fb: FormBuilder) {}
+  codeExistsError: boolean = false;
 
   /**
-   * Lifecycle hook that initializes the form group with necessary form controls and validators.
-   * This method also fetches existing market data for editing.
-   * 
-   * @returns void
-   * 
-   * LLD:
-   * 1. Initialize the `marketForm` with controls: `marketName`, `marketCode`, `longCode`, `region`, and `subregion`.
-   * 2. Fetch existing market data by calling `fetchMarketData()`.
+   * Flags to control whether the market name validation error is displayed.
+   */
+
+  /**
+   * Flags to control whether the market name validation error is displayed.
+   */
+  nameExistsError: boolean = false;
+
+  /**
+   * Stores the market ID from the route.
+   */
+
+  /**
+   * Stores the market ID from the route.
+   */
+  marketId!: number;
+
+  /**
+   * Flags to check if the user has edited the code.
+   */
+  /**
+   * Flags to check if the user has edited the code.
+   */
+  hasEditedCode = false;
+
+  /**
+   * Flags to check if the user has edited the name.
+   */
+
+  /**
+   * Flags to check if the user has edited the name.
+   */
+  hasEditedName = false;
+
+  /**
+   * Constructor to inject the necessary services and initialize the form builder.
+   */
+  constructor(
+    private fb: FormBuilder,
+    private marketService: MarketService,
+    private regionService: RegionService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private messageService: MessageService
+  ) {}
+
+  /**
+   * Lifecycle hook to initialize the component.
    */
   ngOnInit(): void {
+    this.marketId = +this.route.snapshot.paramMap.get('id')!;
     this.marketForm = this.fb.group({
       marketName: ['', Validators.required],
       marketCode: ['', [Validators.required, Validators.maxLength(2)]],
-      longCode: ['', Validators.required],
+      longCode: [
+        '',
+        [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
+        [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
+      ],
       region: ['', Validators.required],
-      subregion: ['']
+      subregion: [''],
     });
 
+    this.loadRegions();
     this.fetchMarketData();
+
+    // Listen for changes in the marketCode field
+    // Listen for changes in the marketCode field
+    this.marketForm
+      .get('marketCode')
+      ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(() => {
+        this.updateLongCode();
+        this.hasEditedCode = true; // Mark that the code was edited
+      });
+
+    // Listen for changes in the region field to update longCode
+    // Listen for changes in the region field to update longCode
+    this.marketForm
+      .get('region')
+      ?.valueChanges.pipe(distinctUntilChanged())
+      .subscribe(() => this.updateLongCode());
+
+    // Perform code validation only when the user edits the marketCode
+    // Perform code validation only when the user edits the marketCode
+    this.marketForm
+      .get('marketCode')
+      ?.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((code) => {
+          if (!this.hasEditedCode) return [false];
+          if (!this.hasEditedCode) return [false];
+          this.codeExistsError = false;
+          if (!code) {
+            this.marketForm.get('marketCode')?.setErrors(null);
+            return [false];
+          }
+          return this.marketService.checkMarketCodeExists(code);
+        })
+      )
+      .subscribe((exists) => {
+        if (this.hasEditedCode) {
+          this.codeExistsError = exists;
+          if (exists) {
+            this.marketForm.get('marketCode')?.setErrors({ exists: true });
+          } else {
+            this.marketForm.get('marketCode')?.setErrors(null);
+          }
+        }
+      });
+
+    // Perform name validation only when the user edits the marketName
+    // Perform name validation only when the user edits the marketName
+    this.marketForm
+      .get('marketName')
+      ?.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((name) => {
+          if (!this.hasEditedName) return [false];
+          if (!this.hasEditedName) return [false];
+          this.nameExistsError = false;
+          if (!name) {
+            this.marketForm.get('marketName')?.setErrors(null);
+            return [false];
+          }
+          return this.marketService.checkMarketNameExists(name);
+        })
+      )
+      .subscribe((exists) => {
+        if (this.hasEditedName) {
+          this.nameExistsError = exists;
+          if (exists) {
+            this.marketForm.get('marketName')?.setErrors({ exists: true });
+          } else {
+            this.marketForm.get('marketName')?.setErrors(null);
+          }
+        }
+      });
   }
 
   /**
-   * Fetches existing market data and sets it in the form.
-   * 
-   * @returns void
-   * 
-   * LLD:
-   * 1. Retrieves the existing market data (mock data used here).
-   * 2. Uses `patchValue` to populate the `marketForm` with the existing data.
-   * 3. Calls `onRegionSelect()` to populate subregions based on the selected region.
-   * 4. Sets `selectedSubregion` to the fetched subregion value.
+   * Fetches all regions from the `RegionService` and assigns them to the regions array.
+   * Fetches all regions from the `RegionService` and assigns them to the regions array.
+   * Handles any errors during the fetch process.
+   */
+  loadRegions(): void {
+    this.regionService.getAllRegions().subscribe(
+      (regions: Region[]) => {
+        this.regions = regions;
+      },
+      (error) => {
+        console.error('Error loading regions:', error);
+      }
+    );
+  }
+
+  /**
+   * Fetches the existing market data for editing.
+   * Fetches the existing market data for editing.
+   * The fetched data is then patched into the form.
+   * Handles any errors during the fetch process.
    */
   fetchMarketData(): void {
-    const existingMarketData = {
-      marketName: 'Sample Market',
-      marketCode: 'SM',
-      longCode: 'SAMPLE123',
-      region: 'EURO',
-      subregion: 'Europe'
-    };
-
-    this.marketForm.patchValue(existingMarketData);
-    this.onRegionSelect(existingMarketData.region);
-    this.selectedSubregion = existingMarketData.subregion;
+    this.marketService.getMarketDetailsById(this.marketId).subscribe(
+      (data: Market) => {
+        this.marketForm.patchValue({
+          marketName: data.name,
+          marketCode: data.code,
+          longCode: data.longMarketCode,
+          region: data.region,
+          subregion: data.subRegion,
+        });
+        this.onRegionSelect(Number(data.region));
+      },
+      (error) => {
+        console.error('Error fetching market data:', error);
+      }
+    );
   }
 
   /**
-   * Handles the selection of a region and updates the subregions array accordingly.
-   * 
-   * @param regionValue The selected region value.
-   * @returns void
-   * 
-   * LLD:
-   * 1. Set `selectedRegion` to the passed `regionValue`.
-   * 2. Determine the regionKey and fetch the corresponding subregions from `allSubregions`.
-   * 3. Populate `subregions` with the selected region's subregions.
-   * 4. Reset `selectedSubregion` if it doesn't match any of the available subregions.
+   * Updates the selected region in the form and fetches subregions based on the selected region.
+   * Dynamically updates the long market code based on the selected region and market code.
    */
-  onRegionSelect(regionValue: string): void {
-    this.selectedRegion = regionValue;
-    const regionKey = regionValue as keyof typeof this.allSubregions;
+  onRegionSelect(regionId: number): void {
+    this.selectedRegion = regionId;
+    this.marketForm.get('region')?.setValue(regionId);
+    this.updateLongCode();
 
-    if (regionKey in this.allSubregions) {
-      this.subregions = this.allSubregions[regionKey] || [];
-      if (!this.subregions.some(subregion => subregion.value === this.selectedSubregion)) {
+    this.regionService.getSubRegionsByRegion(regionId).subscribe(
+      (subregions: Region[]) => {
+        this.subregions = subregions;
         this.selectedSubregion = null;
+      },
+      (error) => {
+        console.error('Error loading subregions:', error);
       }
+    );
+  }
+
+  /**
+   * Updates the selected subregion in the form when the user selects a new subregion.
+   */
+  onSubregionChange(event: any, subregionId: number): void {
+    this.selectedSubregion = subregionId.toString();
+    this.marketForm.get('subregion')?.setValue(subregionId);
+  }
+
+  /**
+   * Dynamically generates the long market code based on the selected region and market code.
+   */
+  private updateLongCode(): void {
+  
+    const region = this.regions.find(
+      (r) => r.key === this.marketForm.get('region')?.value
+    );
+    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase()|| '';
+    
+    if (region && marketCode.length === 2) {
+      const firstChar = region.value.charAt(0).toUpperCase();
+     
+      const newLongCode = `${firstChar}XXXX${marketCode}`;
+      this.marketForm
+        .get('longCode')
+        ?.setValue(newLongCode, { emitEvent: false });
+    } else if (region) {
+      const firstChar = region.value.charAt(0).toUpperCase();
+      this.marketForm
+        .get('longCode')
+        ?.setValue(firstChar, { emitEvent: false });
+    } else {
+      this.marketForm.get('longCode')?.setValue('', { emitEvent: false });
     }
   }
 
   /**
-   * Handles the selection of a subregion and sets it as the currently selected subregion.
-   * 
-   * @param event The event triggered by selecting a subregion.
-   * @param subregionValue The value of the subregion being selected.
-   * @returns void
-   * 
-   * LLD:
-   * 1. Update `selectedSubregion` with the passed `subregionValue`.
-   * 2. Update the `subregion` form control with the selected value.
-   */
-  onSubregionChange(event: any, subregionValue: string): void {
-    this.selectedSubregion = subregionValue;
-    this.marketForm.get('subregion')?.setValue(subregionValue);
-  }
-
-  /**
-   * Called when the form is submitted. Combines the form data with the selected subregion and logs the complete data.
-   * 
-   * @returns void
-   * 
-   * LLD:
-   * 1. Merge the form's current value with the `selectedSubregion`.
-   * 2. Log the complete form data for further processing (actual API call can be made here in a real scenario).
+   * Submits the updated market form to the backend.
+   * If the form is valid, the updated data is sent to the backend for saving.
+   * Handles any errors during the submission process.
    */
   onSubmit(): void {
-    const formData = { ...this.marketForm.value, subregions: this.selectedSubregion };
-    console.log('Form submitted:', formData);
+    if (this.marketForm.valid) {
+      const marketData: Market = {
+        id: this.marketId,
+        name: this.marketForm.value.marketName,
+        code: this.marketForm.value.marketCode,
+        longMarketCode: this.marketForm.value.longCode,
+        region: this.marketForm.value.region,
+        subRegion: this.marketForm.value.subregion,
+      };
+
+      this.marketService.updateMarket(this.marketId, marketData).subscribe(
+        () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Market is Successfully Edited',
+          });
+        },
+        (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'An error occurred while Editing the market',
+          });
+        }
+      );
+    }
   }
 }
