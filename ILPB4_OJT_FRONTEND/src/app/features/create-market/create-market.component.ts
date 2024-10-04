@@ -179,16 +179,31 @@ export class CreateMarketComponent implements OnInit {
    * 2. Concatenate the first character of the region value with 'XXXXX' and the `marketCode` to form the `longCode`.
    * 3. Update the `longCode` form control without emitting change events.
    */
-  updateLongCode(): void {
-    const regionCode = this.marketForm.get('region')?.value;
-    const shortCode = this.marketForm.get('marketCode')?.value;
-
-    if (regionCode && shortCode) {
-      // The fixed parts of the long code are region and short code
-      const longCode = `${regionCode}-${shortCode.toUpperCase()}.XX.XX`;
-      this.marketForm.get('longCode')?.setValue(longCode, { emitEvent: false });
+  private updateLongCode(): void {
+  
+    const region = this.regions.find(
+      (r) => r.key === this.marketForm.get('region')?.value
+    );
+    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase()|| '';
+    
+    if (region && marketCode.length === 2) {
+      const firstChar = region.value.charAt(0).toUpperCase();
+     
+      const newLongCode = `${firstChar}-__.__.${marketCode}`;
+      console.log(newLongCode)
+      this.marketForm
+        .get('longCode')
+        ?.setValue(newLongCode, { emitEvent: false });
+    } else if (region) {
+      const firstChar = region.value.charAt(0).toUpperCase();
+      this.marketForm
+        .get('longCode')
+        ?.setValue(firstChar, { emitEvent: false });
+    } else {
+      this.marketForm.get('longCode')?.setValue('', { emitEvent: false });
     }
   }
+
  
 
   // setCursorToEditable(event: any): void {
