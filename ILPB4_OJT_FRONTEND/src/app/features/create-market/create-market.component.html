@@ -1,3 +1,5 @@
+<p-confirmDialog></p-confirmDialog>
+
 <div class="create-market-container">
   <h1>Create Market</h1>
   <hr>
@@ -128,6 +130,8 @@
         [disabled]="marketForm.invalid">
         Submit
       </button>
+
+      <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button>
     </form>
   </div>
 </div>

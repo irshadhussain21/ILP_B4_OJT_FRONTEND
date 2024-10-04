@@ -9,13 +9,17 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market, SubGroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { ButtonModule } from 'primeng/button'; 
+import { ConfirmationService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-create-market',
   standalone: true, 
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule, SubGroupComponent, ButtonModule], 
+  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule, SubGroupComponent, ButtonModule, ConfirmDialogModule], 
+  providers: [ConfirmationService]
 })
 export class CreateMarketComponent implements OnInit {
   /**
@@ -69,7 +73,9 @@ export class CreateMarketComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private marketService: MarketService,
-    private regionService: RegionService
+    private regionService: RegionService,
+    private confirmationService: ConfirmationService,
+    private router: Router
   ) {}
 
   /**
@@ -290,4 +296,16 @@ export class CreateMarketComponent implements OnInit {
     }
   }
   
+  onCancel(): void {
+    this.confirmationService.confirm({
+      message: 'You have unsaved changes. Are you sure you want to proceed?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.marketForm.reset();
+        // Navigate to the market list
+        this.router.navigate(['/marketlist']);
+      }
+    });
+  }
 }

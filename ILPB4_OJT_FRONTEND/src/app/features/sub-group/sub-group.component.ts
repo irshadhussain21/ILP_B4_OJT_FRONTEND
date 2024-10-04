@@ -372,16 +372,16 @@ validateSubgroupName(row: AbstractControl): void {
  * @method onCancel
  * Resets the form and reloads the existing subgroups, after confirming with the user.
  */
-  onCancel(): void {
-    this.confirmationService.confirm({
-      message: 'You have unsaved changes. Are you sure you want to proceed?',
-      header: 'Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.loadSubGroups();
-      }
-    });
-  }
+  // onCancel(): void {
+  //   this.confirmationService.confirm({
+  //     message: 'You have unsaved changes. Are you sure you want to proceed?',
+  //     header: 'Confirmation',
+  //     icon: 'pi pi-exclamation-triangle',
+  //     accept: () => {
+  //       this.loadSubGroups();
+  //     }
+  //   });
+  // }
 
 /**
  * @method canAddSubgroup
