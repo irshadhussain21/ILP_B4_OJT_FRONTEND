@@ -49,7 +49,11 @@
                     <td [pTooltip]="market.longMarketCode" tooltipPosition="top">{{ market.longMarketCode }}</td>
                     <td>{{ market.code }}</td>
                     <td [pTooltip]="market.name" tooltipPosition="top" class="truncate"><a [routerLink]="['/marketlist/market', market.id]" class="market-link">{{ market.name }}</a></td>
-                    <td>{{ market.marketSubGroups.join(', ')}}</td> <!-- Joining subgroups array -->
+                    <td>
+                        <span *ngFor="let subGroup of market.marketSubGroups">
+                          {{ subGroup.subGroupCode }} - {{ subGroup.subGroupName }}<span *ngIf="!isLast(subGroup, market.marketSubGroups)">, </span>
+                        </span>
+                      </td>                      
                     <td>{{ market.region }}</td>
                     <td>{{ market.subRegion }}</td>
                 </tr>

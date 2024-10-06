@@ -366,6 +366,7 @@ export class EditMarketComponent implements OnInit {
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
+        marketSubGroups: []
       };
 
       this.marketService.updateMarket(this.marketId, marketData).subscribe(

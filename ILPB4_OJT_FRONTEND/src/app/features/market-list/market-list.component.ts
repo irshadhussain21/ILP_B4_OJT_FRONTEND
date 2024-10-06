@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { MarketService } from '../../services/market.service';
-import { Market } from '../../core/models/market';
+import { Market, MarketSubgroup } from '../../core/models/market';
 
 @Component({
   selector: 'app-marketlist',
@@ -38,18 +38,22 @@ export class MarketlistComponent implements OnInit {
   }
 
   ngOnInit() {
-      // Fetch markets from the backend
-      this.marketService.getAllMarkets().subscribe(
-        (data: Market[]) => {
-          console.log('Fetched markets:', data); // Debugging line
-          this.markets = data;
-          this.filteredMarkets = data;  // Initialize filtered markets
-        },
-        (error) => {
-          console.error('Error fetching markets:', error);
-        }
-      );
-    }
+    // Fetch markets from the backend using next, error, and complete callbacks
+    this.marketService.getAllMarkets().subscribe({
+      next: (data: Market[]) => {
+        console.log('Fetched markets:', data); // Debugging line
+        this.markets = data;
+        this.filteredMarkets = data;  // Initialize filtered markets
+      },
+      error: (error) => {
+        console.error('Error fetching markets:', error);
+      },
+      complete: () => {
+        console.log('Market fetching complete.');
+      }
+    });
+  }
+  
 
   filterMarkets() {
     if (this.searchText) {
@@ -69,4 +73,8 @@ export class MarketlistComponent implements OnInit {
     this.filterMarkets(); // Call the filter method to refresh the displayed markets
   }
 
+    // Helper method to check if the current subgroup is the last one
+  isLast(subGroup: MarketSubgroup, subGroups: MarketSubgroup[]): boolean {
+    return subGroups.indexOf(subGroup) === subGroups.length - 1;
+  }
 }
