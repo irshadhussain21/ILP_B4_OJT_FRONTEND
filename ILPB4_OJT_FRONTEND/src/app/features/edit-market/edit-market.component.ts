@@ -8,7 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MarketService } from '../../services/market.service';
-
+import { RegionService } from '../../services/region.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
 import { Region } from '../../core/models/region';
@@ -17,16 +17,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { HeaderComponent } from '../../shared/header/header.component';
-
 import { InputMaskModule } from 'primeng/inputmask';
-import { RegionService } from '../../services/region.service';
 
 /**
  * LLD
  * 
- * 
  * This component is used to edit the details of an existing market.
- * 
  * 
  * Execution Flow:
  *  - On initialization, the market ID is fetched from the route parameters.
@@ -49,83 +45,42 @@ import { RegionService } from '../../services/region.service';
     ToastModule,
     HeaderComponent,
     InputMaskModule,
-    HeaderComponent,
-    InputMaskModule,
   ],
   providers: [MessageService],
-  
 })
 export class EditMarketComponent implements OnInit {
   /**
    * Represents the title of the form.
    */
   title: string = 'Edit Market';
-
- 
-
   /**
    * The reactive form group that holds all the market data fields.
    */
   marketForm!: FormGroup;
-
-  /**
-   * List of all regions that will be displayed in the form.
-   */
-
   /**
    * List of all regions that will be displayed in the form.
    */
   regions: Region[] = [];
-
-  /**
-   * List of subregions based on the selected region.
-   */
-
   /**
    * List of subregions based on the selected region.
    */
   subregions: Region[] = [];
-
-  /**
-   * Stores the selected region's key.
-   */
-
   /**
    * Stores the selected region's key.
    */
   selectedRegion: number | null = null;
-
-  /**
-   * Stores the selected subregion's key.
-   */
-
   /**
    * Stores the selected subregion's key.
    */
   selectedSubregion: string | null = null;
-
-  /**
-   * Flags to control whether the market code validation error is displayed.
-   */
-
   /**
    * Flags to control whether the market code validation error is displayed.
    */
   codeExistsError: boolean = false;
-
-  /**
-   * Flags to control whether the market name validation error is displayed.
-   */
-
   /**
    * Flags to control whether the market name validation error is displayed.
    */
   nameExistsError: boolean = false;
-
-  /**
-   * Stores the market ID from the route.
-   */
-
   /**
    * Stores the market ID from the route.
    */
@@ -134,15 +89,7 @@ export class EditMarketComponent implements OnInit {
   /**
    * Flags to check if the user has edited the code.
    */
-  /**
-   * Flags to check if the user has edited the code.
-   */
   hasEditedCode = false;
-
-  /**
-   * Flags to check if the user has edited the name.
-   */
-
   /**
    * Flags to check if the user has edited the name.
    */
@@ -171,7 +118,6 @@ export class EditMarketComponent implements OnInit {
       longCode: [
         '',
         [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
-        [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
       ],
       region: ['', Validators.required],
       subregion: [''],
@@ -180,7 +126,6 @@ export class EditMarketComponent implements OnInit {
     this.loadRegions();
     this.fetchMarketData();
 
-    // Listen for changes in the marketCode field
     // Listen for changes in the marketCode field
     this.marketForm
       .get('marketCode')
@@ -191,13 +136,11 @@ export class EditMarketComponent implements OnInit {
       });
 
     // Listen for changes in the region field to update longCode
-    // Listen for changes in the region field to update longCode
     this.marketForm
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
-    // Perform code validation only when the user edits the marketCode
     // Perform code validation only when the user edits the marketCode
     this.marketForm
       .get('marketCode')
@@ -205,7 +148,6 @@ export class EditMarketComponent implements OnInit {
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((code) => {
-          if (!this.hasEditedCode) return [false];
           if (!this.hasEditedCode) return [false];
           this.codeExistsError = false;
           if (!code) {
@@ -227,14 +169,12 @@ export class EditMarketComponent implements OnInit {
       });
 
     // Perform name validation only when the user edits the marketName
-    // Perform name validation only when the user edits the marketName
     this.marketForm
       .get('marketName')
       ?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((name) => {
-          if (!this.hasEditedName) return [false];
           if (!this.hasEditedName) return [false];
           this.nameExistsError = false;
           if (!name) {
@@ -258,7 +198,6 @@ export class EditMarketComponent implements OnInit {
 
   /**
    * Fetches all regions from the `RegionService` and assigns them to the regions array.
-   * Fetches all regions from the `RegionService` and assigns them to the regions array.
    * Handles any errors during the fetch process.
    */
   loadRegions(): void {
@@ -273,7 +212,6 @@ export class EditMarketComponent implements OnInit {
   }
 
   /**
-   * Fetches the existing market data for editing.
    * Fetches the existing market data for editing.
    * The fetched data is then patched into the form.
    * Handles any errors during the fetch process.
@@ -386,3 +324,4 @@ export class EditMarketComponent implements OnInit {
     }
   }
 }
+
