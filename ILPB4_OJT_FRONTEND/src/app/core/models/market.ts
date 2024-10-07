@@ -5,15 +5,10 @@ export interface Market {
     longMarketCode: string;
     region: string;
     subRegion: string;
-<<<<<<< HEAD
     marketSubGroups?: MarketSubgroup[];
  
 } 
 
-=======
-}
- 
->>>>>>> fc584988bebf8447f30b75ba610ea44073178244
 export interface MarketDetails {
     marketId: number;
     marketName: string;
