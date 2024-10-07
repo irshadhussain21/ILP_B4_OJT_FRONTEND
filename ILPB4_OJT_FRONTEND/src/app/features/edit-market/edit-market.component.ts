@@ -10,14 +10,16 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { Market } from '../../core/models/market';
+import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { InputMaskModule } from 'primeng/inputmask';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { SubgroupComponent } from '../subgroup/subgroup.component';
 
 /**
  * LLD
@@ -45,10 +47,19 @@ import { InputMaskModule } from 'primeng/inputmask';
     ToastModule,
     HeaderComponent,
     InputMaskModule,
+    ConfirmDialogModule,
+    SubgroupComponent
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
 })
 export class EditMarketComponent implements OnInit {
+
+// Flag to display Subgroup form
+  
+ showSubgroupComponent: boolean = false;
+
+ subGroups: MarketSubgroup[] = []; // Store subgroups data
+
   /**
    * Represents the title of the form.
    */
@@ -104,7 +115,8 @@ export class EditMarketComponent implements OnInit {
     private regionService: RegionService,
     private route: ActivatedRoute,
     private router: Router,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
   /**
@@ -195,6 +207,16 @@ export class EditMarketComponent implements OnInit {
         }
       });
   }
+
+    // Function to show the <app-sub-group> component
+    showSubgroup() {
+      this.showSubgroupComponent = true;
+    }
+
+    onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
+      // console.log('Received subgroups from child:', subGroups);
+      this.subGroups = subGroups; // Update the parent component's subGroups array
+    }
 
   /**
    * Fetches all regions from the `RegionService` and assigns them to the regions array.
@@ -324,5 +346,19 @@ export class EditMarketComponent implements OnInit {
       );
     }
   }
+
+  onCancel(): void {
+    this.confirmationService.confirm({
+      message: 'You have unsaved changes. Are you sure you want to proceed?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.marketForm.reset();
+        // Navigate to the market list
+        this.router.navigate(['/marketlist']);
+      }
+    });
+  }
+
 }
 
