@@ -129,6 +129,7 @@
 ::ng-deep .p-chip-text {
   color: #333;
   font-family: Arial, sans-serif;
+<<<<<<< HEAD
 }
 
 /* Custom class for the Cancel button */
@@ -138,3 +139,6 @@
   color: #000 !important;                    /* Change this to your desired text color */
 }
 
+=======
+}
+>>>>>>> fc584988bebf8447f30b75ba610ea44073178244

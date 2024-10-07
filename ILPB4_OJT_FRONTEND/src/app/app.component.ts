@@ -1,4 +1,3 @@
-
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MarketlistComponent } from "./features/market-list/market-list.component";

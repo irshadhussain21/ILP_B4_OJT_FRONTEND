@@ -176,6 +176,7 @@
     text-decoration: none;  /* Remove underline */
     color: inherit;
     cursor: pointer;
+
 }
 
 .subgroup-badge {
@@ -189,5 +190,6 @@
     font-size: 0.875rem; /* Adjust the font size as needed */
     white-space: nowrap; /* Prevent text wrapping */
   }
+
 
 

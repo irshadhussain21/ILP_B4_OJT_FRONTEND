@@ -8,12 +8,17 @@ import {
 import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MarketService } from '../../services/market.service';
-import { RegionService } from '../../services/region.service';
+
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
 import { Region } from '../../core/models/region';
-import { InputMaskModule } from 'primeng/inputmask';
+import { TranslateModule } from '@ngx-translate/core';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 import { HeaderComponent } from "../../shared/header/header.component";
+import { InputMaskModule } from 'primeng/inputmask';
+import { RegionService } from '../../services/region.service';
 
 /**
  * LLD
@@ -52,13 +57,22 @@ import { HeaderComponent } from "../../shared/header/header.component";
   standalone: true,
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, RadioButtonModule, InputMaskModule, HeaderComponent],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    RadioButtonModule,
+    TranslateModule,
+    ToastModule,
+    HeaderComponent,
+    InputMaskModule
+],
+  providers: [MessageService],
 })
 export class CreateMarketComponent implements OnInit {
   /**
    * Represents the reactive form group for creating a market.
    */
-  @Input() title: string = '';
+  title:string="Create Market";
   marketForm!: FormGroup;
 
   regions: Region[] = [];
@@ -84,7 +98,9 @@ export class CreateMarketComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private marketService: MarketService,
-    private regionService: RegionService
+    private regionService: RegionService ,
+    private messageService: MessageService,
+    private router: Router,
   ) {}
 
   /**
@@ -315,13 +331,22 @@ export class CreateMarketComponent implements OnInit {
 
       this.marketService.createMarket(marketData).subscribe(
         (response: number) => {
-          console.log('Market created successfully:', response);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Market is Successfully added',
+          });
           this.marketForm.reset();
           this.codeExistsError = false;
           this.nameExistsError = false;
+          // this.router.navigate(['/marketlist']);
         },
         (error) => {
-          console.error('Error creating market:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'An error occurred while adding the market',
+          });
         }
       );
     }

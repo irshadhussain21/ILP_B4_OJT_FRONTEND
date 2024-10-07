@@ -96,6 +96,7 @@ export class MarketService {
   updateMarket(marketId: number, market: Market): Observable<any> {
     return this.http.put(`${this.apiUrl}/${marketId}`, market);
   }
+<<<<<<< HEAD
   /**
  * Deletes a market entry by ID.
  *
@@ -107,3 +108,6 @@ deleteMarket(marketId: number): Observable<any> {
 }
 
 }
+=======
+}
+>>>>>>> fc584988bebf8447f30b75ba610ea44073178244
