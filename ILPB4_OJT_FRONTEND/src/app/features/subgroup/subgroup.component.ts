@@ -1,5 +1,5 @@
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -122,7 +122,7 @@ export class SubgroupComponent implements OnInit {
       rows: this.fb.array([]) // FormArray to manage rows
     });
       // Fetch subgroups based on the passed marketCode
-      if (this.marketCode) {
+      if (this.marketCode.toLowerCase()) {
         this.loadSubGroups(); 
       } else {
         this.addRow(); // If no marketCode, add an empty row by default
@@ -153,7 +153,7 @@ export class SubgroupComponent implements OnInit {
    * Handles error logging if the request fails.
    */
   loadSubGroups(): void {
-    this.marketSubgroupService.getSubgroups(this.marketCode).subscribe({
+    this.marketSubgroupService.getSubgroups(this.marketCode.toLowerCase()).subscribe({
       next: (subGroups: MarketSubgroup[]) => {
         if (subGroups.length > 0) {
           this.form.setControl('rows', this.fb.array(subGroups.map(subGroup => this.createRow(subGroup))));

@@ -48,19 +48,12 @@
 
   ::ng-deep .market-input{
     border-right: 0;
+    width: 50px; 
   }
 
   ::ng-deep .subgroup-input{
     border-left: 0;
   }
-
-::ng-deep .market-input{
-    width: 50px; /* Adjust the width as per your requirement */
-}
-
-::ng-deep .subgroup-input {
-  width: 150px;
-}
 
 
 ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
