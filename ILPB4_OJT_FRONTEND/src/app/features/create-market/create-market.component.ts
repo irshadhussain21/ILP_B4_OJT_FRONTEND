@@ -8,7 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MarketService } from '../../services/market.service';
-import { RegionService } from '../../services/region.service';
+
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market } from '../../core/models/market';
 import { Region } from '../../core/models/region';
@@ -18,6 +18,7 @@ import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { HeaderComponent } from "../../shared/header/header.component";
 import { InputMaskModule } from 'primeng/inputmask';
+import { RegionService } from '../../services/region.service';
 
 /**
  * LLD
@@ -97,7 +98,7 @@ export class CreateMarketComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private marketService: MarketService,
-    private regionService: RegionService,
+    private regionService: RegionService ,
     private messageService: MessageService,
     private router: Router,
   ) {}
