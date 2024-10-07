@@ -1,6 +1,6 @@
 <p-toast></p-toast>
 <div class="edit-market-container">
-   
+
     <app-header [title]="title" ></app-header>
     <!-- Scrollable Content Wrapper -->
     <div class="scrollable-content">
@@ -27,7 +27,7 @@
             </div>
           </div>
         </div>
-  
+
         <!-- Subregion Selection -->
         <div *ngIf="subregions.length > 0" class="form-section">
           <label for="subregion" class="form-label">{{ 'PAGE.LABELS.SUBREGION' | translate }} <span class="asterik">*</span></label>
@@ -49,7 +49,7 @@
             </div>
           </div>
         </div>
-  
+
         <!-- Short Code / Market Name -->
         <div class="form-section">
             <label class="form-label">{{ 'PAGE.LABELS.SHORT_CODE_MARKET_NAME' | translate }} <span class="asterik">*</span></label>
@@ -73,18 +73,18 @@
                     (input)="hasEditedName = true"  
                 />
             </div>
-          
+
             <!-- Error message for market code -->
             <p *ngIf="codeExistsError && hasEditedCode" class="error-message">
                 <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS' | translate }}
             </p>
-          
+
             <!-- Error message for market name -->
             <p *ngIf="nameExistsError && hasEditedName" class="error-message">
                 <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS' | translate }}
             </p>
           </div>
-          
+
         <!-- Long Code -->
         <div class="form-section">
             <label class="form-label"
@@ -102,7 +102,7 @@
             class="longcode-input">
             </p-inputMask>
           </div>
-  
+
         <!-- Submit Button -->
         <button 
           type="submit" 
