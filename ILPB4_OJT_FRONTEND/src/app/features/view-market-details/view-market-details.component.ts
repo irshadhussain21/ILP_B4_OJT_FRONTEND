@@ -151,8 +151,6 @@ export class ViewMarketDetailsComponent implements OnInit {
     }
   }
 
-  
-  
 
   /**
    * get market details from the backend.

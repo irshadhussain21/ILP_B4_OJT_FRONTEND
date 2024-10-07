@@ -108,8 +108,8 @@
 .p-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: auto;
-    white-space: nowrap;  /* Prevent text from wrapping to the next line */
+    table-layout: fixed;
+    white-space: nowrap;  /* Prevent text from wrapping to the next line */ 
 }
 .truncate {
     white-space: nowrap; /* Prevent line breaks */
@@ -155,7 +155,7 @@
     text-overflow: ellipsis; /* Show ellipsis (...) when content overflows */
     padding: 10px; /* Add padding for better spacing */
     border-bottom: 1px solid #ddd; /* Border for rows */
-    max-width: 150px; /* Set a maximum width for columns */
+    max-width: none; /* Set a maximum width for columns */
 }
 
 /* Responsive table */

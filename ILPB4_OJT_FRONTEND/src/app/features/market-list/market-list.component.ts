@@ -7,7 +7,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { MarketService } from '../../services/market.service';
+import { RegionService } from '../../services/region.service';
 import { Market, MarketDetails } from '../../core/models/market';
+import { Region } from '../../core/models/region';
 
 @Component({
   selector: 'app-marketlist',
@@ -28,9 +30,12 @@ export class MarketlistComponent implements OnInit {
   selectedMarket!: Market;  
   searchText: string = ''; 
 
-  constructor(private marketService: MarketService) {}
+  constructor(private marketService: MarketService, private regionService: RegionService) {}
   sortField: string = '';
   sortOrder: number = 1;
+
+  regionsMap: { [key: string]: string } = {}; // Stores region key-value pairs
+  subRegionsMap: { [key: string]: string } = {}; // Stores subregion key-value pairs
 
   onSort(event: any) {
       this.sortField = event.field;
@@ -38,6 +43,28 @@ export class MarketlistComponent implements OnInit {
   }
 
   ngOnInit() {
+
+      // Fetch regions data
+      this.regionService.getAllRegions().subscribe((regions: Region[]) => {
+        regions.forEach(region => {
+          this.regionsMap[region.key.toString()] = region.value;
+
+        // Fetch subregions for each region
+        this.regionService.getSubRegionsByRegion(region.key).subscribe(
+          (subregions: Region[]) => {
+            subregions.forEach(subregion => {
+              this.subRegionsMap[subregion.key.toString()] = subregion.value;
+            });
+          },
+          (error) => {
+            console.error(`Error fetching subregions for region ${region.key}:`, error);
+          }
+        );
+      });
+    });
+
+
+
       // Fetch markets from the backend
       this.marketService.getAllMarkets().subscribe(
         (data: Market[]) => {
@@ -49,6 +76,8 @@ export class MarketlistComponent implements OnInit {
             this.marketService.getMarketDetailsById(market.id!).subscribe(
               (details: MarketDetails) => {
                 market.marketSubGroups = details.marketSubGroups;
+                market.region = this.regionsMap[market.region] || market.region;
+                market.subRegion = this.subRegionsMap[market.subRegion] || market.subRegion;
               },
               (error) => {
                 console.error('Error fetching market details:', error);
