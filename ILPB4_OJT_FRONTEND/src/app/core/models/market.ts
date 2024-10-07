@@ -1,5 +1,3 @@
-
-
 export interface Market {
     id?: number;
     name: string;
@@ -7,8 +5,8 @@ export interface Market {
     longMarketCode: string;
     region: string;
     subRegion: string;
-} 
-
+}
+ 
 export interface MarketDetails {
     marketId: number;
     marketName: string;
@@ -17,12 +15,11 @@ export interface MarketDetails {
     region: string;
     subRegion: string;
     marketSubGroups: MarketSubgroup[];
-} 
-
+}
+ 
 export interface MarketSubgroup {
     subGroupCode: string;
     subGroupId: number;
     subGroupName: string;
-
+ 
 }
-

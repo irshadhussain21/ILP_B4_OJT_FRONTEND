@@ -1,16 +1,15 @@
-
-<app-header [title]="'Create Market'"></app-header>
+<p-toast></p-toast>
 <div class="create-market-container">
 
- 
+  <app-header [title]="title"></app-header>
 
   <div class="scrollable-content">
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
+      
+      
       <div class="form-section">
-        <label for="region" class="form-label"
-          >Region <span class="asterik">*</span></label
-        >
-        <p class="form-sub-label">Select a Region</p>
+        <label for="region" class="form-label">{{ 'PAGE.LABELS.REGION' | translate }} <span class="asterik">*</span></label>
+        <p class="form-sub-label">{{ 'PAGE.PLACEHOLDERS.SELECT_REGION' | translate }}</p>
         <div class="region-options">
           <div
             class="region-option"
@@ -34,69 +33,59 @@
       </div>
 
       <div *ngIf="subregions.length > 0" class="form-section">
-        <label for="subregion" class="form-label"
-          >Subregion <span class="asterik">*</span></label
-        >
-        <p class="form-sub-label">Select a Subregion</p>
+        <label for="subregion" class="form-label">{{ 'PAGE.LABELS.SUBREGION' | translate }} <span class="asterik">*</span></label>
+        <p class="form-sub-label">{{ 'PAGE.PLACEHOLDERS.SELECT_SUBREGION' | translate }}</p>
         <div class="subregion-options">
-          <div
-            class="subregion-option"
-            *ngFor="let subregion of subregions"
-            [ngClass]="{
-              selected: selectedSubregion === subregion.key.toString()
-            }"
-            (click)="onSubregionChange($event, subregion.key)"
-          >
-            <p-radioButton
-              [name]="'subregion'"
-              [label]="subregion.value"
-              [inputId]="subregion.key.toString()"
-              [value]="subregion.key"
-              formControlName="subregion"
-            >
+          <div 
+            class="subregion-option" 
+            *ngFor="let subregion of subregions" 
+            [ngClass]="{'selected': selectedSubregion === subregion.key.toString()}"
+            (click)="onSubregionChange($event, subregion.key)">
+            <p-radioButton 
+              [name]="'subregion'" 
+              [label]="subregion.value" 
+              [inputId]="subregion.key.toString()" 
+              [value]="subregion.key" 
+              formControlName="subregion">
             </p-radioButton>
-            <label class="check-box-labels" [for]="subregion.key.toString()">{{
-              subregion.value
-            }}</label>
+            <label class="check-box-labels" [for]="subregion.key.toString()">{{ subregion.value }}</label>
           </div>
         </div>
       </div>
 
       <div class="form-section">
-        <label class="form-label"
-          >Short Code/Market Name <span class="asterik">*</span></label
-        >
-        <p class="form-sub-label">
-          Enter a two-letter Market Code, a Market Name
-        </p>
+        <label class="form-label">{{ 'PAGE.LABELS.SHORT_CODE_MARKET_NAME' | translate }} <span class="asterik">*</span></label>
+        <p class="form-sub-label">{{ 'PAGE.PLACEHOLDERS.ENTER_CODE' | translate }} and {{ 'PAGE.PLACEHOLDERS.ENTER_NAME' | translate }}</p>
         <div class="shortcode-marketname-container">
-          <input
-            formControlName="marketCode"
-            type="text"
-            placeholder="Code"
-            class="shortcode-input"
-            maxlength="2"
-            autocapitalize="on"
-          />
-          <span class="divider"></span>
-          <input
-            formControlName="marketName"
-            type="text"
-            placeholder="Name"
-            class="marketname-input"
-          />
+            <input 
+                formControlName="marketCode" 
+                type="text" 
+                placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_CODE' | translate }}" 
+                class="shortcode-input" 
+                maxlength="2"  
+                autocapitalize="on"
+            />
+            <span class="divider"></span>
+            <input 
+                formControlName="marketName" 
+                type="text" 
+                placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_NAME' | translate }}" 
+                class="marketname-input" 
+            />
         </div>
-
+        
+        
         <p *ngIf="codeExistsError" class="error-message">
-          <span class="error-icon">❗</span> Entered market code already exists.
+            <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS' | translate }}
         </p>
 
+      
         <p *ngIf="nameExistsError" class="error-message">
-          <span class="error-icon">❗</span> Entered market name already exists.
+            <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS' | translate }}
         </p>
       </div>
 
-      <!--long market code-->
+      
 
       <div class="form-section">
         <label class="form-label"
@@ -106,9 +95,9 @@
           The format will be automatically set based on selections
         </p>
         <div class="input-wrapper">
-        
+       
           <p-inputMask #longCodeInput
-          formControlName="longCode" 
+          formControlName="longCode"
           [mask]="longCodeMask"
 
           (onFocus)="setCursorToEditable($event)"
@@ -118,12 +107,12 @@
         </div>
       </div>
 
-      <button
-        type="submit"
-        class="submit-button"
-        [disabled]="marketForm.invalid"
-      >
-        Submit
+      
+      <button 
+        type="submit" 
+        class="submit-button" 
+        [disabled]="marketForm.invalid">
+        {{ 'PAGE.BUTTONS.SUBMIT' | translate }}
       </button>
     </form>
   </div>
