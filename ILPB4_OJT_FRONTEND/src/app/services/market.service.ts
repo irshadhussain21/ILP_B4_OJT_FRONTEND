@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Market } from '../core/models/market';
+import { Market, MarketDetails } from '../core/models/market';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -96,4 +96,15 @@ export class MarketService {
   updateMarket(marketId: number, market: Market): Observable<any> {
     return this.http.put(`${this.apiUrl}/${marketId}`, market);
   }
+  /**
+ * Deletes a market entry by ID.
+ *
+ * @param marketId The ID of the market to delete.
+ * @returns Observable<any> An observable that emits the response from the delete operation.
+ */
+deleteMarket(marketId: number): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/${marketId}`);
 }
+
+}
+
