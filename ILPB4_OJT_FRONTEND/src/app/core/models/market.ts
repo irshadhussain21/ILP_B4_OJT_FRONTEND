@@ -6,7 +6,6 @@ export interface Market {
     region: string;
     subRegion: string;
     marketSubGroups?: MarketSubgroup[];
- 
 } 
 
 export interface MarketDetails {
@@ -20,8 +19,9 @@ export interface MarketDetails {
 }
  
 export interface MarketSubgroup {
-    subGroupCode: string;
-    subGroupId: number;
-    subGroupName: string;
- 
-}
+    subGroupId?: number;     
+    marketId?: number;
+    marketCode: string;      
+    subGroupCode: string;    
+    subGroupName: string;    
+  }

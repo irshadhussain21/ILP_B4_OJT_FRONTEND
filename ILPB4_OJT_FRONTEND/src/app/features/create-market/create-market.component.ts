@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -10,15 +10,17 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { MarketService } from '../../services/market.service';
 
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { Market } from '../../core/models/market';
+import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { HeaderComponent } from "../../shared/header/header.component";
 import { InputMaskModule } from 'primeng/inputmask';
 import { RegionService } from '../../services/region.service';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { SubgroupComponent } from "../subgroup/subgroup.component";
 
 /**
  * LLD
@@ -64,9 +66,11 @@ import { RegionService } from '../../services/region.service';
     TranslateModule,
     ToastModule,
     HeaderComponent,
-    InputMaskModule
+    InputMaskModule,
+    ConfirmDialogModule,
+    SubgroupComponent
 ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
 })
 export class CreateMarketComponent implements OnInit {
   /**
@@ -89,6 +93,13 @@ export class CreateMarketComponent implements OnInit {
 
   longCodeMask: string = 'a-aa.aa.aa';
 
+    /**
+   * Flag to display Subgroup form
+   */
+    showSubgroupComponent: boolean = false;
+
+    subGroups: MarketSubgroup[] = []; // Store subgroups data
+
   /**
    * Initializes the component with necessary services.
    * @param {FormBuilder} fb - FormBuilder for creating reactive forms.
@@ -100,6 +111,7 @@ export class CreateMarketComponent implements OnInit {
     private marketService: MarketService,
     private regionService: RegionService ,
     private messageService: MessageService,
+    private confirmationService: ConfirmationService,
     private router: Router,
   ) {}
 
@@ -185,6 +197,11 @@ export class CreateMarketComponent implements OnInit {
           this.marketForm.get('marketName')?.setErrors(null);
         }
       });
+    }
+
+  // Function to show the <app-sub-group> component
+  showSubgroup() {
+    this.showSubgroupComponent = true;
   }
 
   /**
@@ -288,6 +305,12 @@ export class CreateMarketComponent implements OnInit {
     this.marketForm.get('subregion')?.setValue(subregionId);
   }
 
+  onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
+    // console.log('Received subgroups from child:', subGroups);
+    this.subGroups = subGroups; // Update the parent component's subGroups array
+  }
+
+
  // Ensure only the middle part is editable
  setCursorToEditable(event: any) {
   console.log('hi')
@@ -327,28 +350,56 @@ export class CreateMarketComponent implements OnInit {
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
+        marketSubGroups: this.subGroups.map(subGroup => ({
+          subGroupName: subGroup.subGroupName,
+          subGroupCode: subGroup.subGroupCode,
+          marketCode: this.marketForm.value.marketCode
+        }))
       };
-
-      this.marketService.createMarket(marketData).subscribe(
-        (response: number) => {
+  
+      this.marketService.createMarket(marketData).subscribe({
+        next: (response: number) => {
+          // console.log('Market created successfully:', response);
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
             detail: 'Market is Successfully added',
           });
-          this.marketForm.reset();
-          this.codeExistsError = false;
-          this.nameExistsError = false;
-          // this.router.navigate(['/marketlist']);
+          this.resetForm(); // Moved reset logic to a separate method
+          this.router.navigate(['/marketlist']);
         },
-        (error) => {
+        error: (err) => {
+          // console.error('Error creating market:', err);
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
             detail: 'An error occurred while adding the market',
           });
         }
-      );
+      });
+
+      // console.log('Form Data:', marketData);
     }
+  }
+  
+  // Separate method to reset form and handle cleanup
+  private resetForm(): void {
+    this.marketForm.reset();
+    this.codeExistsError = false;
+    this.nameExistsError = false;
+    this.subGroups = [];
+  }
+
+  onCancel(): void {
+    this.confirmationService.confirm({
+      message: 'You have unsaved changes. Are you sure you want to proceed?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.marketForm.reset();
+        // Navigate to the market list
+        this.router.navigate(['/marketlist']);
+      }
+    });
   }
 }

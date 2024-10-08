@@ -3,6 +3,7 @@ import { MarketlistComponent } from './features/market-list/market-list.componen
 import { CreateMarketComponent } from './features/create-market/create-market.component';
 import { ViewMarketDetailsComponent } from './features/view-market-details/view-market-details.component';
 import { EditMarketComponent } from './features/edit-market/edit-market.component';
+import { SubgroupComponent } from './features/subgroup/subgroup.component';
 
 export const routes: Routes = [
   {
@@ -25,5 +26,9 @@ export const routes: Routes = [
   {
     path: 'marketlist/market/:marketId',
     component:ViewMarketDetailsComponent
+  },
+  {
+    path:'subgroup',
+    component: SubgroupComponent
   }
 ];

@@ -236,7 +236,6 @@ hr {
   padding: 10px 15px;
   border: 1px solid #c4cfd9;
   border-radius: 8px;
-  width: auto;
   max-width: 300px;
   font-size: 16px;
   background-color: #f7f9fc;
@@ -278,6 +277,25 @@ hr {
   background-color: #aaa;
   cursor: not-allowed;
 } 
+
+.cancel-button {
+  padding: 10px 20px;
+  background-color: #6c757d; /* Use a grey color for the cancel button */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  margin-left: 10px;
+  display: inline-block;
+  text-align: left;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268; /* Slightly darker grey on hover */
+}
+
 
 
 .error-message {
