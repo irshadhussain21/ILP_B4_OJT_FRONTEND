@@ -317,11 +317,11 @@ export class EditMarketComponent implements OnInit {
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
         marketSubGroups: this.subGroups.map(subGroup => ({
-          subGroupId: subGroup.subGroupId || 0,  // Omit or set null for new subgroups
-          subGroupName: subGroup.subGroupName,  // Pass subgroup name
-          subGroupCode: subGroup.subGroupCode,  // Pass subgroup code
-          marketId: subGroup.marketId || this.marketId,  // Ensure marketId is assigned
-          marketCode: subGroup.marketCode || this.marketForm.value.marketCode // Pass marketCode
+          subGroupId: subGroup.subGroupId || 0,  
+          subGroupName: subGroup.subGroupName,  
+          subGroupCode: subGroup.subGroupCode,  
+          marketId: subGroup.marketId || this.marketId, 
+          marketCode: subGroup.marketCode || this.marketForm.value.marketCode 
         }))
       };
 
@@ -333,6 +333,7 @@ export class EditMarketComponent implements OnInit {
             summary: 'Success',
             detail: 'Market is Successfully Edited',
           });
+          this.router.navigate(['/marketlist']);
         },
         error: (error) => {
           console.error('Error during market update:', error);
@@ -344,6 +345,7 @@ export class EditMarketComponent implements OnInit {
         },
         complete: () => {
           // console.log('Market update request completed');
+
         }
       });
       // console.log(marketData)
