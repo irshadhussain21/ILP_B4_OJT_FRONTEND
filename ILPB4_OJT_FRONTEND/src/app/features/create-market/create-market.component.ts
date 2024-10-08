@@ -259,6 +259,7 @@ export class CreateMarketComponent implements OnInit {
     this.regionService.getAllRegions().subscribe(
       (regions: Region[]) => {
         this.regions = regions;
+        console.log(this.regions)
       },
       (error) => {
         console.error('Error loading regions:', error);
