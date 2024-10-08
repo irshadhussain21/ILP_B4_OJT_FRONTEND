@@ -55,7 +55,6 @@ import { SubgroupComponent } from '../subgroup/subgroup.component';
 export class EditMarketComponent implements OnInit {
 
 // Flag to display Subgroup form
-  
  showSubgroupComponent: boolean = false;
 
  subGroups: MarketSubgroup[] = []; // Store subgroups data
@@ -126,7 +125,7 @@ export class EditMarketComponent implements OnInit {
     this.marketId = +this.route.snapshot.paramMap.get('id')!;
     this.marketForm = this.fb.group({
       marketName: ['', Validators.required],
-      marketCode: ['', [Validators.required, Validators.maxLength(2)]],
+      marketCode: [''],
       longCode: [
         '',
         [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
@@ -159,26 +158,7 @@ export class EditMarketComponent implements OnInit {
       ?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((code) => {
-          if (!this.hasEditedCode) return [false];
-          this.codeExistsError = false;
-          if (!code) {
-            this.marketForm.get('marketCode')?.setErrors(null);
-            return [false];
-          }
-          return this.marketService.checkMarketCodeExists(code);
-        })
       )
-      .subscribe((exists) => {
-        if (this.hasEditedCode) {
-          this.codeExistsError = exists;
-          if (exists) {
-            this.marketForm.get('marketCode')?.setErrors({ exists: true });
-          } else {
-            this.marketForm.get('marketCode')?.setErrors(null);
-          }
-        }
-      });
 
     // Perform name validation only when the user edits the marketName
     this.marketForm
@@ -215,8 +195,8 @@ export class EditMarketComponent implements OnInit {
 
     onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
       // console.log('Received subgroups from child:', subGroups);
-      this.subGroups = subGroups; // Update the parent component's subGroups array
-    }
+      this.subGroups = [...subGroups]; // Ensure it updates with the new subgroups
+    }    
 
   /**
    * Fetches all regions from the `RegionService` and assigns them to the regions array.
@@ -239,22 +219,33 @@ export class EditMarketComponent implements OnInit {
    * Handles any errors during the fetch process.
    */
   fetchMarketData(): void {
-    this.marketService.getMarketDetailsById(this.marketId).subscribe(
-      (data: Market) => {
+    this.marketService.getMarketDetailsById(this.marketId).subscribe({
+      next: (data: Market) => {
         this.marketForm.patchValue({
+          id: data.id,
           marketName: data.name,
           marketCode: data.code,
           longCode: data.longMarketCode,
           region: data.region,
           subregion: data.subRegion,
+          subGroups: this.subGroups
         });
+  
+        // Load the subgroups for the market
+        if (data.marketSubGroups && data.marketSubGroups.length > 0) {
+          this.subGroups = data.marketSubGroups;
+          this.showSubgroup();
+        }
+  
         this.onRegionSelect(Number(data.region));
+        // console.log(this.subGroups);
       },
-      (error) => {
-        console.error('Error fetching market data:', error);
+      error: (err) => {
+        console.error('Error fetching market data:', err);
       }
-    );
+    });
   }
+  
 
   /**
    * Updates the selected region in the form and fetches subregions based on the selected region.
@@ -325,25 +316,37 @@ export class EditMarketComponent implements OnInit {
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
-        marketSubGroups: []
+        marketSubGroups: this.subGroups.map(subGroup => ({
+          subGroupId: subGroup.subGroupId || 0,  // Omit or set null for new subgroups
+          subGroupName: subGroup.subGroupName,  // Pass subgroup name
+          subGroupCode: subGroup.subGroupCode,  // Pass subgroup code
+          marketId: subGroup.marketId || this.marketId,  // Ensure marketId is assigned
+          marketCode: subGroup.marketCode || this.marketForm.value.marketCode // Pass marketCode
+        }))
       };
 
-      this.marketService.updateMarket(this.marketId, marketData).subscribe(
-        () => {
+      this.marketService.updateMarket(this.marketId, marketData).subscribe({
+        next: (response) => {
+          // console.log('Market update response:', response);
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
             detail: 'Market is Successfully Edited',
           });
         },
-        (error) => {
+        error: (error) => {
+          console.error('Error during market update:', error);
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
             detail: 'An error occurred while Editing the market',
           });
+        },
+        complete: () => {
+          // console.log('Market update request completed');
         }
-      );
+      });
+      // console.log(marketData)
     }
   }
 

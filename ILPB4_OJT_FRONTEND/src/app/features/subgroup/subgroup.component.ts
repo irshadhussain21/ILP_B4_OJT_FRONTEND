@@ -94,7 +94,7 @@ export class SubgroupComponent implements OnInit {
 
   // Accept the marketCode as an input from the parent component
   @Input() marketCode: string = '';
-
+  @Input() fetchSubGroups: MarketSubgroup[] = [];
   @Output() subGroupsChanged = new EventEmitter<MarketSubgroup[]>();
 
   isInitialLoad = true; // Initially, the Add Subgroup button is enabled.
@@ -126,6 +126,10 @@ export class SubgroupComponent implements OnInit {
         this.loadSubGroups(); 
       } else {
         this.addRow(); // If no marketCode, add an empty row by default
+      }
+
+      if (this.fetchSubGroups && this.fetchSubGroups.length > 0) {
+        this.form.setControl('rows', this.fb.array(this.fetchSubGroups.map(subGroup => this.createRow(subGroup))));
       }
 
       // Track changes to the form array and emit valid subgroups
