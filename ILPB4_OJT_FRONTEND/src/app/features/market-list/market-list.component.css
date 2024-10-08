@@ -108,8 +108,8 @@
 .p-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: auto;
-    white-space: nowrap;  /* Prevent text from wrapping to the next line */
+    table-layout: fixed;
+    white-space: nowrap;  /* Prevent text from wrapping to the next line */ 
 }
 .truncate {
     white-space: nowrap; /* Prevent line breaks */
@@ -140,8 +140,8 @@
 
 /* Hover effect for table rows */
 .p-table tbody tr:hover {
-    background-color: #e9ecef;
-    transition: background-color 0.3s;
+    background-color: #f0f0f0;
+    
 }
 
 /* Alignments */
@@ -155,7 +155,7 @@
     text-overflow: ellipsis; /* Show ellipsis (...) when content overflows */
     padding: 10px; /* Add padding for better spacing */
     border-bottom: 1px solid #ddd; /* Border for rows */
-    max-width: 150px; /* Set a maximum width for columns */
+    max-width: none; /* Set a maximum width for columns */
 }
 
 /* Responsive table */
@@ -176,7 +176,20 @@
     text-decoration: none;  /* Remove underline */
     color: inherit;
     cursor: pointer;
+
 }
+
+.subgroup-badge {
+    display: inline-block;
+    background-color: #e0f0ff; /* Lighter blue background */
+    color: #007bff; /* Blue text (optional, change as needed) */
+    border: 1px solid #007bff; /* Blue border */
+    padding: 4px 8px; /* Padding inside the rectangle */
+    margin-right: 4px; /* Spacing between badges */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 0.875rem; /* Adjust the font size as needed */
+    white-space: nowrap; /* Prevent text wrapping */
+  }
 
 
 
