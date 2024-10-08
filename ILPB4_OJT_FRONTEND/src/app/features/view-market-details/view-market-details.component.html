@@ -1,3 +1,4 @@
+<p-toast></p-toast>
 <app-header [title]="marketDetails?.marketCode + ' - ' + marketDetails?.marketName">
   
   <button class="edit-button" (click)="navigateToEdit()">
@@ -7,11 +8,15 @@
   </button>
 
 
-  <button class="options-button">
-    <img src="../assets/options-icon.svg" alt="Options Icon" width="16" height="16" />
-  </button>
+  <div class="options-card">
+    <p-button class="options-btn" (onClick)="menu.toggle($event)" icon="pi pi-ellipsis-h"/>
+</div>
 
 </app-header>
+<p-confirmDialog></p-confirmDialog>
+
+<p-menu #menu [model]="items" [popup]="true" />
+
 
 <div class="container">  
     <div class="card">
@@ -52,3 +57,4 @@
       
     </div>
 </div>
+
