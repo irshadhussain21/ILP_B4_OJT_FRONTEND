@@ -97,7 +97,7 @@
         <!-- Subgroup component template -->
         <ng-template #subgroupTemplate>
           <app-sub-group [marketCode]="marketForm.get('marketCode')?.value"
-            (subGroupsChanged)="onSubGroupsChanged($event)"></app-sub-group>
+            (subGroupsChanged)="onSubGroupsChanged($event)" (noRowsLeftChanged)="onNoRowsLeftChanged($event)"></app-sub-group>
         </ng-template>
       </div>
 
