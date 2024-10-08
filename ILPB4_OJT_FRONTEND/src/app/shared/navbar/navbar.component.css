@@ -44,7 +44,7 @@
 .nav-link:hover {
   color: #ddd;
 }
-
+/* Updated dropdown menu styling */
 .dropdown-menu {
   position: absolute;
   background-color: #fff;
@@ -52,19 +52,43 @@
   left: 0;
   display: none;
   flex-direction: column;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+  padding: 10px 0; /* Space around the menu */
+  min-width: 200px; /* Ensure proper width for readability */
+  z-index: 10;
 }
 
 .dropdown-menu a {
-  padding: 10px;
+  padding: 12px 20px; /* Comfortable clickable area */
   color: #333;
   text-decoration: none;
-  display: block;
+  font-size: 16px; /* Professional font size */
+  font-weight: 500; /* Slightly bold for readability */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
 }
 
 .dropdown-menu a:hover {
-  background-color: #f0f0f0;
+  background-color: #f5f5f5; /* Light background on hover */
+  color: var(--primary-navy-color); /* Primary color for hover effect */
 }
 
+.nav-item:hover .dropdown-menu {
+  display: flex;
+  animation: fadeIn 0.3s ease; /* Add a fade-in animation for a smoother appearance */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .nav-item:hover .dropdown-menu {
   display: flex;
 }
