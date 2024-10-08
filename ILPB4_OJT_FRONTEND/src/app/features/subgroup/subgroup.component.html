@@ -33,7 +33,7 @@
               <input type="text" placeholder="Subgroup Name" pInputText formControlName="subGroupName"
                 class="name-input" (blur)="row.get('subGroupName')?.markAsTouched()" />
 
-              <i style="cursor: pointer;" class="fa fa-trash-can delete-icon p-ml-2" (click)="deleteRow(rowIndex, row.get('subGroupId').value)"></i>
+              <i style="cursor: pointer;" class="fa fa-trash-can delete-icon p-ml-2" (click)="deleteRow(rowIndex)"></i>
             </div>
           </td>
         </tr>
