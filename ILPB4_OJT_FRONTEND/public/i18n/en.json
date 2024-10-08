@@ -3,7 +3,8 @@
     "PAGE": {
       "BUTTONS": {
         "SUBMIT": "Submit",
-        "UPDATE_MARKET": "Update Market"
+        "UPDATE_MARKET": "Update Market",
+        "CANCEL": "Cancel"
       },
       "LABELS": {
         "CREATE_MARKET": "Create Market",

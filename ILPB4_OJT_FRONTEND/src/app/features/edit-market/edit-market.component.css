@@ -239,6 +239,24 @@ padding-left: 5px;
   cursor: not-allowed;
 }
 
+.cancel-button {
+  padding: 10px 20px;
+  background-color: #6c757d; /* Use a grey color for the cancel button */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  margin-left: 10px;
+  display: inline-block;
+  text-align: left;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268; /* Slightly darker grey on hover */
+}
+
 @media (max-width: 768px) {
   .shortcode-marketname-container {
     flex-direction: column;
