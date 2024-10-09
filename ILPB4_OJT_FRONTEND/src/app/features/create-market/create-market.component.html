@@ -83,7 +83,7 @@
         <label class="form-label">Subgroup(s)</label>
         <!-- Error template or subgroup based on button click -->
         <ng-container *ngIf="!showSubgroupComponent; else subgroupTemplate">
-          <div class="error-template">
+          <div class="empty-subgroup-template">
             <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
             <p *ngIf="marketForm.invalid">Enter the Market Code/Name before adding Subgroup(s)</p>
             <p *ngIf="marketForm.valid">Start adding Subgroup(s) for the Market</p>
