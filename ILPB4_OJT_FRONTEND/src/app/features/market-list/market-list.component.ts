@@ -10,6 +10,8 @@ import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
 import { Market, MarketDetails, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
+import { DropdownModule } from 'primeng/dropdown';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
   selector: 'app-marketlist',
@@ -19,7 +21,7 @@ import { Region } from '../../core/models/region';
     InputTextModule, 
     CommonModule,
     TooltipModule,
-    TagModule,RouterLink,FormsModule
+    TagModule,RouterLink,FormsModule,DropdownModule,PaginatorModule
   ],
   templateUrl: './market-list.component.html',
   styleUrls: ['./market-list.component.css']
@@ -29,6 +31,11 @@ export class MarketlistComponent implements OnInit {
   filteredMarkets!: Market[];
   selectedMarket!: Market;  
   searchText: string = ''; 
+  rows: number = 10; // Default rows per page
+  first: number = 0;  // First record for pagination
+  totalMarkets: number = 0; // Total number of markets
+  rowsPerPageOptions = [10, 25, 50, 75, 100]; // Dropdown options for rows per page
+  selectedRowsPerPage: number = this.rows;
 
   constructor(private marketService: MarketService, private regionService: RegionService) {}
   sortField: string = '';
@@ -116,5 +123,15 @@ export class MarketlistComponent implements OnInit {
     // Helper method to check if the current subgroup is the last one
   isLast(subGroup: MarketSubgroup, subGroups: MarketSubgroup[]): boolean {
     return subGroups.indexOf(subGroup) === subGroups.length - 1;
+  }
+
+
+  onPageChange(event: any) {
+    this.first = event.first; // Update the first record index
+  }
+
+  onRowsPerPageChange(event: any) {
+    this.rows = event.value; // Update the rows per page
+    this.first = 0; // Reset to the first page
   }
 }
