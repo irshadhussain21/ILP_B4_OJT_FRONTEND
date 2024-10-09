@@ -13,6 +13,16 @@
     border: none; /* Remove all borders for the table cells */
   }
 
+  ::ng-deep .p-datatable-thead > tr > th {
+    width: 0; /* Set to auto to fit content */
+    white-space: nowrap; /* Prevent text from wrapping */
+  }
+
+  /* Set table to auto width instead of taking 100% */
+::ng-deep .p-datatable {
+  width: auto;
+  max-width: 100%; /* Ensure the table doesn't overflow the container */
+}
 
   ::ng-deep .p-confirm-dialog-accept.p-button {
     margin-left: 10px;  /* Adds space between the accept and reject buttons */
@@ -44,25 +54,37 @@
   .p-mt-3 {
     margin-top: 20px;
   }
-  
 
-  ::ng-deep .market-input{
-    border-right: 0;
-    width: 50px; 
+  ::ng-deep .input-wrapper .market-input{
+    border-right: 0; 
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    max-width: 100px;
   }
 
-  ::ng-deep .subgroup-input{
+  ::ng-deep .input-wrapper .subgroup-input{
     border-left: 0;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    max-width: 100px;
   }
 
 
 ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
-  padding: .5Rem;
+  padding: .35Rem;
 }
 
 ::ng-deep .p-divider.p-divider-vertical {
   margin: 0;
   padding: 0;
+}
+
+::ng-deep .p-divider-vertical:before {
+  position: absolute;
+  display: block;
+  top: 11px;
+  height: 50%;
+  content: "";
 }
 
 /* Remove hover effect for PrimeNG input fields */

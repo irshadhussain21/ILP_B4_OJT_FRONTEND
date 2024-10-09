@@ -96,9 +96,11 @@ export class SubgroupComponent implements OnInit {
   @Input() marketCode: string = '';
   @Input() fetchSubGroups: MarketSubgroup[] = [];
   @Output() subGroupsChanged = new EventEmitter<MarketSubgroup[]>();
+  @Output() noRowsLeftChanged = new EventEmitter<{ noRowsLeft: boolean, subGroups: MarketSubgroup[] }>();
 
   isInitialLoad = true; // Initially, the Add Subgroup button is enabled.
   submitting = false; // Add this flag to track the form submission status
+  noRowsLeft: boolean = false; //A boolean flag that is set to true when there are no rows left in the form.
 
   form!: FormGroup;
 
@@ -172,23 +174,6 @@ export class SubgroupComponent implements OnInit {
 
     this.isInitialLoad = false;
   }
-  
-  
-  /**
-   * @method deleteSubGroup
-   * Deletes an existing subgroup from the backend by its ID. Upon successful deletion, reloads the list of subgroups.
-   * @param {number} subGroupId - The ID of the subgroup to be deleted.
-   */
-  deleteSubGroup(subGroupId: number): void {
-    this.marketSubgroupService.deleteSubgroup(subGroupId).subscribe({
-      next: () => {
-        this.loadSubGroups(); // Reload the list after deletion
-      },
-      error: (error: HttpErrorResponse) => {
-        console.error('Error deleting subgroup:', error.message);
-      }
-    });
-  }
 
 /**
  * @getter rows
@@ -254,35 +239,29 @@ export class SubgroupComponent implements OnInit {
  * @param {number} rowIndex - The index of the row to be deleted.
  * @param {number} subGroupId - The ID of the subgroup to be deleted, if already persisted.
  */
-  deleteRow(rowIndex: number, subGroupId: number): void {
+deleteRow(rowIndex: number): void {
 
-    const rowsArray = this.form.get('rows') as FormArray | null;
-    if (!rowsArray) {
-      console.error('Form array "rows" does not exist');
-      return;
-    }
-  
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete this subgroup?',
-      header: 'Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        if (subGroupId) {
-          this.marketSubgroupService.deleteSubgroup(subGroupId).subscribe({
-            next: () => {
-              rowsArray.removeAt(rowIndex);
-            },
-            error: (error: HttpErrorResponse) => {
-              console.error('Error deleting subgroup:', error.message);
-            }
-          });
-        } else {
-          rowsArray.removeAt(rowIndex);
-        }
-      },
-      reject: () => {}
-    });
+  const rowsArray = this.form.get('rows') as FormArray | null;
+  if (!rowsArray) {
+    console.error('Form array "rows" does not exist');
+    return;
   }
+
+  this.confirmationService.confirm({
+    message: 'Are you sure you want to delete this subgroup?',
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      rowsArray.removeAt(rowIndex);
+      if (rowsArray.length === 0) {
+        this.noRowsLeftChanged.emit({ noRowsLeft: true, subGroups: [] });
+      } else {
+        this.noRowsLeftChanged.emit({ noRowsLeft: false, subGroups: this.subGroups });
+      }
+    },
+    reject: () => {}
+  });
+}
   
 /**
  * @method validateSubgroupCode

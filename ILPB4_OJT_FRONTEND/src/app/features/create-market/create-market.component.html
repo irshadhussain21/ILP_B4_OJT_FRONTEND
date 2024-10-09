@@ -84,7 +84,7 @@
         <!-- Error template or subgroup based on button click -->
         <ng-container *ngIf="!showSubgroupComponent; else subgroupTemplate">
           <div class="error-template">
-            <img src="assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
+            <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
             <p *ngIf="marketForm.invalid">Enter the Market Code/Name before adding Subgroup(s)</p>
             <p *ngIf="marketForm.valid">Start adding Subgroup(s) for the Market</p>
 
@@ -97,7 +97,7 @@
         <!-- Subgroup component template -->
         <ng-template #subgroupTemplate>
           <app-sub-group [marketCode]="marketForm.get('marketCode')?.value"
-            (subGroupsChanged)="onSubGroupsChanged($event)"></app-sub-group>
+            (subGroupsChanged)="onSubGroupsChanged($event)" (noRowsLeftChanged)="onNoRowsLeftChanged($event)"></app-sub-group>
         </ng-template>
       </div>
 
