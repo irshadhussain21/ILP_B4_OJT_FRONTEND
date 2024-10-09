@@ -18,12 +18,12 @@
         <tr [formGroupName]="rowIndex">
 
           <td>
-            <p-inputGroup>
+            <p-inputGroup class="input-wrapper">
               <input type="text" placeholder="" pInputText formControlName="marketCode" maxlength="2"
                 class="market-input" readonly />
               <p-divider layout="vertical"></p-divider>
 
-              <input type="text" placeholder="Subgroup Code" pInputText formControlName="subGroupCode" maxlength="1"
+              <input type="text" placeholder="Code" pInputText formControlName="subGroupCode" maxlength="1"
                 class="subgroup-input" (blur)="row.get('subGroupCode')?.markAsTouched()" />
             </p-inputGroup>
           </td>
