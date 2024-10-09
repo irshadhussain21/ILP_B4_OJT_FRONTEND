@@ -152,7 +152,7 @@ export class CreateMarketComponent implements OnInit {
       ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
-    this.marketForm
+      this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(
         debounceTime(300),
@@ -160,7 +160,7 @@ export class CreateMarketComponent implements OnInit {
         switchMap((code) => {
           this.codeExistsError = false;
           if (!code) {
-            this.marketForm.get('marketCode')?.setErrors(null);
+            this.marketForm.get('marketCode')?.setErrors({ required: true });
             return [false];
           }
           return this.marketService.checkMarketCodeExists(code);
@@ -170,8 +170,6 @@ export class CreateMarketComponent implements OnInit {
         this.codeExistsError = exists;
         if (exists) {
           this.marketForm.get('marketCode')?.setErrors({ exists: true });
-        } else {
-          this.marketForm.get('marketCode')?.setErrors(null);
         }
       });
 
@@ -183,7 +181,7 @@ export class CreateMarketComponent implements OnInit {
         switchMap((name) => {
           this.nameExistsError = false;
           if (!name) {
-            this.marketForm.get('marketName')?.setErrors(null);
+            this.marketForm.get('marketName')?.setErrors({ required: true });
             return [false];
           }
           return this.marketService.checkMarketNameExists(name);
@@ -193,10 +191,8 @@ export class CreateMarketComponent implements OnInit {
         this.nameExistsError = exists;
         if (exists) {
           this.marketForm.get('marketName')?.setErrors({ exists: true });
-        } else {
-          this.marketForm.get('marketName')?.setErrors(null);
         }
-      });
+      });    
     }
 
   // Function to show the <app-sub-group> component

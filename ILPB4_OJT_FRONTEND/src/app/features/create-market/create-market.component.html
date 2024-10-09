@@ -52,11 +52,19 @@
             class="marketname-input" />
         </div>
 
+        <!-- Error message for required marketCode -->
+        <p *ngIf="marketForm.get('marketCode')?.touched && marketForm.get('marketCode')?.hasError('required')" class="error-message">
+          <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_REQUIRED' | translate }}
+        </p>
+
+        <!-- Error message for required marketName -->
+        <p *ngIf="marketForm.get('marketName')?.touched && marketForm.get('marketName')?.hasError('required')" class="error-message">
+          <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_REQUIRED' | translate }}
+        </p>
 
         <p *ngIf="codeExistsError" class="error-message">
           <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS' | translate }}
         </p>
-
 
         <p *ngIf="nameExistsError" class="error-message">
           <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS' | translate }}

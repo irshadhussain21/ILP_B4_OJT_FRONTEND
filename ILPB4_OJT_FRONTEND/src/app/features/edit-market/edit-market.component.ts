@@ -143,7 +143,7 @@ export class EditMarketComponent implements OnInit {
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => {
         this.updateLongCode();
-        this.hasEditedCode = true; // Mark that the code was edited
+        // this.hasEditedCode = true; // Mark that the code was edited
       });
 
     // Listen for changes in the region field to update longCode
@@ -151,14 +151,6 @@ export class EditMarketComponent implements OnInit {
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
-
-    // Perform code validation only when the user edits the marketCode
-    this.marketForm
-      .get('marketCode')
-      ?.valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-      )
 
     // Perform name validation only when the user edits the marketName
     this.marketForm
@@ -170,7 +162,7 @@ export class EditMarketComponent implements OnInit {
           if (!this.hasEditedName) return [false];
           this.nameExistsError = false;
           if (!name) {
-            this.marketForm.get('marketName')?.setErrors(null);
+            this.marketForm.get('marketName')?.setErrors({ required: true });
             return [false];
           }
           return this.marketService.checkMarketNameExists(name);
@@ -181,8 +173,30 @@ export class EditMarketComponent implements OnInit {
           this.nameExistsError = exists;
           if (exists) {
             this.marketForm.get('marketName')?.setErrors({ exists: true });
-          } else {
-            this.marketForm.get('marketName')?.setErrors(null);
+          } 
+        }
+      });
+
+      this.marketForm
+      .get('marketCode')
+      ?.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((code) => {
+          if (!this.hasEditedCode) return [false];
+          this.codeExistsError = false;
+          if (!code) {
+            this.marketForm.get('marketCode')?.setErrors({ required: true });
+            return [false];
+          }
+          return this.marketService.checkMarketCodeExists(code);
+        })
+      )
+      .subscribe((exists) => {
+        if (this.hasEditedCode) {
+          this.codeExistsError = exists;
+          if (exists) {
+            this.marketForm.get('marketName')?.setErrors({ exists: true });
           }
         }
       });
