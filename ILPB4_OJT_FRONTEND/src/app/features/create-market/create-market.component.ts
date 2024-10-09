@@ -310,6 +310,15 @@ export class CreateMarketComponent implements OnInit {
     this.subGroups = subGroups; // Update the parent component's subGroups array
   }
 
+  onNoRowsLeftChanged(event : { noRowsLeft: boolean, subGroups: MarketSubgroup[] }): void {
+    // console.log('No rows left:', event.noRowsLeft);
+    // console.log('Received subgroups from child:', event.subGroups);
+    this.subGroups = [...event.subGroups];
+    if(event.noRowsLeft){
+      this.showSubgroupComponent = false;
+    }
+  }
+
 
  // Ensure only the middle part is editable
  setCursorToEditable(event: any) {

@@ -198,6 +198,16 @@ export class EditMarketComponent implements OnInit {
       this.subGroups = [...subGroups]; // Ensure it updates with the new subgroups
     }    
 
+    onNoRowsLeftChanged(event : { noRowsLeft: boolean, subGroups: MarketSubgroup[] }): void {
+      // console.log('No rows left:', event.noRowsLeft);
+      // console.log('Received subgroups from child:', event.subGroups);
+      this.subGroups = [...event.subGroups];
+      if(event.noRowsLeft){
+        this.showSubgroupComponent = false;
+      }
+    }
+    
+
   /**
    * Fetches all regions from the `RegionService` and assigns them to the regions array.
    * Handles any errors during the fetch process.
