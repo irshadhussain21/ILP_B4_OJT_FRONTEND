@@ -158,6 +158,10 @@
     max-width: none; /* Set a maximum width for columns */
 }
 
+.capitalize-first {
+    text-transform: capitalize;
+}
+
 /* Responsive table */
 @media (max-width: 768px) {
     .p-table {
@@ -176,7 +180,6 @@
     text-decoration: none;  /* Remove underline */
     color: inherit;
     cursor: pointer;
-
 }
 
 .subgroup-badge {

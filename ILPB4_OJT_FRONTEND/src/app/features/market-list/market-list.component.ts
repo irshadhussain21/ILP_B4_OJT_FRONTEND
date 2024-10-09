@@ -63,8 +63,6 @@ export class MarketlistComponent implements OnInit {
       });
     });
 
-
-
       // Fetch markets from the backend
       this.marketService.getAllMarkets().subscribe(
         (data: Market[]) => {
@@ -93,15 +91,18 @@ export class MarketlistComponent implements OnInit {
   //Filters the list of markets based on the search text entered by the user.
   filterMarkets() {
     if (this.searchText) {
-      this.filteredMarkets = this.markets.filter(market => 
-        market.longMarketCode.toLowerCase().startsWith(this.searchText.toLowerCase()) ||
-        market.code.toLowerCase().startsWith(this.searchText.toLowerCase()) ||
-        market.name.toLowerCase().startsWith(this.searchText.toLowerCase())
-      );
+        this.marketService.searchMarkets(this.searchText).subscribe(
+            (data: Market[]) => {
+                this.filteredMarkets = data; // Update the filteredMarkets with the response from the search API
+            },
+            (error) => {
+                console.error('Error searching markets:', error);
+            }
+        );
     } else {
-      this.filteredMarkets = this.markets; 
+        this.filteredMarkets = this.markets; // Reset to the original list if the search text is empty
     }
-  }
+}
   //Clears the current search filter and resets the market list.
   clearFilter() {
     this.searchText = ''; 
