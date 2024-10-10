@@ -15,6 +15,51 @@ import { PaginatorModule } from 'primeng/paginator';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { HeaderComponent } from "../../shared/header/header.component";
 
+
+/**
+ * LLD
+ *
+ * This component is responsible for displaying a list of markets with features for filtering,
+ * sorting, and pagination. It integrates with the `MarketService` to fetch market data and
+ * allows users to search and filter markets by various criteria.
+ *
+ * Execution Flow:
+ *  - On initialization, the component fetches all regions and subregions from the `RegionService`
+ *    and market data from the `MarketService`.
+ *  - It populates the regions and subregions in a dropdown for filtering purposes.
+ *  - The user can filter the market list using the search text, selected regions, and subregions.
+ *  - Markets can be sorted by different fields, and pagination is supported to manage the number of
+ *    displayed records.
+ *  - The `clearFilter` method allows users to reset the search input to display all markets.
+ *
+ * API Endpoints:
+ *  - `GET /api/Regions`: Fetches all available regions.
+ *  - `GET /api/Regions/{regionKey}/SubRegions`: Fetches subregions based on the selected region.
+ *  - `GET /api/Markets`: Fetches a list of all markets.
+ *  - `GET /api/Markets/Search`: Searches markets based on the provided search text.
+ *
+ * Sample API Response (GET /api/Markets):
+ *  [
+ *    {
+ *      "id": 1,
+ *      "name": "Global Market",
+ *      "code": "GM",
+ *      "longMarketCode": "L-GM.AA.AA",
+ *      "region": "EURO",
+ *      "subRegion": "SubRegion 1",
+ *      "marketSubGroups": [
+ *        {
+ *          "subGroupId": 1,
+ *          "subGroupName": "SubGroup 1",
+ *          "subGroupCode": "SG1"
+ *        }
+ *      ]
+ *    },
+ *    ...
+ *  ]
+ */
+
+
 @Component({
   selector: 'app-marketlist',
   standalone: true,
@@ -31,7 +76,7 @@ import { HeaderComponent } from "../../shared/header/header.component";
   styleUrls: ['./market-list.component.css']
 })
 export class MarketlistComponent implements OnInit {
-
+ // Title for the market list component
 @Input() title: string = '';
 handleSelectionChange() {
   console.log('Selected Cities:', this.selectedRegions);
@@ -46,16 +91,22 @@ removeRegion(region: any) {
   this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
 }
 
+  // Array to hold the fetched markets
   markets!: Market[];
   filteredMarkets!: Market[];
   selectedMarket!: Market;  
   searchText: string = ''; 
+   // Number of rows to display per page
   rows: number = 10; 
+   // Index of the first row for pagination
   first: number = 0;
   totalMarkets: number = 0; 
+  // Options for the number of rows per page in pagination
   rowsPerPageOptions = [10, 25, 50, 75, 100];
   selectedRowsPerPage: number = this.rows;
+  // List of regions for filtering markets
   regions: any[];
+  // Selected regions for filtering markets
   selectedRegions: any[] = [];
  
 
