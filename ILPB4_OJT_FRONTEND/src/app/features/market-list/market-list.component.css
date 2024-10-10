@@ -38,7 +38,6 @@
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    
     margin-bottom: 5px; /* Margin below button to separate from the underline */
 }
 
@@ -106,8 +105,14 @@
    
     white-space: nowrap; /* Prevent text wrapping in table cells */
     padding-bottom: 10px;
-    overflow: auto;
+    overflow: hidden;
+    max-height: 400px;
     
+}
+.p-table .p-datatable-scrollable-body {
+    max-height: 400px; /* Control the scrollable area */
+    overflow-y: auto; /* Enable vertical scrolling for the table body */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 .p-table {
     width: 100%;
@@ -162,6 +167,10 @@
     max-width: none; /* Set a maximum width for columns */
 }
 
+.capitalize-first {
+    text-transform: capitalize;
+}
+
 /* Responsive table */
 @media (max-width: 768px) {
     .p-table {
@@ -180,7 +189,6 @@
     text-decoration: none;  /* Remove underline */
     color: inherit;
     cursor: pointer;
-
 }
 
 .subgroup-badge {
@@ -193,7 +201,7 @@
     border-radius: 5px; /* Rounded corners */
     font-size: 0.875rem; /* Adjust the font size as needed */
     white-space: nowrap; /* Prevent text wrapping */
-  }
+}
 
   .selected-chips-container {
     display: flex;

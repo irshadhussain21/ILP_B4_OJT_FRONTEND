@@ -59,5 +59,7 @@
 
 body {
     padding-top: 60px; /* Prevent content from hiding under the navbar */
+    overflow: hidden;
     font-family:var(--font-primary), var(--font-secondary); /* Apply secondary font family to the body */
+
 }
