@@ -77,6 +77,7 @@ export class ViewMarketDetailsComponent implements OnInit {
   marketId: number | undefined;
   market!: Market;
   items: MenuItem[] | undefined;
+  marketName: string | undefined = '';
 
   constructor(private route: ActivatedRoute, private marketService: MarketService, private router: Router, private confirmationService: ConfirmationService, private messageService: MessageService) {}
 
@@ -92,6 +93,7 @@ export class ViewMarketDetailsComponent implements OnInit {
     this.marketService.getMarketById(this.marketId).subscribe(
       (data: Market) => {
         this.market = data;
+        this.marketName = this.marketDetails?.marketName;
         this.setupMenuItems();
       },
       (error) => {

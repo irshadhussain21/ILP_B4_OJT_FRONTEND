@@ -1,5 +1,6 @@
 .container{
-    margin: 10px;
+    margin: 110px 10px 10px 10px;
+    
 }
 
 .market-header {
@@ -60,6 +61,9 @@
 /* Search bar styling */
 .search-container {
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .p-input-icon-left input {
@@ -199,9 +203,72 @@
     white-space: nowrap; /* Prevent text wrapping */
 }
 
+  .selected-chips-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.selected-label {
+    margin-right: 10px;
+    font-weight: normal;
+    font-size: 10px;
+}
+
+.chip {
+    background-color: #e5faff;
+    color: #3b73a6;
+    border: 1px solid #007bff;
+    border-radius: 15px;
+    padding: 2px 5px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+}
+
+.chip i {
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 8px;
+    background-color:#3b73a6 ;
+    color: #dee2e6;
+    border-radius: 50%;
+    padding: 2px;
+}
+
+.clear-all {
+    text-decoration: underline; /* Adds the underline */
+    text-decoration-color: #3b73a6; 
+    color: #3b73a6;
+    cursor: pointer;
+    margin-left: 10px;
+    padding-left: 10px;
+    font-weight: normal;
+    font-size: 10px;
+    border-bottom: #004085;
+    border-left: 1px solid rgb(205, 200, 200);
+}
+
+.clear-all:hover {
+    text-decoration: underline;
+}
 
 
+::ng-deep .p-multiselect-label {
+    visibility: hidden; /* Hides the selected options text */
+    width: 100%; /* Prevents the container from resizing */
+    overflow: hidden; /* Ensures the text doesn't cause width adjustment */
+    white-space: nowrap; /* Prevents wrapping */
+    max-width: 80px;
+}
 
-
-
-
+/* Ensure the placeholder text remains visible */
+::ng-deep .p-multiselect-label::before {
+    content: "region"; /* Displays the placeholder text */
+    visibility: visible;
+}
+::ng-deep .selected-options.p-multiselect {
+    background-color: #3b73a6; /* Light blue background when options are selected */
+    border-color: #004085; /* Change the border color as well */
+}

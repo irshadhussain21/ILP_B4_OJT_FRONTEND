@@ -1,8 +1,9 @@
+
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 <div class="create-market-container">
 
-  <app-header [title]="title"></app-header>
+  
 
   <div class="scrollable-content">
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
@@ -71,9 +72,14 @@
           The format will be automatically set based on selections
         </p>
         <div class="input-wrapper">
+       
+          <p-inputMask #longCodeInput
+          formControlName="longCode"
+          [mask]="longCodeMask"
 
-          <p-inputMask #longCodeInput formControlName="longCode" [mask]="longCodeMask"
-            (focus)="setCursorToEditable($event)" placeholder="_-__.__.__" class="longcode-input">
+          (onFocus)="setCursorToEditable($event)"
+          placeholder="_-__.__.__"
+          class="longcode-input">
           </p-inputMask>
         </div>
       </div>

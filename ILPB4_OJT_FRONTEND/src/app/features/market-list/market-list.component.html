@@ -1,18 +1,47 @@
+<app-header title="Market">
+    <button id="add-market-btn" class="add-market-button" [routerLink]="['/marketlist/create']" routerLinkActive="router-link-active">
+        <i class="pi pi-plus"></i> Create Market
+    </button>
+</app-header>
 <div class="container">
-    <div class="market-header">
-        <h2>Markets</h2>
-        <button id="add-market-btn" class="add-market-button" [routerLink]="['/marketlist/create']" routerLinkActive="router-link-active">
-            <i class="pi pi-plus"></i> Create Market
-        </button>
-    </div>
-
+    
     <div class="search-container">
         <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
+            <i class="pi pi-search" style=" margin-top: -10px;"></i>
             <input type="text" pInputText placeholder="Search markets..." [(ngModel)]="searchText" (input)="filterMarkets()" />
-            <i class="pi pi-times" *ngIf="searchText" (click)="clearFilter()" style="cursor: pointer;"></i> <!-- Close icon -->
+            <i class="pi pi-times" *ngIf="searchText" (click)="clearFilter()" style="cursor: pointer;"></i>
         </span>
+    
+
+    <!-- MultiSelect Dropdown for Regions -->
+    <div class="filter-container" style="margin-bottom: 20px;">
+        <p-multiSelect 
+            [options]="regions" 
+            [(ngModel)]="selectedRegions" 
+            optionLabel="label" 
+            placeholder="Region" 
+            [filter]="true" 
+            filterPlaceHolder="Search"
+            [showToggleAll]="false"
+            appendTo="body"
+            class="region-multiselect"
+            [ngClass]="{'selected-options': selectedRegions.length > 0}"
+            (onChange)="handleSelectionChange()">
+        </p-multiSelect>
     </div>
+</div>
+
+    <!-- Container for Chips and Clear All Button -->
+    <div class="selected-chips-container">
+        <span *ngIf="selectedRegions.length > 0" class="selected-label">Region</span>
+        <span *ngFor="let region of selectedRegions" class="chip">
+            {{ region.label }}
+            <i class="pi pi-times" (click)="removeRegion(region)"></i>
+        </span>
+        <span *ngIf="selectedRegions.length > 0" class="clear-all" (click)="clearAll()">Clear All</span>
+    </div>
+
+
 
     <div class="p-table-container">
         <p-table [value]="filteredMarkets" scrollable="true" [scrollHeight]="'400px'" [tableStyle]="{'min-width': '60rem'}" sortMode="single" (onSort)="onSort($event)">
