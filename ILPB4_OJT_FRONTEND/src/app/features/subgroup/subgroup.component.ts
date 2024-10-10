@@ -97,7 +97,9 @@ export class SubgroupComponent implements OnInit {
   @Input() fetchSubGroups: MarketSubgroup[] = [];
   @Output() subGroupsChanged = new EventEmitter<MarketSubgroup[]>();
   @Output() noRowsLeftChanged = new EventEmitter<{ noRowsLeft: boolean, subGroups: MarketSubgroup[] }>();
+  @Output() hasErrorsChanged = new EventEmitter<boolean>();
 
+  hasErrors: boolean = false;
   isInitialLoad = true; // Initially, the Add Subgroup button is enabled.
   submitting = false; // Add this flag to track the form submission status
   noRowsLeft: boolean = false; //A boolean flag that is set to true when there are no rows left in the form.
@@ -139,8 +141,23 @@ export class SubgroupComponent implements OnInit {
         debounceTime(300) // Emit changes after 300ms of inactivity
       ).subscribe(() => {
         this.emitValidSubGroups();
+        this.checkForErrors();
       });
   }
+
+  checkForErrors(): void {
+    this.hasErrors = this.rows.controls.some(row =>
+      row.get('subGroupCode')?.hasError('invalidFormat') ||
+      row.get('subGroupCode')?.hasError('required') ||
+      row.get('subGroupName')?.hasError('required') ||
+      row.get('subGroupCode')?.hasError('duplicateSubgroupCode') ||
+      row.get('subGroupName')?.hasError('duplicateSubgroupName')
+    );
+  
+    // Emit the updated value of hasErrors
+    this.hasErrorsChanged.emit(this.hasErrors);
+  }
+  
 
   emitValidSubGroups(): void {
     // Filter out only valid rows

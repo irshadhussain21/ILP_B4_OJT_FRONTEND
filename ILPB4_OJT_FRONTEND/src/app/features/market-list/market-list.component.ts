@@ -10,6 +10,8 @@ import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
 import { Market, MarketDetails, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
+import { DropdownModule } from 'primeng/dropdown';
+import { PaginatorModule } from 'primeng/paginator';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { HeaderComponent } from "../../shared/header/header.component";
 
@@ -21,7 +23,7 @@ import { HeaderComponent } from "../../shared/header/header.component";
     InputTextModule,
     CommonModule,
     TooltipModule,
-    TagModule, RouterLink, FormsModule,
+    TagModule, RouterLink, FormsModule,DropdownModule,PaginatorModule,
     MultiSelectModule,
     HeaderComponent
 ],
@@ -48,7 +50,11 @@ removeRegion(region: any) {
   filteredMarkets!: Market[];
   selectedMarket!: Market;  
   searchText: string = ''; 
-
+  rows: number = 10; 
+  first: number = 0;
+  totalMarkets: number = 0; 
+  rowsPerPageOptions = [10, 25, 50, 75, 100];
+  selectedRowsPerPage: number = this.rows;
   regions: any[];
   selectedRegions: any[] = [];
  
@@ -63,8 +69,8 @@ removeRegion(region: any) {
   sortField: string = '';
   sortOrder: number = 1;
 
-  regionsMap: { [key: string]: string } = {}; // Stores region key-value pairs
-  subRegionsMap: { [key: string]: string } = {}; // Stores subregion key-value pairs
+  regionsMap: { [key: string]: string } = {}; 
+  subRegionsMap: { [key: string]: string } = {}; 
 
   onSort(event: any) {
       this.sortField = event.field;
@@ -92,14 +98,12 @@ removeRegion(region: any) {
       });
     });
 
-
-
       // Fetch markets from the backend
       this.marketService.getAllMarkets().subscribe(
         (data: Market[]) => {
-          console.log('Fetched markets:', data); // Debugging line
+          console.log('Fetched markets:', data); 
           this.markets = data;
-          this.filteredMarkets = data;  // Initialize filtered markets
+          this.filteredMarkets = data;  
 
           this.markets.forEach(market => {
             this.marketService.getMarketDetailsById(market.id!).subscribe(
@@ -119,23 +123,29 @@ removeRegion(region: any) {
         }
       );
     }
+
   //Filters the list of markets based on the search text entered by the user.
   filterMarkets() {
     if (this.searchText) {
-      this.filteredMarkets = this.markets.filter(market => 
-        market.longMarketCode.toLowerCase().startsWith(this.searchText.toLowerCase()) ||
-        market.code.toLowerCase().startsWith(this.searchText.toLowerCase()) ||
-        market.name.toLowerCase().startsWith(this.searchText.toLowerCase())
-      );
+        this.marketService.searchMarkets(this.searchText).subscribe(
+            (data: Market[]) => {
+                this.filteredMarkets = data; 
+            },
+            (error) => {
+                console.error('Error searching markets:', error); 
+            }
+        );
     } else {
-      this.filteredMarkets = this.markets; 
+        this.filteredMarkets = this.markets; 
     }
   }
-  //Clears the current search filter and resets the market list.
+
+  // Clear the search text
   clearFilter() {
     this.searchText = ''; 
-    this.filterMarkets(); 
+    this.filterMarkets();  
   }
+
   //Retrieve the sub group code for displaying it in the market list.
   getSubgroupCode(market: Market): string {
     return market.marketSubGroups ? market.marketSubGroups.map(subgroup => subgroup.subGroupCode).join(' ') : '';
@@ -144,5 +154,15 @@ removeRegion(region: any) {
     // Helper method to check if the current subgroup is the last one
   isLast(subGroup: MarketSubgroup, subGroups: MarketSubgroup[]): boolean {
     return subGroups.indexOf(subGroup) === subGroups.length - 1;
+  }
+
+
+  onPageChange(event: any) {
+    this.first = event.first; 
+  }
+
+  onRowsPerPageChange(event: any) {
+    this.rows = event.value; 
+    this.first = 0; 
   }
 }

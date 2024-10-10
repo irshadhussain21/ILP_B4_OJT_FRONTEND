@@ -73,10 +73,9 @@ import { SubgroupComponent } from "../subgroup/subgroup.component";
   providers: [MessageService, ConfirmationService],
 })
 export class CreateMarketComponent implements OnInit {
-  /**
-   * Represents the reactive form group for creating a market.
-   */
+
   title:string="Create Market";
+
   marketForm!: FormGroup;
 
   regions: Region[] = [];
@@ -93,12 +92,9 @@ export class CreateMarketComponent implements OnInit {
 
   longCodeMask: string = 'a-aa.aa.aa';
 
-    /**
-   * Flag to display Subgroup form
-   */
-    showSubgroupComponent: boolean = false;
+  showSubgroupComponent: boolean = false;
 
-    subGroups: MarketSubgroup[] = []; // Store subgroups data
+  subGroups: MarketSubgroup[] = [];
 
   /**
    * Initializes the component with necessary services.
@@ -141,20 +137,17 @@ export class CreateMarketComponent implements OnInit {
 
     this.loadRegions();
 
-    // Listen to changes in marketCode and region to auto-update longCode
-    
-    this.marketForm
-      .get('region')
-      ?.valueChanges.pipe(distinctUntilChanged())
-      .subscribe(() => this.updateLongCode());
-
     this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
-
     this.marketForm
+      .get('region')
+      ?.valueChanges.pipe(distinctUntilChanged())
+      .subscribe(() => this.updateLongCode());
+
+      this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(
         debounceTime(300),
@@ -162,7 +155,7 @@ export class CreateMarketComponent implements OnInit {
         switchMap((code) => {
           this.codeExistsError = false;
           if (!code) {
-            this.marketForm.get('marketCode')?.setErrors(null);
+            this.marketForm.get('marketCode')?.setErrors({ required: true });
             return [false];
           }
           return this.marketService.checkMarketCodeExists(code);
@@ -172,8 +165,6 @@ export class CreateMarketComponent implements OnInit {
         this.codeExistsError = exists;
         if (exists) {
           this.marketForm.get('marketCode')?.setErrors({ exists: true });
-        } else {
-          this.marketForm.get('marketCode')?.setErrors(null);
         }
       });
 
@@ -185,7 +176,7 @@ export class CreateMarketComponent implements OnInit {
         switchMap((name) => {
           this.nameExistsError = false;
           if (!name) {
-            this.marketForm.get('marketName')?.setErrors(null);
+            this.marketForm.get('marketName')?.setErrors({ required: true });
             return [false];
           }
           return this.marketService.checkMarketNameExists(name);
@@ -195,13 +186,10 @@ export class CreateMarketComponent implements OnInit {
         this.nameExistsError = exists;
         if (exists) {
           this.marketForm.get('marketName')?.setErrors({ exists: true });
-        } else {
-          this.marketForm.get('marketName')?.setErrors(null);
         }
-      });
+      });    
     }
 
-  // Function to show the <app-sub-group> component
   showSubgroup() {
     this.showSubgroupComponent = true;
   }
@@ -215,26 +203,28 @@ export class CreateMarketComponent implements OnInit {
    * 3. Update the `longCode` form control without emitting change events.
    */
   private updateLongCode(): void {
-    const region = this.regions.find(r => r.key === this.marketForm.get('region')?.value);
-    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase() || '';
   
+    const region = this.regions.find(
+      (r) => r.key === this.marketForm.get('region')?.value
+    );
+    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase()|| '';
+    
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
-      const newLongCode = `${firstChar}-XX.XX.${marketCode}`;
-      this.marketForm.get('longCode')?.setValue(newLongCode, { emitEvent: false });
-      setTimeout(() => {
-        this.marketForm.get('longCode')?.updateValueAndValidity();
-      }, 0);
-  
+     
+      const newLongCode = `${firstChar}XXXX${marketCode}`;
+      this.marketForm
+        .get('longCode')
+        ?.setValue(newLongCode, { emitEvent: false });
     } else if (region) {
       const firstChar = region.value.charAt(0).toUpperCase();
-      this.marketForm.get('longCode')?.setValue(`${firstChar}-`, { emitEvent: false });
-     
+      this.marketForm
+        .get('longCode')
+        ?.setValue(firstChar, { emitEvent: false });
     } else {
       this.marketForm.get('longCode')?.setValue('', { emitEvent: false });
     }
   }
-  
 
   /**
    * Fetches all regions from the RegionService and assigns them to the `regions` array.
@@ -246,9 +236,6 @@ export class CreateMarketComponent implements OnInit {
     this.regionService.getAllRegions().subscribe(
       (regions: Region[]) => {
         this.regions = regions;
-      },
-      (error) => {
-        console.error('Error loading regions:', error);
       }
     );
   }
@@ -273,9 +260,6 @@ export class CreateMarketComponent implements OnInit {
       (subregions: Region[]) => {
         this.subregions = subregions;
         this.selectedSubregion = null;
-      },
-      (error) => {
-        console.error('Error loading subregions:', error);
       }
     );
   }
@@ -293,31 +277,41 @@ export class CreateMarketComponent implements OnInit {
   }
 
   onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
-    // console.log('Received subgroups from child:', subGroups);
-    this.subGroups = subGroups; // Update the parent component's subGroups array
+    this.subGroups = subGroups;
   }
 
   onNoRowsLeftChanged(event : { noRowsLeft: boolean, subGroups: MarketSubgroup[] }): void {
-    // console.log('No rows left:', event.noRowsLeft);
-    // console.log('Received subgroups from child:', event.subGroups);
     this.subGroups = [...event.subGroups];
     if(event.noRowsLeft){
       this.showSubgroupComponent = false;
     }
   }
 
+  onHasErrorsChanged(hasErrors: boolean): void {
+    if (hasErrors) {
+      this.marketForm.setErrors({ subgroupErrors: true });
+    } else {
+      this.marketForm.setErrors(null);
+    }
+  }
 
- // Ensure only the middle part is editable
  setCursorToEditable(event: any) {
   const inputElement = event.target;
+  const start = 2; 
+  const end = 8;   
 
-  // Prevent default focus behavior (optional)
-  event.preventDefault();
+  
+  setTimeout(() => {
+    inputElement.setSelectionRange(start, start); 
+  }, 0);
 
-  // Manually set cursor position to where user can start typing
-  // Assuming you want the cursor after the first part (_-)
-  const editablePosition = 3; // adjust this based on your input mask format
-  inputElement.setSelectionRange(editablePosition, editablePosition);
+
+   inputElement.addEventListener('keydown', (e: KeyboardEvent) => {
+    const cursorPosition = inputElement.selectionStart;
+    if (cursorPosition && (cursorPosition < start || cursorPosition > end)) {
+      e.preventDefault(); 
+    }
+  });
 }
 
   /**
@@ -330,15 +324,12 @@ export class CreateMarketComponent implements OnInit {
    * 4. Reset the form and error flags upon successful creation.
    * 5. Handle errors appropriately if the API call fails.
    */
-
   onSubmit(): void {
     if (this.marketForm.valid) {
-      let longCode = this.marketForm.value.longCode;
-      const formattedLongCode = this.applyLongCodeFormat(longCode);
       const marketData: Market = {
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
-        longMarketCode: formattedLongCode, 
+        longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
         marketSubGroups: this.subGroups.map(subGroup => ({
@@ -349,16 +340,16 @@ export class CreateMarketComponent implements OnInit {
       };
   
       this.marketService.createMarket(marketData).subscribe({
-        next: (response: number) => {
+        next: () => {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
             detail: 'Market is Successfully added',
           });
-          this.resetForm(); 
+          this.resetForm();
           this.router.navigate(['/marketlist']);
         },
-        error: (err) => {
+        error: () => {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -366,12 +357,10 @@ export class CreateMarketComponent implements OnInit {
           });
         }
       });
-
-     
     }
   }
   
-  // Separate method to reset form and handle cleanup
+
   private resetForm(): void {
     this.marketForm.reset();
     this.codeExistsError = false;
@@ -390,13 +379,4 @@ export class CreateMarketComponent implements OnInit {
       }
     });
   }
-  
-  // Helper method to format longCode
-  applyLongCodeFormat(longCode: string): string {
-   
-    const formattedCode = longCode.replace(/(\w)(\w{2})(\w{2})(\w{2})/, '$1-$2.$3.$4');
-    return formattedCode;
-  }
-  
-
 }

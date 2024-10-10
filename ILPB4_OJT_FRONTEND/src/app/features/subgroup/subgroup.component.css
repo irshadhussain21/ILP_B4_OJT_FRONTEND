@@ -1,112 +1,111 @@
 
 
 ::ng-deep .name-input {
-    width: 400px;
-    margin-right: 10px;
-  }
-
-  ::ng-deep .p-datatable-tbody > tr {
-    border-top: none;   /* Remove top border */
-    border-bottom: none; /* Remove bottom border */
-  }
-  ::ng-deep .p-datatable-tbody > tr > td {
-    border: none; /* Remove all borders for the table cells */
-  }
-
-  ::ng-deep .p-datatable-thead > tr > th {
-    width: 0; /* Set to auto to fit content */
-    white-space: nowrap; /* Prevent text from wrapping */
-  }
-
-  /* Set table to auto width instead of taking 100% */
-::ng-deep .p-datatable {
-  width: auto;
-  max-width: 100%; /* Ensure the table doesn't overflow the container */
+  width: 400px;
+  margin-right: 10px;
 }
 
-  ::ng-deep .p-confirm-dialog-accept.p-button {
-    margin-left: 10px;  /* Adds space between the accept and reject buttons */
-  }
+::ng-deep .p-datatable-tbody > tr {
+  border-top: none;   /* Remove top border */
+  border-bottom: none; /* Remove bottom border */
+}
+::ng-deep .p-datatable-tbody > tr > td {
+  border: none; /* Remove all borders for the table cells */
+}
+
+::ng-deep .p-datatable-thead > tr > th {
+  width: 0; /* Set to auto to fit content */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+/* Set table to auto width instead of taking 100% */
+::ng-deep .p-datatable {
+width: auto;
+max-width: 100%; /* Ensure the table doesn't overflow the container */
+}
+
+::ng-deep .p-confirm-dialog-accept.p-button {
+  margin-left: 10px;  /* Adds space between the accept and reject buttons */
+}
 
 
-  ::ng-deep .p-datatable-thead > tr > th,
-  ::ng-deep .p-datatable-tfoot > tr > td {
-  border: none; /* Remove borders in the header and footer */
-  }
+::ng-deep .p-datatable-thead > tr > th,
+::ng-deep .p-datatable-tfoot > tr > td {
+border: none; /* Remove borders in the header and footer */
+}
 
-  
-  /* Adjust the delete button styling */
-  .delete-btn {
-    padding: 6px;
-  }
-  
-  /* Flexbox for inline form controls */
-  .form-inline {
-    display: flex;
-    align-items: center;
-  }
-  
-  /* General button styling for uniformity */
-  button.p-button {
-    margin: 0px 10px;
-  }
-  
-  .p-mt-3 {
-    margin-top: 20px;
-  }
 
-  ::ng-deep .input-wrapper .market-input{
-    border-right: 0; 
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-    max-width: 100px;
-  }
+/* Adjust the delete button styling */
+.delete-btn {
+  padding: 6px;
+}
 
-  ::ng-deep .input-wrapper .subgroup-input{
-    border-left: 0;
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-    max-width: 100px;
-  }
+/* Flexbox for inline form controls */
+.form-inline {
+  display: flex;
+  align-items: center;
+}
+
+/* General button styling for uniformity */
+button.p-button {
+  margin: 0px 10px;
+}
+
+.p-mt-3 {
+  margin-top: 20px;
+}
+
+::ng-deep .input-wrapper .market-input{
+  border-right: 0; 
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  max-width: 100px;
+}
+
+::ng-deep .input-wrapper .subgroup-input{
+  border-left: 0;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  max-width: 100px;
+}
 
 
 ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
-  padding: .35Rem;
+padding: .35Rem;
 }
 
 ::ng-deep .p-divider.p-divider-vertical {
-  margin: 0;
-  padding: 0;
+margin: 0;
+padding: 0;
 }
 
 ::ng-deep .p-divider-vertical:before {
-  position: absolute;
-  display: block;
-  top: 11px;
-  height: 50%;
-  content: "";
+position: absolute;
+display: block;
+top: 11px;
+height: 50%;
+content: "";
 }
 
 /* Remove hover effect for PrimeNG input fields */
 ::ng-deep .p-inputtext:hover, ::ng-deep .p-inputtext:focus, ::ng-deep .p-inputtext {
-  background-color: transparent !important; /* Remove background color */
-  border-color: #d1d5db !important; /* Keep border color unchanged */
-  box-shadow: none !important; /* Remove any shadow */
-  cursor: auto;
+background-color: transparent !important; /* Remove background color */
+border-color: #d1d5db !important; /* Keep border color unchanged */
+box-shadow: none !important; /* Remove any shadow */
+cursor: auto;
 }
 
 /* Remove focus effect for PrimeNG input fields */
 ::ng-deep .p-inputtext:focus {
-  outline: none !important;
+outline: none !important;
 }
 
 /* Grey background for disabled input fields */
 ::ng-deep .p-inputtext:disabled,
 ::ng-deep input:disabled {
-  background-color: #f0f0f0 !important; /* Set grey background */
-  color: #6c757d !important;           /* Optional: Set text color for better visibility */
-  cursor: not-allowed;                 /* Optional: Set cursor to not-allowed */
-  border-color: #d1d5db !important;    /* Keep the original border */
-  box-shadow: none !important;         /* Remove any shadow */
+background-color: #f0f0f0 !important; /* Set grey background */
+color: #6c757d !important;           /* Optional: Set text color for better visibility */
+cursor: not-allowed;                 /* Optional: Set cursor to not-allowed */
+border-color: #d1d5db !important;    /* Keep the original border */
+box-shadow: none !important;         /* Remove any shadow */
 }
-

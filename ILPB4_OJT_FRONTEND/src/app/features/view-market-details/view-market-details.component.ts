@@ -137,12 +137,12 @@ export class ViewMarketDetailsComponent implements OnInit {
       this.marketService.deleteMarket(this.marketId).subscribe({
         next: (response) => {
           console.log('Market deleted successfully:', response);
+          // Optionally, navigate back or refresh the list after deletion
           this.messageService.add({ 
             severity: 'success', 
             summary: 'Success', 
-            detail: `Market deleted successfully` 
+            detail: `${this.market.name} market deleted successfully` 
           });
-          this.router.navigate(['/markets']);
         },
         error: (error) => {
           console.error('Error deleting market:', error);
