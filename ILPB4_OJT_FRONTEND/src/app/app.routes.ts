@@ -8,27 +8,23 @@ import { SubgroupComponent } from './features/subgroup/subgroup.component';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'marketlist',
-    pathMatch: 'full'
+    redirectTo: 'markets',
+    pathMatch: 'full',
   },
   {
-    path: 'marketlist',
-    component: MarketlistComponent
+    path: 'markets',
+    component: MarketlistComponent,
   },
   {
-    path:"marketlist/create",
-    component:CreateMarketComponent
+    path: 'markets/create',
+    component: CreateMarketComponent,
   },
   {
-    path: 'marketlist/edit/:id',
-    component:EditMarketComponent
+    path: 'markets/edit/:id',
+    component: EditMarketComponent,
   },
   {
-    path: 'marketlist/market/:marketId',
-    component:ViewMarketDetailsComponent
+    path: 'markets/:marketId',
+    component: ViewMarketDetailsComponent,
   },
-  {
-    path:'subgroup',
-    component: SubgroupComponent
-  }
 ];

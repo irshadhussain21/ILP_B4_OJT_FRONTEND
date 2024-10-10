@@ -1,5 +1,5 @@
 <app-header title="Markets">
-    <button id="add-market-btn" class="add-market-button" [routerLink]="['/marketlist/create']" routerLinkActive="router-link-active">
+    <button id="add-market-btn" class="add-market-button" [routerLink]="['/markets/create']" routerLinkActive="router-link-active">
         <i class="pi pi-plus"></i> Create Market
     </button>
 </app-header>
@@ -77,7 +77,7 @@
                 <tr>
                     <td [pTooltip]="market.longMarketCode" tooltipPosition="top">{{ market.longMarketCode | uppercase}}</td>
                     <td>{{ market.code | uppercase}}</td>
-                    <td [pTooltip]="market.name" tooltipPosition="top" class="truncate capitalize-first"><a [routerLink]="['/marketlist/market', market.id]" class="market-link">{{ market.name }}</a></td>
+                    <td [pTooltip]="market.name" tooltipPosition="top" class="truncate capitalize-first"><a [routerLink]="['/markets', market.id]" class="market-link">{{ market.name }}</a></td>
                     <td>  <ng-container *ngIf="market.marketSubGroups && market.marketSubGroups.length > 0">
                         <span *ngFor="let subgroup of market.marketSubGroups" 
                         class="subgroup-badge" 

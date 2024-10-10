@@ -340,7 +340,7 @@ export class EditMarketComponent implements OnInit {
             summary: 'Success',
             detail: 'Market is Successfully Edited',
           });
-          this.router.navigate(['/marketlist']);
+          this.router.navigate(['/markets']);
         },
         error: () => {
           this.messageService.add({
@@ -362,7 +362,7 @@ export class EditMarketComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.marketForm.reset();
-        this.router.navigate(['/marketlist']);
+        this.router.navigate(['/markets']);
       }
     });
   }
