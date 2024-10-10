@@ -23,15 +23,36 @@ import { SubgroupComponent } from '../subgroup/subgroup.component';
 
 /**
  * LLD
- * 
+ *
  * This component is used to edit the details of an existing market.
- * 
+ *
  * Execution Flow:
  *  - On initialization, the market ID is fetched from the route parameters.
  *  - Regions are loaded from the `RegionService` and populated in the form.
  *  - The `MarketService` is used to check if the market name or code already exists, but only when the data has been changed by the user.
  *  - If the market code or name already exists, validation errors are shown only after edits.
  *  - On form submission, the updated market data is sent to the backend for saving.
+ *
+ * API Endpoints:
+ *  - `GET /api/Market/{id}`: Fetches the details of a market by ID.
+ *  - `PUT /api/Market/{id}`: Updates an existing market with the provided data.
+ *
+ * Sample API Response (GET):
+ *  {
+ *    "marketId": 1,
+ *    "name": "Global Market",
+ *    "code": "GM",
+ *    "longMarketCode": "L-GM.AA.AA",
+ *    "region": 2,
+ *    "subRegion": "SubRegion 1",
+ *    "marketSubGroups": [
+ *      {
+ *        "subGroupId": 1,
+ *        "subGroupName": "SubGroup 1",
+ *        "subGroupCode": "SG1"
+ *      }
+ *    ]
+ *  }
  */
 
 @Component({
@@ -48,15 +69,20 @@ import { SubgroupComponent } from '../subgroup/subgroup.component';
     HeaderComponent,
     InputMaskModule,
     ConfirmDialogModule,
-    SubgroupComponent
+    SubgroupComponent,
   ],
   providers: [MessageService, ConfirmationService],
 })
 export class EditMarketComponent implements OnInit {
+  /**
+   * Boolean flag to control the visibility of the SubgroupComponent.
+   */
+  showSubgroupComponent: boolean = false;
 
- showSubgroupComponent: boolean = false;
-
- subGroups: MarketSubgroup[] = []; 
+  /**
+   * Stores the list of subgroups to be edited or displayed.
+   */
+  subGroups: MarketSubgroup[] = [];
 
   /**
    * Represents the title of the form.
@@ -119,6 +145,7 @@ export class EditMarketComponent implements OnInit {
 
   /**
    * Lifecycle hook to initialize the component.
+   * Fetches the market ID from the route parameters, initializes the form, and loads the regions and market data.
    */
   ngOnInit(): void {
     this.marketId = +this.route.snapshot.paramMap.get('id')!;
@@ -127,7 +154,11 @@ export class EditMarketComponent implements OnInit {
       marketCode: [''],
       longCode: [
         '',
-        [Validators.required, Validators.minLength(7), Validators.maxLength(20)],
+        [
+          Validators.required,
+          Validators.minLength(7),
+          Validators.maxLength(20),
+        ],
       ],
       region: ['', Validators.required],
       subregion: [''],
@@ -141,14 +172,14 @@ export class EditMarketComponent implements OnInit {
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => {
         this.updateLongCode();
-        });
+      });
 
     this.marketForm
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
-      this.marketForm
+    this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(
         debounceTime(300),
@@ -164,69 +195,84 @@ export class EditMarketComponent implements OnInit {
         })
       )
       .subscribe((exists) => {
-          this.codeExistsError = exists;
-          if (exists) {
-            this.marketForm.get('marketName')?.setErrors({ exists: true });
-          }
+        this.codeExistsError = exists;
+        if (exists) {
+          this.marketForm.get('marketName')?.setErrors({ exists: true });
+        }
       });
 
     this.marketForm
-    .get('marketName')
-    ?.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((name) => {
-        if (!this.hasEditedName) return [false];
-        this.nameExistsError = false;
-        if (!name) {
-          this.marketForm.get('marketName')?.setErrors({ required: true });
-          return [false];
-        }
-        return this.marketService.checkMarketNameExists(name);
-      })
-    )
-    .subscribe((exists) => {
+      .get('marketName')
+      ?.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((name) => {
+          if (!this.hasEditedName) return [false];
+          this.nameExistsError = false;
+          if (!name) {
+            this.marketForm.get('marketName')?.setErrors({ required: true });
+            return [false];
+          }
+          return this.marketService.checkMarketNameExists(name);
+        })
+      )
+      .subscribe((exists) => {
         this.nameExistsError = exists;
         if (exists) {
           this.marketForm.get('marketName')?.setErrors({ exists: true });
-        } 
-    });
+        }
+      });
   }
 
+  /**
+   * Displays the SubgroupComponent for managing subgroups.
+   */
+  showSubgroup() {
+    this.showSubgroupComponent = true;
+  }
 
-    showSubgroup() {
-      this.showSubgroupComponent = true;
-    }
+  /**
+   * Updates the subgroups when changes are made.
+   * @param subGroups The updated list of subgroups.
+   */
+  onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
+    this.subGroups = [...subGroups];
+  }
 
-    onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
-      this.subGroups = [...subGroups];
-    }    
+  /**
+   * Handles changes when no rows (subgroups) are left.
+   * @param event Object containing whether there are no rows left and the updated subgroups.
+   */
+  onNoRowsLeftChanged(event: {
+    noRowsLeft: boolean;
+    subGroups: MarketSubgroup[];
+  }): void {
+    this.subGroups = [...event.subGroups];
+    if (event.noRowsLeft) {
+      this.showSubgroupComponent = false;
+    }
+  }
 
-    onNoRowsLeftChanged(event : { noRowsLeft: boolean, subGroups: MarketSubgroup[] }): void {
-      this.subGroups = [...event.subGroups];
-      if(event.noRowsLeft){
-        this.showSubgroupComponent = false;
-      }
+  /**
+   * Handles subgroup validation errors and updates the form errors accordingly.
+   * @param hasErrors Boolean indicating whether there are errors in the subgroups.
+   */
+  onHasErrorsChanged(hasErrors: boolean): void {
+    if (hasErrors) {
+      this.marketForm.setErrors({ subgroupErrors: true });
+    } else {
+      this.marketForm.setErrors(null);
     }
-    
-    onHasErrorsChanged(hasErrors: boolean): void {
-      if (hasErrors) {
-        this.marketForm.setErrors({ subgroupErrors: true });
-      } else {
-        this.marketForm.setErrors(null);
-      }
-    }
+  }
 
   /**
    * Fetches all regions from the `RegionService` and assigns them to the regions array.
    * Handles any errors during the fetch process.
    */
   loadRegions(): void {
-    this.regionService.getAllRegions().subscribe(
-      (regions: Region[]) => {
-        this.regions = regions;
-      }
-    );
+    this.regionService.getAllRegions().subscribe((regions: Region[]) => {
+      this.regions = regions;
+    });
   }
 
   /**
@@ -244,39 +290,41 @@ export class EditMarketComponent implements OnInit {
           longCode: data.longMarketCode,
           region: data.region,
           subregion: data.subRegion,
-          subGroups: this.subGroups
+          subGroups: this.subGroups,
         });
-  
+
         if (data.marketSubGroups && data.marketSubGroups.length > 0) {
           this.subGroups = data.marketSubGroups;
           this.showSubgroup();
         }
-  
+
         this.onRegionSelect(Number(data.region));
-      }
+      },
     });
   }
-  
 
   /**
    * Updates the selected region in the form and fetches subregions based on the selected region.
    * Dynamically updates the long market code based on the selected region and market code.
+   * @param regionId The ID of the selected region.
    */
   onRegionSelect(regionId: number): void {
     this.selectedRegion = regionId;
     this.marketForm.get('region')?.setValue(regionId);
     this.updateLongCode();
 
-    this.regionService.getSubRegionsByRegion(regionId).subscribe(
-      (subregions: Region[]) => {
+    this.regionService
+      .getSubRegionsByRegion(regionId)
+      .subscribe((subregions: Region[]) => {
         this.subregions = subregions;
         this.selectedSubregion = null;
-      }
-    );
+      });
   }
 
   /**
    * Updates the selected subregion in the form when the user selects a new subregion.
+   * @param event Event triggered when the subregion changes.
+   * @param subregionId The ID of the selected subregion.
    */
   onSubregionChange(event: any, subregionId: number): void {
     this.selectedSubregion = subregionId.toString();
@@ -287,15 +335,14 @@ export class EditMarketComponent implements OnInit {
    * Dynamically generates the long market code based on the selected region and market code.
    */
   private updateLongCode(): void {
-  
     const region = this.regions.find(
       (r) => r.key === this.marketForm.get('region')?.value
     );
-    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase()|| '';
-    
+    const marketCode =
+      this.marketForm.get('marketCode')?.value.toUpperCase() || '';
+
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
-     
       const newLongCode = `${firstChar}XXXX${marketCode}`;
       this.marketForm
         .get('longCode')
@@ -324,13 +371,13 @@ export class EditMarketComponent implements OnInit {
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
-        marketSubGroups: this.subGroups.map(subGroup => ({
-          subGroupId: subGroup.subGroupId || 0,  
-          subGroupName: subGroup.subGroupName,  
-          subGroupCode: subGroup.subGroupCode,  
-          marketId: subGroup.marketId || this.marketId, 
-          marketCode: subGroup.marketCode || this.marketForm.value.marketCode 
-        }))
+        marketSubGroups: this.subGroups.map((subGroup) => ({
+          subGroupId: subGroup.subGroupId || 0,
+          subGroupName: subGroup.subGroupName,
+          subGroupCode: subGroup.subGroupCode,
+          marketId: subGroup.marketId || this.marketId,
+          marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
+        })),
       };
 
       this.marketService.updateMarket(this.marketId, marketData).subscribe({
@@ -349,12 +396,15 @@ export class EditMarketComponent implements OnInit {
             detail: 'An error occurred while Editing the market',
           });
         },
-        complete: () => { }
+        complete: () => {},
       });
-
     }
   }
 
+  /**
+   * Handles the cancel action and confirms if the user has unsaved changes.
+   * Resets the form and navigates back to the markets list if the user confirms.
+   */
   onCancel(): void {
     this.confirmationService.confirm({
       message: 'You have unsaved changes. Are you sure you want to proceed?',
@@ -363,7 +413,7 @@ export class EditMarketComponent implements OnInit {
       accept: () => {
         this.marketForm.reset();
         this.router.navigate(['/markets']);
-      }
+      },
     });
   }
 }
