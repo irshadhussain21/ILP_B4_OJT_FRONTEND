@@ -347,7 +347,7 @@ export class CreateMarketComponent implements OnInit {
             detail: 'Market is Successfully added',
           });
           this.resetForm();
-          this.router.navigate(['/marketlist']);
+          this.router.navigate(['/markets']);
         },
         error: () => {
           this.messageService.add({
@@ -375,7 +375,7 @@ export class CreateMarketComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.marketForm.reset();
-        this.router.navigate(['/marketlist']);
+        this.router.navigate(['/markets']);
       }
     });
   }

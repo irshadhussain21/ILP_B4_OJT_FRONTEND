@@ -47,18 +47,18 @@ export class HeaderComponent {
     if (idToUse) {
       this.marketService.getMarketById(idToUse).subscribe((market) => {
         const currentUrl = marketId
-          ? `/marketlist/market/${marketId}`
-          : `/marketlist/edit/${editId}`;
+          ? `/markets/${marketId}`
+          : `/markets/edit/${editId}`;
         this.items = [
           { label: 'Home', url: '/' },
-          { label: 'Markets', url: '/marketlist' },
+          { label: 'Markets', url: '/market' },
           { label: market.name, url: currentUrl }
         ];
       });
     } else {
       this.items = [
         { label: 'Home', url: '/' },
-        { label: 'Markets', url: '/marketlist' }
+        { label: 'Markets', url: '/markets' }
       ];
     }
   }
