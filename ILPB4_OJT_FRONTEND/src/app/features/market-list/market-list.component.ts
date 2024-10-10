@@ -50,10 +50,10 @@ removeRegion(region: any) {
   filteredMarkets!: Market[];
   selectedMarket!: Market;  
   searchText: string = ''; 
-  rows: number = 10; // Default rows per page
-  first: number = 0;  // First record for pagination
-  totalMarkets: number = 0; // Total number of markets
-  rowsPerPageOptions = [10, 25, 50, 75, 100]; // Dropdown options for rows per page
+  rows: number = 10; 
+  first: number = 0;
+  totalMarkets: number = 0; 
+  rowsPerPageOptions = [10, 25, 50, 75, 100];
   selectedRowsPerPage: number = this.rows;
   regions: any[];
   selectedRegions: any[] = [];
@@ -69,8 +69,8 @@ removeRegion(region: any) {
   sortField: string = '';
   sortOrder: number = 1;
 
-  regionsMap: { [key: string]: string } = {}; // Stores region key-value pairs
-  subRegionsMap: { [key: string]: string } = {}; // Stores subregion key-value pairs
+  regionsMap: { [key: string]: string } = {}; 
+  subRegionsMap: { [key: string]: string } = {}; 
 
   onSort(event: any) {
       this.sortField = event.field;
@@ -101,9 +101,9 @@ removeRegion(region: any) {
       // Fetch markets from the backend
       this.marketService.getAllMarkets().subscribe(
         (data: Market[]) => {
-          console.log('Fetched markets:', data); // Debugging line
+          console.log('Fetched markets:', data); 
           this.markets = data;
-          this.filteredMarkets = data;  // Initialize filtered markets
+          this.filteredMarkets = data;  
 
           this.markets.forEach(market => {
             this.marketService.getMarketDetailsById(market.id!).subscribe(
@@ -129,20 +129,21 @@ removeRegion(region: any) {
     if (this.searchText) {
         this.marketService.searchMarkets(this.searchText).subscribe(
             (data: Market[]) => {
-                this.filteredMarkets = data; // Update filteredMarkets with the response
+                this.filteredMarkets = data; 
             },
             (error) => {
-                console.error('Error searching markets:', error); // Log error for debugging
+                console.error('Error searching markets:', error); 
             }
         );
     } else {
-        this.filteredMarkets = this.markets; // Reset to the original list if the search text is empty
+        this.filteredMarkets = this.markets; 
     }
   }
 
+  // Clear the search text
   clearFilter() {
-    this.searchText = ''; // Clear the search text
-    this.filterMarkets();  // Reset the filtered markets
+    this.searchText = ''; 
+    this.filterMarkets();  
   }
 
   //Retrieve the sub group code for displaying it in the market list.
@@ -157,11 +158,11 @@ removeRegion(region: any) {
 
 
   onPageChange(event: any) {
-    this.first = event.first; // Update the first record index
+    this.first = event.first; 
   }
 
   onRowsPerPageChange(event: any) {
-    this.rows = event.value; // Update the rows per page
-    this.first = 0; // Reset to the first page
+    this.rows = event.value; 
+    this.first = 0; 
   }
 }
