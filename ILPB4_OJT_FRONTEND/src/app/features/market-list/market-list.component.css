@@ -1,6 +1,5 @@
 .container{
-    margin: 110px 10px 10px 10px;
-    
+    margin: 10px; 
 }
 
 .market-header {
@@ -60,10 +59,7 @@
 
 /* Search bar styling */
 .search-container {
-    margin-bottom: -10px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 .p-input-icon-left input {
@@ -105,8 +101,7 @@
    
     white-space: nowrap; 
     padding-bottom: 10px;
-    overflow: hidden;
-    max-height: 400px;
+    overflow: auto;
     
 }
 .p-table .p-datatable-scrollable-body {
@@ -167,10 +162,6 @@
     max-width: none; 
 }
 
-.capitalize-first {
-    text-transform: capitalize;
-}
-
 /* Responsive table */
 @media (max-width: 768px) {
     .p-table {
@@ -189,6 +180,7 @@
     text-decoration: none; 
     color: inherit;
     cursor: pointer;
+
 }
 
 .subgroup-badge {

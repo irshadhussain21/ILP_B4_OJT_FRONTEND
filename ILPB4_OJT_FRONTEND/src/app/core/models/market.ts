@@ -9,9 +9,9 @@ export interface Market {
 } 
 
 export interface MarketDetails {
-    id: number;
-    name: string;
-    code: string;
+    marketId: number;
+    marketName: string;
+    marketCode: string;
     longMarketCode: string;
     region: string;
     subRegion: string;

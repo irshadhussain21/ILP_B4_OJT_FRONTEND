@@ -22,7 +22,9 @@
         "ENTER_CODE": "Code",
         "ENTER_NAME": "Name",
         "ERROR_MARKET_CODE_EXISTS": "Entered market code already exists.",
-        "ERROR_MARKET_NAME_EXISTS": "Entered market name already exists."
+        "ERROR_MARKET_NAME_EXISTS": "Entered market name already exists.",
+        "ERROR_MARKET_NAME_REQUIRED": "Market Name is required",
+        "ERROR_MARKET_CODE_REQUIRED" : "Market Code is required"
       }
     }
 }

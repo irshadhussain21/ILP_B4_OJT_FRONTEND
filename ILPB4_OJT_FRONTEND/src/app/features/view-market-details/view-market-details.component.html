@@ -1,6 +1,5 @@
-
-<app-header [title]="marketDetails?.code + ' - ' + marketDetails?.name">
-  
+<p-toast></p-toast>
+<app-header [title]="marketDetails?.marketCode + ' - ' + marketDetails?.marketName">
   
   <button class="edit-button" (click)="navigateToEdit()">
     <img src="assets/edit-icon.svg" alt="Edit Icon" width="16" height="16" />
@@ -14,7 +13,6 @@
 </div>
 
 </app-header>
-<p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 
 <p-menu #menu [model]="items" [popup]="true" />
@@ -37,7 +35,7 @@
       <!-- Market Name Panel -->
       <div class="panel">
         <div class="panel-header">Market Name</div>
-        <div class="panel-content">{{ marketDetails?.name }}</div>
+        <div class="panel-content">{{ marketDetails?.marketName }}</div>
       </div>
   
       <!-- Long Code Panel -->
@@ -51,7 +49,7 @@
         <div class="panel-header">Subgroup(s)</div>
         <div *ngFor="let subgroup of marketDetails?.marketSubGroups" class="subgrouppanel-contt">
           <p>
-            {{ marketDetails?.code }}{{ subgroup.subGroupCode }} - {{ subgroup.subGroupName }}
+            {{ marketDetails?.marketCode }}{{ subgroup.subGroupCode }} - {{ subgroup.subGroupName }}
           </p>
         </div>
         <p *ngIf="!marketDetails?.marketSubGroups?.length">No subgroups available</p>
