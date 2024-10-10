@@ -95,26 +95,28 @@ export class MarketlistComponent implements OnInit {
         }
       );
     }
+
   //Filters the list of markets based on the search text entered by the user.
   filterMarkets() {
     if (this.searchText) {
         this.marketService.searchMarkets(this.searchText).subscribe(
             (data: Market[]) => {
-                this.filteredMarkets = data; // Update the filteredMarkets with the response from the search API
+                this.filteredMarkets = data; // Update filteredMarkets with the response
             },
             (error) => {
-                console.error('Error searching markets:', error);
+                console.error('Error searching markets:', error); // Log error for debugging
             }
         );
     } else {
         this.filteredMarkets = this.markets; // Reset to the original list if the search text is empty
     }
-}
-  //Clears the current search filter and resets the market list.
-  clearFilter() {
-    this.searchText = ''; 
-    this.filterMarkets(); 
   }
+
+  clearFilter() {
+    this.searchText = ''; // Clear the search text
+    this.filterMarkets();  // Reset the filtered markets
+  }
+
   //Retrieve the sub group code for displaying it in the market list.
   getSubgroupCode(market: Market): string {
     return market.marketSubGroups ? market.marketSubGroups.map(subgroup => subgroup.subGroupCode).join(' ') : '';

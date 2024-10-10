@@ -108,7 +108,7 @@ export class MarketService {
 
   searchMarkets(searchText: string): Observable<Market[]> {
     return this.http.get<Market[]>(`${this.apiUrl}/search`, {
-        params: { name: searchText } // Assuming your API expects a query parameter
+        params: { searchText } // Assuming your API expects a query parameter
     });
 }
 
