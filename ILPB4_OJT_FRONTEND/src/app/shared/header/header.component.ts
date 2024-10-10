@@ -52,7 +52,7 @@ export class HeaderComponent {
         this.items = [
           { label: 'Home', url: '/' },
           { label: 'Markets', url: '/marketlist' },
-          { label: market.marketName, url: currentUrl }
+          { label: market.name, url: currentUrl }
         ];
       });
     } else {
