@@ -1,7 +1,18 @@
+
+
 <div class="header">
-    <h1>{{ title }}</h1>
-    <div class="header-buttons">
-        <!-- Content projection goes here -->
-        <ng-content></ng-content> 
+    <!-- Breadcrumb above the title -->
+    <div class="breadcrumbs-container">
+        <p-breadcrumb class="max-w-full" [model]="items" [home]="home">
+            <ng-template pTemplate="separator"> / </ng-template>
+        </p-breadcrumb>
+    </div>
+
+    <div class="title-buttons-container">
+        <!-- Title and buttons -->
+        <h1>{{ title }}</h1>
+        <div class="header-buttons">
+            <ng-content></ng-content> <!-- Projected buttons go here -->
+        </div>
     </div>
 </div>

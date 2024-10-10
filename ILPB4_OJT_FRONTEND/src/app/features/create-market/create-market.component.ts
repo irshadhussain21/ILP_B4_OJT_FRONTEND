@@ -130,15 +130,17 @@ export class CreateMarketComponent implements OnInit {
     this.loadRegions();
 
     // Listen to changes in marketCode and region to auto-update longCode
+    
+    this.marketForm
+      .get('region')
+      ?.valueChanges.pipe(distinctUntilChanged())
+      .subscribe(() => this.updateLongCode());
+
     this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
-    this.marketForm
-      .get('region')
-      ?.valueChanges.pipe(distinctUntilChanged())
-      .subscribe(() => this.updateLongCode());
 
     this.marketForm
       .get('marketCode')
@@ -321,16 +323,61 @@ export class CreateMarketComponent implements OnInit {
    * 4. Reset the form and error flags upon successful creation.
    * 5. Handle errors appropriately if the API call fails.
    */
+  // onSubmit(): void {
+  //   if (this.marketForm.valid) {
+  //     const marketData: Market = {
+  //       name: this.marketForm.value.marketName,
+  //       code: this.marketForm.value.marketCode,
+  //       longMarketCode: this.marketForm.value.longCode,
+  //       region: this.marketForm.value.region,
+  //       subRegion: this.marketForm.value.subregion,
+       
+  //     };
+
+  //     this.marketService.createMarket(marketData).subscribe(
+  //       (response: number) => {
+  //         this.messageService.add({
+  //           severity: 'success',
+  //           summary: 'Success',
+  //           detail: 'Market is Successfully added',
+  //         });
+  //         this.marketForm.reset();
+  //         this.codeExistsError = false;
+  //         this.nameExistsError = false;
+  //         // this.router.navigate(['/marketlist']);
+  //       },
+  //       (error) => {
+  //         this.messageService.add({
+  //           severity: 'error',
+  //           summary: 'Error',
+  //           detail: 'An error occurred while adding the market',
+  //         });
+  //       }
+  //     );
+
+      
+
+  //   }
+  // }
+
   onSubmit(): void {
     if (this.marketForm.valid) {
+      // Get the long code from the form control
+      let longCode = this.marketForm.value.longCode;
+  
+      // Ensure that the long code includes the correct format (X-XX.XX.XX)
+      const formattedLongCode = this.applyLongCodeFormat(longCode);
+  
+      // Create the marketData object with formatted longMarketCode
       const marketData: Market = {
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
-        longMarketCode: this.marketForm.value.longCode,
+        longMarketCode: formattedLongCode,  // Use the formatted long code here
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
       };
-
+  
+      // Proceed with market creation
       this.marketService.createMarket(marketData).subscribe(
         (response: number) => {
           this.messageService.add({
@@ -353,4 +400,13 @@ export class CreateMarketComponent implements OnInit {
       );
     }
   }
+  
+  // Helper method to format longCode
+  applyLongCodeFormat(longCode: string): string {
+    // Use a regular expression to format longCode as X-XX.XX.XX
+    const formattedCode = longCode.replace(/(\w)(\w{2})(\w{2})(\w{2})/, '$1-$2.$3.$4');
+    return formattedCode;
+  }
+  
+
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
@@ -10,27 +10,56 @@ import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
 import { Market, MarketDetails } from '../../core/models/market';
 import { Region } from '../../core/models/region';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { HeaderComponent } from "../../shared/header/header.component";
 
 @Component({
   selector: 'app-marketlist',
   standalone: true,
   imports: [
-    TableModule, 
-    InputTextModule, 
+    TableModule,
+    InputTextModule,
     CommonModule,
     TooltipModule,
-    TagModule,RouterLink,FormsModule
-  ],
+    TagModule, RouterLink, FormsModule,
+    MultiSelectModule,
+    HeaderComponent
+],
   templateUrl: './market-list.component.html',
   styleUrls: ['./market-list.component.css']
 })
 export class MarketlistComponent implements OnInit {
+
+@Input() title: string = '';
+handleSelectionChange() {
+  console.log('Selected Cities:', this.selectedRegions);
+}
+onRegionChange() {
+throw new Error('Method not implemented.');
+}
+clearAll() {
+  this.selectedRegions = [];  
+}
+removeRegion(region: any) {
+  this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
+}
+
   markets!: Market[];
   filteredMarkets!: Market[];
   selectedMarket!: Market;  
   searchText: string = ''; 
 
-  constructor(private marketService: MarketService, private regionService: RegionService) {}
+  regions: any[];
+  selectedRegions: any[] = [];
+ 
+
+  constructor(private marketService: MarketService, private regionService: RegionService) {
+    this.regions = [
+      { label: 'EURO - Europe', value: 'EURO' },
+      { label: 'LAAPA - Latin America, Asia Pacific and Africa', value: 'LAAPA' },
+      { label: 'NOAM - North America', value: 'NOAM' }
+    ];
+  }
   sortField: string = '';
   sortOrder: number = 1;
 
