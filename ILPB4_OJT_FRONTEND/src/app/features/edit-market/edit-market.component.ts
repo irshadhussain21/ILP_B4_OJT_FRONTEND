@@ -54,10 +54,9 @@ import { SubgroupComponent } from '../subgroup/subgroup.component';
 })
 export class EditMarketComponent implements OnInit {
 
-// Flag to display Subgroup form
  showSubgroupComponent: boolean = false;
 
- subGroups: MarketSubgroup[] = []; // Store subgroups data
+ subGroups: MarketSubgroup[] = []; 
 
   /**
    * Represents the title of the form.
@@ -137,45 +136,17 @@ export class EditMarketComponent implements OnInit {
     this.loadRegions();
     this.fetchMarketData();
 
-    // Listen for changes in the marketCode field
     this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => {
         this.updateLongCode();
-        // this.hasEditedCode = true; // Mark that the code was edited
-      });
+        });
 
-    // Listen for changes in the region field to update longCode
     this.marketForm
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
-
-    // Perform name validation only when the user edits the marketName
-    this.marketForm
-      .get('marketName')
-      ?.valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((name) => {
-          if (!this.hasEditedName) return [false];
-          this.nameExistsError = false;
-          if (!name) {
-            this.marketForm.get('marketName')?.setErrors({ required: true });
-            return [false];
-          }
-          return this.marketService.checkMarketNameExists(name);
-        })
-      )
-      .subscribe((exists) => {
-        if (this.hasEditedName) {
-          this.nameExistsError = exists;
-          if (exists) {
-            this.marketForm.get('marketName')?.setErrors({ exists: true });
-          } 
-        }
-      });
 
       this.marketForm
       .get('marketCode')
@@ -193,28 +164,45 @@ export class EditMarketComponent implements OnInit {
         })
       )
       .subscribe((exists) => {
-        if (this.hasEditedCode) {
           this.codeExistsError = exists;
           if (exists) {
             this.marketForm.get('marketName')?.setErrors({ exists: true });
           }
-        }
       });
+
+    this.marketForm
+    .get('marketName')
+    ?.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((name) => {
+        if (!this.hasEditedName) return [false];
+        this.nameExistsError = false;
+        if (!name) {
+          this.marketForm.get('marketName')?.setErrors({ required: true });
+          return [false];
+        }
+        return this.marketService.checkMarketNameExists(name);
+      })
+    )
+    .subscribe((exists) => {
+        this.nameExistsError = exists;
+        if (exists) {
+          this.marketForm.get('marketName')?.setErrors({ exists: true });
+        } 
+    });
   }
 
-    // Function to show the <app-sub-group> component
+
     showSubgroup() {
       this.showSubgroupComponent = true;
     }
 
     onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
-      // console.log('Received subgroups from child:', subGroups);
       this.subGroups = [...subGroups]; // Ensure it updates with the new subgroups
     }    
 
     onNoRowsLeftChanged(event : { noRowsLeft: boolean, subGroups: MarketSubgroup[] }): void {
-      // console.log('No rows left:', event.noRowsLeft);
-      // console.log('Received subgroups from child:', event.subGroups);
       this.subGroups = [...event.subGroups];
       if(event.noRowsLeft){
         this.showSubgroupComponent = false;
@@ -230,9 +218,6 @@ export class EditMarketComponent implements OnInit {
     this.regionService.getAllRegions().subscribe(
       (regions: Region[]) => {
         this.regions = regions;
-      },
-      (error) => {
-        console.error('Error loading regions:', error);
       }
     );
   }
@@ -263,9 +248,6 @@ export class EditMarketComponent implements OnInit {
   
         this.onRegionSelect(Number(data.region));
         // console.log(this.subGroups);
-      },
-      error: (err) => {
-        console.error('Error fetching market data:', err);
       }
     });
   }
@@ -284,9 +266,6 @@ export class EditMarketComponent implements OnInit {
       (subregions: Region[]) => {
         this.subregions = subregions;
         this.selectedSubregion = null;
-      },
-      (error) => {
-        console.error('Error loading subregions:', error);
       }
     );
   }
@@ -350,8 +329,7 @@ export class EditMarketComponent implements OnInit {
       };
 
       this.marketService.updateMarket(this.marketId, marketData).subscribe({
-        next: (response) => {
-          // console.log('Market update response:', response);
+        next: () => {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
@@ -359,20 +337,16 @@ export class EditMarketComponent implements OnInit {
           });
           this.router.navigate(['/marketlist']);
         },
-        error: (error) => {
-          console.error('Error during market update:', error);
+        error: () => {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
             detail: 'An error occurred while Editing the market',
           });
         },
-        complete: () => {
-          // console.log('Market update request completed');
-
-        }
+        complete: () => { }
       });
-      // console.log(marketData)
+
     }
   }
 
@@ -383,7 +357,6 @@ export class EditMarketComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.marketForm.reset();
-        // Navigate to the market list
         this.router.navigate(['/marketlist']);
       }
     });
