@@ -44,21 +44,20 @@
 
 .edit-button{
   display: flex;
-  width: 90px;
+  border-color: #00506a;
+  color: #00506a;
   align-items: center;
   justify-content: center;
   border: 1px solid #d1d1d1;
   border-radius: 12px;
-  padding: 8px 12px;
+  margin-top: 4px;
+  padding-right: 2px;
   background-color: white;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
-}
-
-.edit-button{
-  border-color: #00506a;
-  color: #00506a;
+  height: 50px;
+  padding-right: 16px;
 }
 
 
@@ -131,10 +130,12 @@
   color: #333;
   font-family: Arial, sans-serif;
 }
-::ng-deep .p-button 
+::ng-deep .p-button
 {
   background-color: white;
   border-color: #00506a;
+  color:#00506a;
+  margin:5px
 }
 ::ng-deep .p-button-icon 
 {
