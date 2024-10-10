@@ -1,7 +1,6 @@
 
 
 <div class="header">
-    <!-- Breadcrumb above the title -->
     <div class="breadcrumbs-container">
         <p-breadcrumb class="max-w-full" [model]="items" [home]="home">
             <ng-template pTemplate="separator"> / </ng-template>
@@ -9,10 +8,9 @@
     </div>
 
     <div class="title-buttons-container">
-        <!-- Title and buttons -->
         <h1>{{ title }}</h1>
         <div class="header-buttons">
-            <ng-content></ng-content> <!-- Projected buttons go here -->
+            <ng-content></ng-content> 
         </div>
     </div>
 </div>

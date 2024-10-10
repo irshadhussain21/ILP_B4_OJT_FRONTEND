@@ -79,8 +79,8 @@
 }
 
 ::ng-deep  .p-menuitem-separator {
-  margin-left: 5px; /* Adjust left margin */
-  margin-right: 5px; /* Adjust right margin */
+  margin-left: 5px; 
+  margin-right: 5px; 
 }
 ::ng-deep .p-checkbox-box
 {

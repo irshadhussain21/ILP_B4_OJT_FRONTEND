@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
-import { Market, MarketDetails } from '../../core/models/market';
+import { Market, MarketDetails, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { HeaderComponent } from "../../shared/header/header.component";
@@ -141,4 +141,8 @@ removeRegion(region: any) {
     return market.marketSubGroups ? market.marketSubGroups.map(subgroup => subgroup.subGroupCode).join(' ') : '';
   }
 
+    // Helper method to check if the current subgroup is the last one
+  isLast(subGroup: MarketSubgroup, subGroups: MarketSubgroup[]): boolean {
+    return subGroups.indexOf(subGroup) === subGroups.length - 1;
+  }
 }
