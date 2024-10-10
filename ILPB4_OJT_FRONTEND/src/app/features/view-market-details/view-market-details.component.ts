@@ -93,7 +93,7 @@ export class ViewMarketDetailsComponent implements OnInit {
     this.marketService.getMarketById(this.marketId).subscribe(
       (data: Market) => {
         this.market = data;
-        this.marketName = this.marketDetails?.marketName;
+        this.marketName = this.marketDetails?.name;
         this.setupMenuItems();
       },
       (error) => {
