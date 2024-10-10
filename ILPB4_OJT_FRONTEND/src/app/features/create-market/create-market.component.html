@@ -34,7 +34,7 @@
             <p-radioButton [name]="'subregion'" [label]="subregion.value" [inputId]="subregion.key.toString()"
               [value]="subregion.key" formControlName="subregion">
             </p-radioButton>
-            <label class="check-box-labels" [for]="subregion.key.toString()">{{ subregion.value }}</label>
+            
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
             class="shortcode-input" maxlength="2" autocapitalize="on" />
           <span class="divider"></span>
           <input formControlName="marketName" type="text" placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_NAME' | translate }}"
-            class="marketname-input" />
+            class="marketname-input" required />
         </div>
 
 
@@ -68,7 +68,7 @@
       <div class="form-section">
         <label class="form-label">Long Code <span class="asterik">*</span></label>
         <p class="form-sub-label">
-          The format will be automatically set based on selections
+          {{'PAGE.LABELS.LONG_MARKET_CODE_LABEL'| translate}}
         </p>
         <div class="input-wrapper">
 

@@ -12,6 +12,7 @@
         "REGION": "Region",
         "SUBREGION": "Subregion",
         "SHORT_CODE_MARKET_NAME": "Short Code/Market Name",
+        "LONG_MARKET_CODE_LABEL":"The format will be automatically set based on selections",
         "LONG_MARKET_CODE": "Long Market Code"
       },
       "TOOLTIPS": {},
