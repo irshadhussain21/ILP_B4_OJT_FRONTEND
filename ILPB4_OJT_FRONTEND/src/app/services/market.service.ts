@@ -96,15 +96,29 @@ export class MarketService {
   updateMarket(marketId: number, market: Market): Observable<any> {
     return this.http.put(`${this.apiUrl}/${marketId}`, market);
   }
-  /**
- * Deletes a market entry by ID.
- *
- * @param marketId The ID of the market to delete.
- * @returns Observable<any> An observable that emits the response from the delete operation.
- */
-deleteMarket(marketId: number): Observable<any> {
-  return this.http.delete(`${this.apiUrl}/${marketId}`);
-}
+    /**
+    * Deletes a market entry by ID.
+    *
+    * @param marketId The ID of the market to delete.
+    * @returns Observable<any> An observable that emits the response from the delete operation.
+    */
+  deleteMarket(marketId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${marketId}`);
+  }
 
+  /**
+  * Searches for markets based on the provided search text.
+  *
+  * This method constructs a GET request to the API, passing the search text as a query parameter.
+  * It returns an observable that emits an array of Market objects matching the search criteria.
+  *
+  * @param searchText The text used to search for markets. It can match the market's name, code, or long market code.
+  * @returns Observable<Market[]> An observable that emits an array of markets that match the search criteria.
+  */
+  searchMarkets(searchText: string): Observable<Market[]> {
+  return this.http.get<Market[]>(`${this.apiUrl}/search`, {
+      params: { searchText } 
+  });
+  }
 }
 
