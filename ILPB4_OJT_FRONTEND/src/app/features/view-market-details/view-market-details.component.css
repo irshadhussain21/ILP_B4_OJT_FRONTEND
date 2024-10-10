@@ -52,12 +52,19 @@
   border-radius: 12px;
   margin-top: 4px;
   padding-right: 2px;
+  margin-top: 4px;
+  padding-right: 2px;
   background-color: white;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
   height: 50px;
   padding-right: 16px;
+}
+
+.edit-button{
+  border-color: #00506a;
+  color: #00506a;
 }
 
 
@@ -140,4 +147,6 @@
 ::ng-deep .p-button-icon 
 {
   color:#00506a;
+  
 }
+/*aliya  */

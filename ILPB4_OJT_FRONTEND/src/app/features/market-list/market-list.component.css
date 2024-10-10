@@ -66,6 +66,7 @@
     justify-content: space-between;
 }
 
+
 .p-input-icon-left input {
     padding-left: 35px; 
     padding-right: 12px; 
@@ -105,8 +106,7 @@
    
     white-space: nowrap; 
     padding-bottom: 10px;
-    overflow: hidden;
-    max-height: 400px;
+    overflow: auto;
     
 }
 .p-table .p-datatable-scrollable-body {
@@ -167,10 +167,6 @@
     max-width: none; 
 }
 
-.capitalize-first {
-    text-transform: capitalize;
-}
-
 /* Responsive table */
 @media (max-width: 768px) {
     .p-table {
@@ -189,6 +185,7 @@
     text-decoration: none; 
     color: inherit;
     cursor: pointer;
+
 }
 
 .subgroup-badge {

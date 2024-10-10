@@ -2,7 +2,7 @@
 .create-market-container {
   max-width: 100vw;
   margin: 0;
-  padding-top: 10px;
+  padding: 20px;
   font-family: 'DM Sans', sans-serif;
   background-color: #fff;
   border-radius: 8px;
@@ -82,6 +82,7 @@ hr {
   font-family: var(--font-secondary);
   font-size: var(--text-sm-plus);
   color: var(--grey-1);
+  margin-bottom: 10px;
 }
 
 .asterik {
@@ -120,7 +121,7 @@ hr {
 
 .region-option.selected, 
 .subregion-option.selected {
-  border: 1px solid #00AEEF; 
+  /* border: 1px solid #00AEEF;  */
   background-color: var(--light-blue-1);
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
@@ -232,11 +233,10 @@ hr {
 } */
 
 :host ::ng-deep .p-inputtext {
-  margin-top: 10px;
   padding: 10px 15px;
-  border: 1px solid #c4cfd9;
+  /* border: 1px solid #c4cfd9; */
   border-radius: 8px;
-  max-width: 300px;
+  /* max-width: 300px; */
   font-size: 16px;
   background-color: #f7f9fc;
   text-align: left;
@@ -247,7 +247,29 @@ hr {
   box-sizing: border-box;
   margin-left: 0;
   text-transform: uppercase;
-  
+  text-transform: uppercase;
+}
+
+.empty-subgroup-template {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* padding: 20px; */
+  margin: 0 auto;
+  text-align: center;
+}
+
+.empty-subgroup-template img {
+  width: 150px; /* Adjust size of the image */
+  height: auto;
+  margin-bottom: 20px; /* Space below the image */
+}
+
+.empty-subgroup-template p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
 }
 
 /* .longcode-input:focus {
