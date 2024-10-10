@@ -142,15 +142,17 @@ export class CreateMarketComponent implements OnInit {
     this.loadRegions();
 
     // Listen to changes in marketCode and region to auto-update longCode
+    
+    this.marketForm
+      .get('region')
+      ?.valueChanges.pipe(distinctUntilChanged())
+      .subscribe(() => this.updateLongCode());
+
     this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
-    this.marketForm
-      .get('region')
-      ?.valueChanges.pipe(distinctUntilChanged())
-      .subscribe(() => this.updateLongCode());
 
     this.marketForm
       .get('marketCode')
@@ -213,41 +215,26 @@ export class CreateMarketComponent implements OnInit {
    * 3. Update the `longCode` form control without emitting change events.
    */
   private updateLongCode(): void {
+    const region = this.regions.find(r => r.key === this.marketForm.get('region')?.value);
+    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase() || '';
   
-    const region = this.regions.find(
-      (r) => r.key === this.marketForm.get('region')?.value
-    );
-    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase()|| '';
-    
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
-     
-      const newLongCode = `${firstChar}XXXX${marketCode}`;
-      this.marketForm
-        .get('longCode')
-        ?.setValue(newLongCode, { emitEvent: false });
+      const newLongCode = `${firstChar}-XX.XX.${marketCode}`;
+      this.marketForm.get('longCode')?.setValue(newLongCode, { emitEvent: false });
+      setTimeout(() => {
+        this.marketForm.get('longCode')?.updateValueAndValidity();
+      }, 0);
+  
     } else if (region) {
       const firstChar = region.value.charAt(0).toUpperCase();
-      this.marketForm
-        .get('longCode')
-        ?.setValue(firstChar, { emitEvent: false });
+      this.marketForm.get('longCode')?.setValue(`${firstChar}-`, { emitEvent: false });
+     
     } else {
       this.marketForm.get('longCode')?.setValue('', { emitEvent: false });
     }
   }
-
- 
-
-  // setCursorToEditable(event: any): void {
-  //   const inputElement = event.target;
-    
-  //   // Move cursor to the start of the editable part (first __)
-  //   const editableStart = 2; // Start position after "X-"
-    
-  //   setTimeout(() => {
-  //     inputElement.setSelectionRange(editableStart, editableStart);
-  //   }, 0);
-  // }
+  
 
   /**
    * Fetches all regions from the RegionService and assigns them to the `regions` array.
@@ -322,23 +309,15 @@ export class CreateMarketComponent implements OnInit {
 
  // Ensure only the middle part is editable
  setCursorToEditable(event: any) {
-  console.log('hi')
   const inputElement = event.target;
-  const start = 2; // Position after "X-"
-  const end = 8;   // Before the last fixed part "XX"
 
-  // Move the cursor and restrict changes to middle part
-  setTimeout(() => {
-    inputElement.setSelectionRange(start, start); // Move the cursor to start
-  }, 0);
+  // Prevent default focus behavior (optional)
+  event.preventDefault();
 
-   // Restrict changes to the middle section of the input
-   inputElement.addEventListener('keydown', (e: KeyboardEvent) => {
-    const cursorPosition = inputElement.selectionStart;
-    if (cursorPosition && (cursorPosition < start || cursorPosition > end)) {
-      e.preventDefault(); // Prevent typing outside the editable area
-    }
-  });
+  // Manually set cursor position to where user can start typing
+  // Assuming you want the cursor after the first part (_-)
+  const editablePosition = 3; // adjust this based on your input mask format
+  inputElement.setSelectionRange(editablePosition, editablePosition);
 }
 
   /**
@@ -351,12 +330,15 @@ export class CreateMarketComponent implements OnInit {
    * 4. Reset the form and error flags upon successful creation.
    * 5. Handle errors appropriately if the API call fails.
    */
+
   onSubmit(): void {
     if (this.marketForm.valid) {
+      let longCode = this.marketForm.value.longCode;
+      const formattedLongCode = this.applyLongCodeFormat(longCode);
       const marketData: Market = {
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
-        longMarketCode: this.marketForm.value.longCode,
+        longMarketCode: formattedLongCode, 
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
         marketSubGroups: this.subGroups.map(subGroup => ({
@@ -368,17 +350,15 @@ export class CreateMarketComponent implements OnInit {
   
       this.marketService.createMarket(marketData).subscribe({
         next: (response: number) => {
-          // console.log('Market created successfully:', response);
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
             detail: 'Market is Successfully added',
           });
-          this.resetForm(); // Moved reset logic to a separate method
+          this.resetForm(); 
           this.router.navigate(['/marketlist']);
         },
         error: (err) => {
-          // console.error('Error creating market:', err);
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -387,7 +367,7 @@ export class CreateMarketComponent implements OnInit {
         }
       });
 
-      // console.log('Form Data:', marketData);
+     
     }
   }
   
@@ -406,9 +386,17 @@ export class CreateMarketComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.marketForm.reset();
-        // Navigate to the market list
         this.router.navigate(['/marketlist']);
       }
     });
   }
+  
+  // Helper method to format longCode
+  applyLongCodeFormat(longCode: string): string {
+   
+    const formattedCode = longCode.replace(/(\w)(\w{2})(\w{2})(\w{2})/, '$1-$2.$3.$4');
+    return formattedCode;
+  }
+  
+
 }
