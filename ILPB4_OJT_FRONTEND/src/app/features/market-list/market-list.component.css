@@ -1,5 +1,6 @@
 .container{
-    margin: 10px; 
+    margin: 110px 10px 10px 10px;
+    
 }
 
 .market-header {
@@ -59,8 +60,12 @@
 
 /* Search bar styling */
 .search-container {
-    margin-bottom: 20px;
+    margin-bottom: -10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
+
 
 .p-input-icon-left input {
     padding-left: 35px; 

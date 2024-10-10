@@ -367,4 +367,3 @@ export class EditMarketComponent implements OnInit {
     });
   }
 }
-

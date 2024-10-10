@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
@@ -10,21 +10,42 @@ import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
 import { Market, MarketDetails, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
+import { DropdownModule } from 'primeng/dropdown';
+import { PaginatorModule } from 'primeng/paginator';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { HeaderComponent } from "../../shared/header/header.component";
 
 @Component({
   selector: 'app-marketlist',
   standalone: true,
   imports: [
-    TableModule, 
-    InputTextModule, 
+    TableModule,
+    InputTextModule,
     CommonModule,
     TooltipModule,
-    TagModule,RouterLink,FormsModule
-  ],
+    TagModule, RouterLink, FormsModule,DropdownModule,PaginatorModule,
+    MultiSelectModule,
+    HeaderComponent
+],
   templateUrl: './market-list.component.html',
   styleUrls: ['./market-list.component.css']
 })
 export class MarketlistComponent implements OnInit {
+
+@Input() title: string = '';
+handleSelectionChange() {
+  console.log('Selected Cities:', this.selectedRegions);
+}
+onRegionChange() {
+throw new Error('Method not implemented.');
+}
+clearAll() {
+  this.selectedRegions = [];  
+}
+removeRegion(region: any) {
+  this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
+}
+
   markets!: Market[];
   filteredMarkets!: Market[];
   selectedMarket!: Market;  
@@ -77,8 +98,6 @@ export class MarketlistComponent implements OnInit {
       });
     });
 
-
-
       // Fetch markets from the backend
       this.marketService.getAllMarkets().subscribe(
         (data: Market[]) => {
@@ -104,6 +123,7 @@ export class MarketlistComponent implements OnInit {
         }
       );
     }
+
   //Filters the list of markets based on the search text entered by the user.
   filterMarkets() {
     if (this.searchText) {
@@ -125,6 +145,7 @@ export class MarketlistComponent implements OnInit {
     this.searchText = ''; 
     this.filterMarkets();  
   }
+
   //Retrieve the sub group code for displaying it in the market list.
   getSubgroupCode(market: Market): string {
     return market.marketSubGroups ? market.marketSubGroups.map(subgroup => subgroup.subGroupCode).join(' ') : '';
