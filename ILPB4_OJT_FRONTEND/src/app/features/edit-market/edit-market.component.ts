@@ -199,7 +199,7 @@ export class EditMarketComponent implements OnInit {
     }
 
     onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
-      this.subGroups = [...subGroups]; // Ensure it updates with the new subgroups
+      this.subGroups = [...subGroups];
     }    
 
     onNoRowsLeftChanged(event : { noRowsLeft: boolean, subGroups: MarketSubgroup[] }): void {
@@ -209,6 +209,13 @@ export class EditMarketComponent implements OnInit {
       }
     }
     
+    onHasErrorsChanged(hasErrors: boolean): void {
+      if (hasErrors) {
+        this.marketForm.setErrors({ subgroupErrors: true });
+      } else {
+        this.marketForm.setErrors(null);
+      }
+    }
 
   /**
    * Fetches all regions from the `RegionService` and assigns them to the regions array.
@@ -240,14 +247,12 @@ export class EditMarketComponent implements OnInit {
           subGroups: this.subGroups
         });
   
-        // Load the subgroups for the market
         if (data.marketSubGroups && data.marketSubGroups.length > 0) {
           this.subGroups = data.marketSubGroups;
           this.showSubgroup();
         }
   
         this.onRegionSelect(Number(data.region));
-        // console.log(this.subGroups);
       }
     });
   }
@@ -361,6 +366,5 @@ export class EditMarketComponent implements OnInit {
       }
     });
   }
-
 }
 

@@ -121,7 +121,7 @@ hr {
 
 .region-option.selected, 
 .subregion-option.selected {
-  border: 1px solid #00AEEF; 
+  /* border: 1px solid #00AEEF;  */
   background-color: var(--light-blue-1);
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }

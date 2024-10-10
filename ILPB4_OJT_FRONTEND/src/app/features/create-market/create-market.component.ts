@@ -73,10 +73,9 @@ import { SubgroupComponent } from "../subgroup/subgroup.component";
   providers: [MessageService, ConfirmationService],
 })
 export class CreateMarketComponent implements OnInit {
-  /**
-   * Represents the reactive form group for creating a market.
-   */
+
   title:string="Create Market";
+
   marketForm!: FormGroup;
 
   regions: Region[] = [];
@@ -93,12 +92,9 @@ export class CreateMarketComponent implements OnInit {
 
   longCodeMask: string = 'a-aa.aa.aa';
 
-    /**
-   * Flag to display Subgroup form
-   */
-    showSubgroupComponent: boolean = false;
+  showSubgroupComponent: boolean = false;
 
-    subGroups: MarketSubgroup[] = []; // Store subgroups data
+  subGroups: MarketSubgroup[] = [];
 
   /**
    * Initializes the component with necessary services.
@@ -141,7 +137,6 @@ export class CreateMarketComponent implements OnInit {
 
     this.loadRegions();
 
-    // Listen to changes in marketCode and region to auto-update longCode
     this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
@@ -195,7 +190,6 @@ export class CreateMarketComponent implements OnInit {
       });    
     }
 
-  // Function to show the <app-sub-group> component
   showSubgroup() {
     this.showSubgroupComponent = true;
   }
@@ -232,19 +226,6 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
- 
-
-  // setCursorToEditable(event: any): void {
-  //   const inputElement = event.target;
-    
-  //   // Move cursor to the start of the editable part (first __)
-  //   const editableStart = 2; // Start position after "X-"
-    
-  //   setTimeout(() => {
-  //     inputElement.setSelectionRange(editableStart, editableStart);
-  //   }, 0);
-  // }
-
   /**
    * Fetches all regions from the RegionService and assigns them to the `regions` array.
    * Handles any errors during the fetch process.
@@ -255,9 +236,6 @@ export class CreateMarketComponent implements OnInit {
     this.regionService.getAllRegions().subscribe(
       (regions: Region[]) => {
         this.regions = regions;
-      },
-      (error) => {
-        console.error('Error loading regions:', error);
       }
     );
   }
@@ -282,9 +260,6 @@ export class CreateMarketComponent implements OnInit {
       (subregions: Region[]) => {
         this.subregions = subregions;
         this.selectedSubregion = null;
-      },
-      (error) => {
-        console.error('Error loading subregions:', error);
       }
     );
   }
@@ -302,37 +277,39 @@ export class CreateMarketComponent implements OnInit {
   }
 
   onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
-    // console.log('Received subgroups from child:', subGroups);
-    this.subGroups = subGroups; // Update the parent component's subGroups array
+    this.subGroups = subGroups;
   }
 
   onNoRowsLeftChanged(event : { noRowsLeft: boolean, subGroups: MarketSubgroup[] }): void {
-    // console.log('No rows left:', event.noRowsLeft);
-    // console.log('Received subgroups from child:', event.subGroups);
     this.subGroups = [...event.subGroups];
     if(event.noRowsLeft){
       this.showSubgroupComponent = false;
     }
   }
 
+  onHasErrorsChanged(hasErrors: boolean): void {
+    if (hasErrors) {
+      this.marketForm.setErrors({ subgroupErrors: true });
+    } else {
+      this.marketForm.setErrors(null);
+    }
+  }
 
- // Ensure only the middle part is editable
  setCursorToEditable(event: any) {
-  console.log('hi')
   const inputElement = event.target;
-  const start = 2; // Position after "X-"
-  const end = 8;   // Before the last fixed part "XX"
+  const start = 2; 
+  const end = 8;   
 
-  // Move the cursor and restrict changes to middle part
+  
   setTimeout(() => {
-    inputElement.setSelectionRange(start, start); // Move the cursor to start
+    inputElement.setSelectionRange(start, start); 
   }, 0);
 
-   // Restrict changes to the middle section of the input
+
    inputElement.addEventListener('keydown', (e: KeyboardEvent) => {
     const cursorPosition = inputElement.selectionStart;
     if (cursorPosition && (cursorPosition < start || cursorPosition > end)) {
-      e.preventDefault(); // Prevent typing outside the editable area
+      e.preventDefault(); 
     }
   });
 }
@@ -363,18 +340,16 @@ export class CreateMarketComponent implements OnInit {
       };
   
       this.marketService.createMarket(marketData).subscribe({
-        next: (response: number) => {
-          // console.log('Market created successfully:', response);
+        next: () => {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
             detail: 'Market is Successfully added',
           });
-          this.resetForm(); // Moved reset logic to a separate method
+          this.resetForm();
           this.router.navigate(['/marketlist']);
         },
-        error: (err) => {
-          // console.error('Error creating market:', err);
+        error: () => {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -382,12 +357,10 @@ export class CreateMarketComponent implements OnInit {
           });
         }
       });
-
-      // console.log('Form Data:', marketData);
     }
   }
   
-  // Separate method to reset form and handle cleanup
+
   private resetForm(): void {
     this.marketForm.reset();
     this.codeExistsError = false;
@@ -402,7 +375,6 @@ export class CreateMarketComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.marketForm.reset();
-        // Navigate to the market list
         this.router.navigate(['/marketlist']);
       }
     });

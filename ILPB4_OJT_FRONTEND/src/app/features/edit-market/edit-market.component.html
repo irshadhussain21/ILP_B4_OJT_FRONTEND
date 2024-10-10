@@ -133,7 +133,7 @@
             <!-- Subgroup component template -->
             <ng-template #subgroupTemplate>
               <app-sub-group [marketCode]="marketForm.get('marketCode')?.value" [fetchSubGroups]="subGroups"
-                (subGroupsChanged)="onSubGroupsChanged($event)" (noRowsLeftChanged)="onNoRowsLeftChanged($event)"></app-sub-group>
+                (subGroupsChanged)="onSubGroupsChanged($event)" (noRowsLeftChanged)="onNoRowsLeftChanged($event)" (hasErrorsChanged)="onHasErrorsChanged($event)"></app-sub-group>
             </ng-template>
           </div>
 
