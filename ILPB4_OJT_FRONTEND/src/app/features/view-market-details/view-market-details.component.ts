@@ -172,7 +172,7 @@ export class ViewMarketDetailsComponent implements OnInit {
 
   navigateToEdit() {
     if (this.marketId) {
-      this.router.navigate([`/marketlist/edit/${this.marketId}`]);
+      this.router.navigate([`/markets/edit/${this.marketId}`]);
     } else {
       console.error('Market ID is not defined');
     }
