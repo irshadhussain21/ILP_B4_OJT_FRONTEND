@@ -131,3 +131,12 @@
   color: #333;
   font-family: Arial, sans-serif;
 }
+::ng-deep .p-button 
+{
+  background-color: white;
+  border-color: #00506a;
+}
+::ng-deep .p-button-icon 
+{
+  color:#00506a;
+}
