@@ -1,9 +1,8 @@
-<app-header title="Create Market"></app-header>
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 <div class="create-market-container">
 
-  
+  <app-header [title]="title"></app-header>
 
   <div class="scrollable-content">
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
@@ -53,11 +52,19 @@
             class="marketname-input" />
         </div>
 
+        <!-- Error message for required marketCode -->
+        <p *ngIf="marketForm.get('marketCode')?.touched && marketForm.get('marketCode')?.hasError('required')" class="error-message">
+          <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_REQUIRED' | translate }}
+        </p>
+
+        <!-- Error message for required marketName -->
+        <p *ngIf="marketForm.get('marketName')?.touched && marketForm.get('marketName')?.hasError('required')" class="error-message">
+          <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_REQUIRED' | translate }}
+        </p>
 
         <p *ngIf="codeExistsError" class="error-message">
           <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS' | translate }}
         </p>
-
 
         <p *ngIf="nameExistsError" class="error-message">
           <span class="error-icon">❗</span> {{ 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS' | translate }}
@@ -72,14 +79,9 @@
           The format will be automatically set based on selections
         </p>
         <div class="input-wrapper">
-       
-          <p-inputMask #longCodeInput
-          formControlName="longCode"
-          [mask]="longCodeMask"
 
-          (onFocus)="setCursorToEditable($event)"
-          placeholder="_-__.__.__"
-          class="longcode-input">
+          <p-inputMask #longCodeInput formControlName="longCode" [mask]="longCodeMask"
+            (focus)="setCursorToEditable($event)" placeholder="_-__.__.__" class="longcode-input">
           </p-inputMask>
         </div>
       </div>
@@ -89,7 +91,7 @@
         <label class="form-label">Subgroup(s)</label>
         <!-- Error template or subgroup based on button click -->
         <ng-container *ngIf="!showSubgroupComponent; else subgroupTemplate">
-          <div class="error-template">
+          <div class="empty-subgroup-template">
             <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
             <p *ngIf="marketForm.invalid">Enter the Market Code/Name before adding Subgroup(s)</p>
             <p *ngIf="marketForm.valid">Start adding Subgroup(s) for the Market</p>
@@ -103,7 +105,7 @@
         <!-- Subgroup component template -->
         <ng-template #subgroupTemplate>
           <app-sub-group [marketCode]="marketForm.get('marketCode')?.value"
-            (subGroupsChanged)="onSubGroupsChanged($event)" (noRowsLeftChanged)="onNoRowsLeftChanged($event)"></app-sub-group>
+            (subGroupsChanged)="onSubGroupsChanged($event)" (noRowsLeftChanged)="onNoRowsLeftChanged($event)" (hasErrorsChanged)="onHasErrorsChanged($event)"></app-sub-group>
         </ng-template>
       </div>
 
