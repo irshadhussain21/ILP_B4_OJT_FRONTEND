@@ -4,6 +4,7 @@ import { CreateMarketComponent } from './features/create-market/create-market.co
 import { ViewMarketDetailsComponent } from './features/view-market-details/view-market-details.component';
 import { EditMarketComponent } from './features/edit-market/edit-market.component';
 import { SubgroupComponent } from './features/subgroup/subgroup.component';
+import { MarketFormComponent } from './features/market-form/market-form.component';
 
 export const routes: Routes = [
   {
@@ -17,11 +18,11 @@ export const routes: Routes = [
   },
   {
     path: 'markets/create',
-    component: CreateMarketComponent,
+    component: MarketFormComponent,
   },
   {
     path: 'markets/edit/:id',
-    component: EditMarketComponent,
+    component: MarketFormComponent,
   },
   {
     path: 'markets/:marketId',

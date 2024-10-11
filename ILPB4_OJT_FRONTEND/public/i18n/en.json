@@ -2,7 +2,7 @@
     "MESSAGE": {},
     "PAGE": {
       "BUTTONS": {
-        "SUBMIT": "Submit",
+        "CREATE_MARKET": "Submit",
         "UPDATE_MARKET": "Update Market",
         "CANCEL": "Cancel"
       },
