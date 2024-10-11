@@ -1,4 +1,3 @@
-/**Angular Libraries */
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -9,7 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
-/**External Libraries */
+/** External Libraries */
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -18,7 +17,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
-/**Local imports */
+/** Local imports */
 import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
 import { Market, MarketSubgroup } from '../../core/models/market';
@@ -26,6 +25,49 @@ import { Region } from '../../core/models/region';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { SubgroupComponent } from '../subgroup/subgroup.component';
 import { CreateMarketConfig } from '../../config/create-market-config';
+
+/** 
+ * LLD
+ *
+ * The `CreateMarketComponent` is responsible for creating and editing a market. 
+ * It allows users to input market details such as the market name, code, region, subregion, 
+ * and manage subgroups. The component supports both create and edit modes.
+ * 
+ * Execution Flow:
+ *  - On initialization (`ngOnInit`), the component determines whether it is in edit or create mode based 
+ *    on the presence of a market ID in the route parameters.
+ *  - If in edit mode, the market details are fetched using the `MarketService`, and the form is populated.
+ *  - Users can input market details and subgroup information, and the component handles validation and 
+ *    submission of the form.
+ *
+ * Main Actions:
+ *  - Create Market: Allows users to create a new market by submitting the form data.
+ *  - Edit Market: Allows users to modify existing market details and subgroups.
+ *  - Error Handling: Validates the form inputs and handles cases where the market code or name already exists.
+ * 
+ * API Endpoints:
+ *  - `GET /api/Market/{marketId}/details`: Fetches details for a specific market by its ID.
+ *  - `POST /api/Market`: Creates a new market.
+ *  - `PUT /api/Market/{marketId}`: Updates an existing market.
+ * 
+ * Sample API Response:
+ *  {
+ *    "id": 1,
+ *    "name": "Antarctica",
+ *    "code": "AA",
+ *    "longMarketCode": "L-AQ.AA.AA",
+ *    "region": "LAAPA",
+ *    "subRegion": "Africa",
+ *    "marketSubGroups": [
+ *      {
+ *        "subGroupId": 1,
+ *        "subGroupName": "Q-Island",
+ *        "subGroupCode": "Q"
+ *      }
+ *    ]
+ *  }
+ */
+
 @Component({
   selector: 'app-market-form',
   standalone: true,
@@ -56,8 +98,8 @@ export class CreateMarketComponent implements OnInit {
   selectedSubregion: string | null = null;
   hasCodeExistsError: boolean = false;
   hasNameExistsError: boolean = false;
-  hasEditedCode = false;
-  hasEditedName = false;
+  hasEditedCode: boolean = false;
+  hasEditedName: boolean = false;
   showSubgroupComponent: boolean = false;
 
   constructor(
@@ -68,36 +110,47 @@ export class CreateMarketComponent implements OnInit {
     private route: ActivatedRoute,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private translateService:TranslateService
+    private translateService: TranslateService
   ) {}
 
+  /**
+   * On component initialization, it checks if the market ID is present in the route parameters
+   * to determine if the component is in edit mode. It also initializes the form and loads the regions.
+   */
   ngOnInit(): void {
     this.initializeForm();
     this.loadRegions();
-
-    
     this.getRoute();
-
     this.setupFieldListeners();
   }
 
+  /**
+   * Retrieves the market ID from the route parameters and sets the component to edit mode if an ID is present.
+   */
   getRoute() {
     this.route.params.subscribe((params) => {
       if (params['id']) {
         this.isEditMode = true;
         this.marketId = +params['id'];
         this.title = CreateMarketConfig.TITLE_EDIT;
-        this.fetchMarketData(this.marketId); 
+        this.fetchMarketData(this.marketId);
       }
     });
   }
 
+  /**
+   * Initializes the form with required controls for market details.
+   */
   private initializeForm(): void {
     this.marketForm = this.fb.group({
       marketName: ['', Validators.required],
       marketCode: [
         '',
-        [Validators.required, Validators.maxLength(CreateMarketConfig.MIN_MARKET_CODE_LENGTH), Validators.minLength(CreateMarketConfig.MAX_MARKET_CODE_LENGTH)],
+        [
+          Validators.required,
+          Validators.maxLength(CreateMarketConfig.MIN_MARKET_CODE_LENGTH),
+          Validators.minLength(CreateMarketConfig.MAX_MARKET_CODE_LENGTH),
+        ],
       ],
       longCode: [
         '',
@@ -112,9 +165,10 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
+  /**
+   * Sets up field listeners to track changes in form fields like marketCode and region, and triggers validation or long code updates.
+   */
   private setupFieldListeners(): void {
-
-
     this.marketForm
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
@@ -168,14 +222,22 @@ export class CreateMarketComponent implements OnInit {
       });
   }
 
+  /**
+   * Handles the selection of a subregion and updates the subregion form control.
+   * @param event - The event triggered by subregion selection.
+   * @param subregionId - The ID of the selected subregion.
+   */
   onSubregionChange(event: any, subregionId: number): void {
     this.selectedSubregion = subregionId.toString();
     this.marketForm.get('subregion')?.setValue(subregionId);
   }
 
+  /**
+   * Restricts the input in the market code field to allow only alphabetic characters.
+   * @param event - The keyboard event triggered by user input.
+   */
   onMarketCodeInput(event: KeyboardEvent) {
-    const allowedChars =CreateMarketConfig.MARKET_CODE_VALIDATION_REGEX;
-
+    const allowedChars = CreateMarketConfig.MARKET_CODE_VALIDATION_REGEX;
     const key = event.key;
 
     if (
@@ -186,7 +248,7 @@ export class CreateMarketComponent implements OnInit {
       key === 'Delete' ||
       key === 'Escape'
     ) {
-      return
+      return;
     }
 
     if (!allowedChars.test(key)) {
@@ -194,6 +256,9 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates the long code field based on the selected region and market code.
+   */
   private updateLongCode(): void {
     const region = this.regions.find(
       (r) => r.key === this.marketForm.get('region')?.value
@@ -217,6 +282,10 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
+  /**
+   * Fetches the market data for editing when the component is in edit mode.
+   * @param marketId - The ID of the market to be edited.
+   */
   fetchMarketData(marketId: number): void {
     this.marketService.getMarketDetailsById(marketId).subscribe((data) => {
       this.marketForm.patchValue({
@@ -228,22 +297,26 @@ export class CreateMarketComponent implements OnInit {
       });
       this.subGroups = data.marketSubGroups || [];
 
-     
       if (this.subGroups.length > 0) {
         this.showSubgroupComponent = true;
       }
 
-      
       this.onRegionSelect(Number(data.region));
     });
   }
 
+  /**
+   * Gets the text for the submit button, which varies depending on whether the component is in create or edit mode.
+   */
   getSubmitButtonText(): string {
     return this.isEditMode
       ? CreateMarketConfig.BUTTONS.UPDATE_MARKET
       : CreateMarketConfig.BUTTONS.CREATE_MARKET;
   }
 
+  /**
+   * Handles form submission to either create or update a market based on the mode.
+   */
   onSubmit(): void {
     if (this.marketForm.valid) {
       const marketData: Market = {
@@ -270,52 +343,70 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
+  /**
+   * Creates a new market by submitting the form data to the backend API.
+   * @param marketData - The form data to create a new market.
+   */
   private createMarket(marketData: Market): void {
     this.marketService.createMarket(marketData).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: this.translateService.instant(CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_CREATED),
+          detail: this.translateService.instant(
+            CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_CREATED
+          ),
         });
-        setTimeout(()=>{
+        setTimeout(() => {
           this.router.navigate(['/markets']);
-        },1000)
-        
+        }, 1000);
       },
       error: () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: this.translateService.instant(CreateMarketConfig.MESSAGES.ERROR_MESSAGES.CREATE),
+          detail: this.translateService.instant(
+            CreateMarketConfig.MESSAGES.ERROR_MESSAGES.CREATE
+          ),
         });
       },
     });
   }
 
+  /**
+   * Updates the existing market with new form data by sending a PUT request to the API.
+   * @param marketData - The updated market data to be submitted.
+   */
   private updateMarket(marketData: Market): void {
     this.marketService.updateMarket(this.marketId!, marketData).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: this.translateService.instant(CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_UPDATED),
+          detail: this.translateService.instant(
+            CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_UPDATED
+          ),
         });
-        setTimeout(()=>{
+        setTimeout(() => {
           this.router.navigate(['/markets']);
-        },1000)
-        
+        }, 1000);
       },
       error: () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail:this.translateService.instant(CreateMarketConfig.MESSAGES.ERROR_MESSAGES.UPDATE),
+          detail: this.translateService.instant(
+            CreateMarketConfig.MESSAGES.ERROR_MESSAGES.UPDATE
+          ),
         });
       },
     });
   }
 
+  /**
+   * Handles the selection of a region, updates the region form control, and loads the corresponding subregions.
+   * @param regionId - The ID of the selected region.
+   */
   onRegionSelect(regionId: number): void {
     this.selectedRegion = regionId;
     this.marketForm.get('region')?.setValue(regionId);
@@ -329,9 +420,14 @@ export class CreateMarketComponent implements OnInit {
       });
   }
 
+  /**
+   * Cancels the form action and confirms with the user before resetting the form and navigating away.
+   */
   onCancel(): void {
     this.confirmationService.confirm({
-      message: this.translateService.instant(CreateMarketConfig.MESSAGES.CONFIRM),
+      message: this.translateService.instant(
+        CreateMarketConfig.MESSAGES.CONFIRM
+      ),
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
@@ -341,14 +437,25 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
+  /**
+   * Displays the subgroup component when the user clicks to add subgroups.
+   */
   showSubgroup() {
     this.showSubgroupComponent = true;
   }
 
+  /**
+   * Handles changes to the list of subgroups.
+   * @param subGroups - The updated list of subgroups.
+   */
   onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
     this.subGroups = subGroups;
   }
 
+  /**
+   * Handles the event when there are no subgroups left, hiding the subgroup component.
+   * @param event - Event indicating no rows left in the subgroups.
+   */
   onNoRowsLeftChanged(event: {
     noRowsLeft: boolean;
     subGroups: MarketSubgroup[];
@@ -359,6 +466,10 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates the form's validation state based on whether subgroup errors are present.
+   * @param hasErrors - Boolean indicating if subgroup errors are present.
+   */
   onHasErrorsChanged(hasErrors: boolean): void {
     if (hasErrors) {
       this.marketForm.setErrors({ subgroupErrors: true });
@@ -367,6 +478,9 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
+  /**
+   * Loads all available regions from the backend API to populate the region selection dropdown.
+   */
   loadRegions(): void {
     this.regionService.getAllRegions().subscribe((regions) => {
       this.regions = regions;
