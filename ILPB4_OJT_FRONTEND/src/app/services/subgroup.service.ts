@@ -12,23 +12,9 @@ export class MarketSubgroupService {
 
   constructor(private http: HttpClient) {}
 
-  // Update an existing subgroup entry
-  updateSubgroup(id: number, subGroup: Partial<MarketSubgroup>): Observable<MarketSubgroup> {
-    return this.http.put<MarketSubgroup>(`${this.apiUrl}/${id}`, subGroup);
-  }
-
   // Retrieve subgroups related to the existing market code
   getSubgroups(marketCode: string): Observable<MarketSubgroup[]> {
     return this.http.get<MarketSubgroup[]>(`${this.apiUrl}?marketCode=${marketCode}`);
   }
 
-  // Retrieve a specific subgroup by ID
-  getSubgroupById(id: number): Observable<MarketSubgroup> {
-    return this.http.get<MarketSubgroup>(`${this.apiUrl}/${id}`);
-  }
-
-  // Delete a subgroup
-  deleteSubgroup(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-}
+} 
