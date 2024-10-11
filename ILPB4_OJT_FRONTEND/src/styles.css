@@ -1,3 +1,4 @@
+
 /* Import global styles */
 @import "primeng/resources/themes/lara-light-blue/theme.css";
 @import "primeng/resources/primeng.css";
@@ -8,7 +9,9 @@
     --primary-navy-color: rgb(0, 45, 85);     /* Primary color for your app */
     --secondary-color: #e9ecef;   /* Secondary color for backgrounds, etc. */
     --accent-color: #4caf50;      /* Accent color for buttons, highlights, etc. */
-
+    --grey-1: rgb(102, 109, 112);
+    --red-alert: rgb(255, 72, 94);
+    --light-blue-1: rgb(229, 250, 255);
     /* Typography */
     --font-primary: 'DM Sans', sans-serif;
     --font-secondary: system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", 
@@ -18,6 +21,12 @@
     --font-size-large: 1.25rem;   /* Large font size */
     --font-size-small: 0.875rem;  /* Small font size */
     
+    --text-heading-md: 24px;
+    --text-lg: 1.1rem;
+
+
+    --text-sm: 0.7rem;
+    --text-sm-plus: 0.9rem;
     /* Spacing */
     --spacing-xs: 4px;
     --spacing-sm: 8px;
@@ -43,12 +52,12 @@
 
 /* Global resets and base styles */
 * {
-    padding: 0;
+    /* padding: 0; */
     margin: 0;
     font-family: var(--font-primary); /* Apply primary font family */
 }
 
 body {
     padding-top: 60px; /* Prevent content from hiding under the navbar */
-    font-family: var(--font-secondary); /* Apply secondary font family to the body */
+    font-family:var(--font-primary), var(--font-secondary); /* Apply secondary font family to the body */
 }

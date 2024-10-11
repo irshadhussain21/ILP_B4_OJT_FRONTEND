@@ -1,19 +1,28 @@
 import { Routes } from '@angular/router';
-import { MarketlistComponent } from './features/marketlist/marketlist.component'; // Make sure to update the path
+import { MarketlistComponent } from './features/market-list/market-list.component'; // Make sure to update the path
+import { ViewMarketDetailsComponent } from './features/view-market-details/view-market-details.component';
 import { CreateMarketComponent } from './features/create-market/create-market.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/marketlist',
-    pathMatch: 'full'
+    redirectTo: 'markets',
+    pathMatch: 'full',
   },
   {
-    path: 'marketlist',
-    component: MarketlistComponent
+    path: 'markets',
+    component: MarketlistComponent,
   },
   {
-    path:"marketlist/create",
-    component:CreateMarketComponent
-  }
+    path: 'markets/create',
+    component: CreateMarketComponent,
+  },
+  {
+    path: 'markets/edit/:id',
+    component: CreateMarketComponent,
+  },
+  {
+    path: 'markets/:marketId',
+    component: ViewMarketDetailsComponent,
+  },
 ];
