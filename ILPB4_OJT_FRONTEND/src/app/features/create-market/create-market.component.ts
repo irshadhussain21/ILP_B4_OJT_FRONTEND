@@ -8,7 +8,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MarketService } from '../../services/market.service';
-
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
@@ -69,31 +68,64 @@ import { SubgroupComponent } from "../subgroup/subgroup.component";
     InputMaskModule,
     ConfirmDialogModule,
     SubgroupComponent
-],
+  ],
   providers: [MessageService, ConfirmationService],
 })
 export class CreateMarketComponent implements OnInit {
 
+  /**
+   * Title of the form displayed on the page.
+   */
   title:string="Create Market";
 
+  /**
+   * The reactive form group that holds all the fields for the new market form.
+   */
   marketForm!: FormGroup;
 
+  /**
+   * List of all regions fetched from the backend.
+   */
   regions: Region[] = [];
 
+  /**
+   * List of subregions based on the selected region.
+   */
   subregions: Region[] = [];
 
+  /**
+   * Stores the selected region's key.
+   */
   selectedRegion: number | null = null;
 
+  /**
+   * Stores the selected subregion's key.
+   */
   selectedSubregion: string | null = null;
 
+  /**
+   * Boolean flag to show market code validation error if it already exists.
+   */
   codeExistsError: boolean = false;
 
+  /**
+   * Boolean flag to show market name validation error if it already exists.
+   */
   nameExistsError: boolean = false;
 
+  /**
+   * The input mask format for the long market code field.
+   */
   longCodeMask: string = 'a-aa.aa.aa';
 
+  /**
+   * Boolean flag to show or hide the subgroup component.
+   */
   showSubgroupComponent: boolean = false;
 
+  /**
+   * List of market subgroups to be created or edited.
+   */
   subGroups: MarketSubgroup[] = [];
 
   /**
@@ -147,7 +179,8 @@ export class CreateMarketComponent implements OnInit {
       ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => this.updateLongCode());
 
-      this.marketForm
+    // Validate market code existence
+    this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(
         debounceTime(300),
@@ -168,6 +201,7 @@ export class CreateMarketComponent implements OnInit {
         }
       });
 
+    // Validate market name existence
     this.marketForm
       .get('marketName')
       ?.valueChanges.pipe(
@@ -190,6 +224,9 @@ export class CreateMarketComponent implements OnInit {
       });    
     }
 
+  /**
+   * Displays the SubgroupComponent for managing market subgroups.
+   */
   showSubgroup() {
     this.showSubgroupComponent = true;
   }
@@ -203,15 +240,13 @@ export class CreateMarketComponent implements OnInit {
    * 3. Update the `longCode` form control without emitting change events.
    */
   private updateLongCode(): void {
-  
     const region = this.regions.find(
       (r) => r.key === this.marketForm.get('region')?.value
     );
-    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase()|| '';
+    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase() || '';
     
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
-     
       const newLongCode = `${firstChar}XXXX${marketCode}`;
       this.marketForm
         .get('longCode')
@@ -276,10 +311,18 @@ export class CreateMarketComponent implements OnInit {
     this.marketForm.get('subregion')?.setValue(subregionId);
   }
 
+  /**
+   * Updates the subgroups when changes are made.
+   * @param {MarketSubgroup[]} subGroups - The updated list of subgroups.
+   */
   onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
     this.subGroups = subGroups;
   }
 
+  /**
+   * Handles changes when no rows (subgroups) are left.
+   * @param event Object containing whether there are no rows left and the updated subgroups.
+   */
   onNoRowsLeftChanged(event : { noRowsLeft: boolean, subGroups: MarketSubgroup[] }): void {
     this.subGroups = [...event.subGroups];
     if(event.noRowsLeft){
@@ -287,6 +330,10 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles subgroup validation errors and updates the form errors accordingly.
+   * @param {boolean} hasErrors - Boolean indicating whether there are errors in the subgroups.
+   */
   onHasErrorsChanged(hasErrors: boolean): void {
     if (hasErrors) {
       this.marketForm.setErrors({ subgroupErrors: true });
@@ -295,24 +342,26 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
- setCursorToEditable(event: any) {
-  const inputElement = event.target;
-  const start = 2; 
-  const end = 8;   
+  /**
+   * Sets the cursor position in the input field and restricts the allowed range for editing.
+   * @param event Event object from the input field.
+   */
+  setCursorToEditable(event: any) {
+    const inputElement = event.target;
+    const start = 2; 
+    const end = 8;   
 
-  
-  setTimeout(() => {
-    inputElement.setSelectionRange(start, start); 
-  }, 0);
+    setTimeout(() => {
+      inputElement.setSelectionRange(start, start); 
+    }, 0);
 
-
-   inputElement.addEventListener('keydown', (e: KeyboardEvent) => {
-    const cursorPosition = inputElement.selectionStart;
-    if (cursorPosition && (cursorPosition < start || cursorPosition > end)) {
-      e.preventDefault(); 
-    }
-  });
-}
+    inputElement.addEventListener('keydown', (e: KeyboardEvent) => {
+      const cursorPosition = inputElement.selectionStart;
+      if (cursorPosition && (cursorPosition < start || cursorPosition > end)) {
+        e.preventDefault(); 
+      }
+    });
+  }
 
   /**
    * Submits the market creation form, validates the form data, and sends it to the MarketService.
@@ -359,8 +408,10 @@ export class CreateMarketComponent implements OnInit {
       });
     }
   }
-  
 
+  /**
+   * Resets the form and clears error flags after a successful market creation or cancelation.
+   */
   private resetForm(): void {
     this.marketForm.reset();
     this.codeExistsError = false;
@@ -368,6 +419,10 @@ export class CreateMarketComponent implements OnInit {
     this.subGroups = [];
   }
 
+  /**
+   * Handles the cancel action and confirms if the user has unsaved changes.
+   * Resets the form and navigates back to the markets list if the user confirms.
+   */
   onCancel(): void {
     this.confirmationService.confirm({
       message: 'You have unsaved changes. Are you sure you want to proceed?',

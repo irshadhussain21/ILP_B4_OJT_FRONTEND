@@ -49,10 +49,8 @@
       <!-- Subgroup(s) Panel -->
       <div class="Subgrouppanel">
         <div class="panel-header">Subgroup(s)</div>
-        <div *ngFor="let subgroup of marketDetails?.marketSubGroups" class="subgrouppanel-contt">
-          <p>
-            {{ marketDetails?.code }}{{ subgroup.subGroupCode }} - {{ subgroup.subGroupName }}
-          </p>
+        <div *ngFor="let subgroup of combinedSubGroupDetails" class="subgrouppanel-contt">
+          <p>{{ subgroup }}</p> 
         </div>
         <p *ngIf="!marketDetails?.marketSubGroups?.length">No subgroups available</p>
       </div>
