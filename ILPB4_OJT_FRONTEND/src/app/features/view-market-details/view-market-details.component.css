@@ -46,11 +46,14 @@
 
 .edit-button{
   display: flex;
-  /* width: 90px; */
+  border-color: #00506a;
+  color: #00506a;
   align-items: center;
   justify-content: center;
   border: 1px solid #d1d1d1;
   border-radius: 12px;
+  margin-top: 4px;
+  padding-right: 2px;
   margin-top: 4px;
   padding-right: 2px;
   background-color: white;
@@ -136,7 +139,7 @@
   color: #333;
   font-family: Arial, sans-serif;
 }
-::ng-deep .p-button 
+::ng-deep .p-button
 {
   background-color: white;
   border-color: #00506a;
