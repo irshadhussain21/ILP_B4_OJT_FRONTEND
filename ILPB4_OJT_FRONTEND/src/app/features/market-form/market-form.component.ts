@@ -25,7 +25,7 @@ import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { SubgroupComponent } from '../subgroup/subgroup.component';
-
+import { MarketFormConfig } from '../../config/market-form-config';
 @Component({
   selector: 'app-market-form',
   standalone: true,
@@ -46,7 +46,7 @@ import { SubgroupComponent } from '../subgroup/subgroup.component';
 })
 export class MarketFormComponent implements OnInit {
   marketForm!: FormGroup;
-  title: string = 'Create Market';
+  title: string = '';
   isEditMode: boolean = false;
   marketId?: number;
   regions: Region[] = [];
@@ -85,7 +85,7 @@ export class MarketFormComponent implements OnInit {
       if (params['id']) {
         this.isEditMode = true;
         this.marketId = +params['id'];
-        this.title = 'Edit Market';
+        this.title = MarketFormConfig.TITLE_EDIT;
         this.fetchMarketData(this.marketId); 
       }
     });
@@ -96,14 +96,14 @@ export class MarketFormComponent implements OnInit {
       marketName: ['', Validators.required],
       marketCode: [
         '',
-        [Validators.required, Validators.maxLength(2), Validators.minLength(2)],
+        [Validators.required, Validators.maxLength(MarketFormConfig.MIN_MARKET_CODE_LENGTH), Validators.minLength(MarketFormConfig.MAX_MARKET_CODE_LENGTH)],
       ],
       longCode: [
         '',
         [
           Validators.required,
-          Validators.minLength(7),
-          Validators.maxLength(20),
+          Validators.minLength(MarketFormConfig.MIN_LONG_CODE_LENGTH),
+          Validators.maxLength(MarketFormConfig.MAX_LONG_CODE_LENGTH),
         ],
       ],
       region: ['', Validators.required],
@@ -112,9 +112,7 @@ export class MarketFormComponent implements OnInit {
   }
 
   private setupFieldListeners(): void {
-    // this.marketForm.get('marketCode')?.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
-    //   this.updateLongCode();
-    // });
+
 
     this.marketForm
       .get('region')
@@ -175,7 +173,7 @@ export class MarketFormComponent implements OnInit {
   }
 
   onMarketCodeInput(event: KeyboardEvent) {
-    const allowedChars = /^[a-zA-Z]+$/;
+    const allowedChars =MarketFormConfig.MARKET_CODE_VALIDATION_REGEX;
 
     const key = event.key;
 
@@ -229,20 +227,20 @@ export class MarketFormComponent implements OnInit {
       });
       this.subGroups = data.marketSubGroups || [];
 
-      // Show the SubgroupComponent if there are existing subgroups
+     
       if (this.subGroups.length > 0) {
         this.showSubgroupComponent = true;
       }
 
-      // Select the region and load subregions
+      
       this.onRegionSelect(Number(data.region));
     });
   }
 
   getSubmitButtonText(): string {
     return this.isEditMode
-      ? 'PAGE.BUTTONS.UPDATE_MARKET'
-      : 'PAGE.BUTTONS.CREATE_MARKET';
+      ? MarketFormConfig.BUTTONS.UPDATE_MARKET
+      : MarketFormConfig.BUTTONS.CREATE_MARKET;
   }
 
   onSubmit(): void {
