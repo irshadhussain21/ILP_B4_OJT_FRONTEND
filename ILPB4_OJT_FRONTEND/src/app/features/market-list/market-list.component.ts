@@ -15,7 +15,6 @@ import { PaginatorModule } from 'primeng/paginator';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { HeaderComponent } from "../../shared/header/header.component";
 
-
 /**
  * LLD
  *
@@ -58,7 +57,6 @@ import { HeaderComponent } from "../../shared/header/header.component";
  *    ...
  *  ]
  */
-
 
 @Component({
   selector: 'app-marketlist',
@@ -129,51 +127,70 @@ removeRegion(region: any) {
   }
 
   ngOnInit() {
-
-      // Fetch regions data
-      this.regionService.getAllRegions().subscribe((regions: Region[]) => {
+    this.loadRegionsAndSubregions();
+    this.loadMarkets();
+  }
+  
+  // Function to load regions and subregions
+  loadRegionsAndSubregions() {
+    this.regionService.getAllRegions().subscribe(
+      (regions: Region[]) => {
         regions.forEach(region => {
           this.regionsMap[region.key.toString()] = region.value;
-
-        // Fetch subregions for each region
-        this.regionService.getSubRegionsByRegion(region.key).subscribe(
-          (subregions: Region[]) => {
-            subregions.forEach(subregion => {
-              this.subRegionsMap[subregion.key.toString()] = subregion.value;
-            });
-          },
-          (error) => {
-            console.error(`Error fetching subregions for region ${region.key}:`, error);
-          }
-        );
-      });
-    });
-
-      // Fetch markets from the backend
-      this.marketService.getAllMarkets().subscribe(
-        (data: Market[]) => {
-          console.log('Fetched markets:', data); 
-          this.markets = data;
-          this.filteredMarkets = data;  
-
-          this.markets.forEach(market => {
-            this.marketService.getMarketDetailsById(market.id!).subscribe(
-              (details: MarketDetails) => {
-                market.marketSubGroups = details.marketSubGroups;
-                market.region = this.regionsMap[market.region] || market.region;
-                market.subRegion = this.subRegionsMap[market.subRegion] || market.subRegion;
-              },
-              (error) => {
-                console.error('Error fetching market details:', error);
-              }
-            );
-          });
+  
+          // Fetch subregions for each region
+          this.regionService.getSubRegionsByRegion(region.key).subscribe(
+            (subregions: Region[]) => {
+              subregions.forEach(subregion => {
+                this.subRegionsMap[subregion.key.toString()] = subregion.value;
+              });
+            },
+            (error) => {
+              console.error(`Error fetching subregions for region ${region.key}:`, error);
+            }
+          );
+        });
+      },
+      (error) => {
+        console.error('Error fetching regions:', error);
+      }
+    );
+  }
+  
+  // Function to load markets and market details
+  loadMarkets() {
+    this.marketService.getAllMarkets().subscribe(
+      (markets: Market[]) => {
+        console.log('Fetched markets:', markets);
+        this.markets = markets;
+        this.filteredMarkets = markets;
+  
+        this.markets.forEach(market => {
+          this.loadMarketDetails(market);
+        });
+      },
+      (error) => {
+        console.error('Error fetching markets:', error);
+      }
+    );
+  }
+  
+  // Function to load market details by market ID
+  loadMarketDetails(market: Market) {
+    if (market.id) {
+      this.marketService.getMarketDetailsById(market.id).subscribe(
+        (details: MarketDetails) => {
+          market.marketSubGroups = details.marketSubGroups;
+          market.region = this.regionsMap[market.region] || market.region;
+          market.subRegion = this.subRegionsMap[market.subRegion] || market.subRegion;
         },
         (error) => {
-          console.error('Error fetching markets:', error);
+          console.error(`Error fetching market details for market ID ${market.id}:`, error);
         }
       );
     }
+  }
+  
 
   //Filters the list of markets based on the search text entered by the user.
   filterMarkets() {
