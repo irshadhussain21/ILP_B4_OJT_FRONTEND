@@ -53,8 +53,7 @@
               [value]="subregion.key"
               formControlName="subregion"
             ></p-radioButton>
-            <label class="check-box-labels" [for]="subregion.key.toString()">{{ subregion.value }}</label>
-          </div>
+              </div>
         </div>
       </div>
 
@@ -77,6 +76,7 @@
             maxlength="2"
             autocapitalize="on"
             (input)="hasEditedCode = true"
+            (keydown)="onMarketCodeInput($event)"
           />
           <span class="divider"></span>
           <input
