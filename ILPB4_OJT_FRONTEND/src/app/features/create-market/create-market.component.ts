@@ -1,375 +1,39 @@
-/**Angular Libraries */
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-
-/**External Libraries */
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { ToastModule } from 'primeng/toast';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { InputMaskModule } from 'primeng/inputmask';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { CommonModule } from '@angular/common'; // Required for *ngFor and other common directives
 
-/**Local imports */
-import { MarketService } from '../../services/market.service';
-import { RegionService } from '../../services/region.service';
-import { Market, MarketSubgroup } from '../../core/models/market';
-import { Region } from '../../core/models/region';
-import { HeaderComponent } from '../../shared/header/header.component';
-import { SubgroupComponent } from '../subgroup/subgroup.component';
-import { CreateMarketConfig } from '../../config/create-market-config';
 @Component({
-  selector: 'app-market-form',
-  standalone: true,
+  selector: 'app-create-market',
+  standalone: true, // Declare the component as standalone
   templateUrl: './create-market.component.html',
   styleUrls: ['./create-market.component.css'],
-  imports: [
-    ReactiveFormsModule,
-    CommonModule,
-    RadioButtonModule,
-    TranslateModule,
-    ToastModule,
-    HeaderComponent,
-    InputMaskModule,
-    ConfirmDialogModule,
-    SubgroupComponent,
-  ],
-  providers: [MessageService, ConfirmationService],
+  imports: [ReactiveFormsModule, RadioButtonModule, CommonModule] // Import necessary modules for standalone
 })
 export class CreateMarketComponent implements OnInit {
-  marketForm!: FormGroup;
-  title: string = CreateMarketConfig.TITLE_CREATE;
-  isEditMode: boolean = false;
-  marketId?: number;
-  regions: Region[] = [];
-  subregions: Region[] = [];
-  subGroups: MarketSubgroup[] = [];
-  selectedRegion: number | null = null;
-  selectedSubregion: string | null = null;
-  hasCodeExistsError: boolean = false;
-  hasNameExistsError: boolean = false;
-  hasEditedCode = false;
-  hasEditedName = false;
-  showSubgroupComponent: boolean = false;
+  marketForm: FormGroup;
 
-  constructor(
-    private fb: FormBuilder,
-    private marketService: MarketService,
-    private regionService: RegionService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private translateService:TranslateService
-  ) {}
+  regions = [
+    { name: 'EURO - Europe', value: 'euro' },
+    { name: 'LAAPA - Latin America, Asia Pacific and Africa', value: 'laapa' },
+    { name: 'NOAM - North America', value: 'noam' }
+  ];
 
-  ngOnInit(): void {
-    this.initializeForm();
-    this.loadRegions();
-
-    
-    this.getRoute();
-
-    this.setupFieldListeners();
-  }
-
-  getRoute() {
-    this.route.params.subscribe((params) => {
-      if (params['id']) {
-        this.isEditMode = true;
-        this.marketId = +params['id'];
-        this.title = CreateMarketConfig.TITLE_EDIT;
-        this.fetchMarketData(this.marketId); 
-      }
-    });
-  }
-
-  private initializeForm(): void {
+  constructor(private fb: FormBuilder) {
     this.marketForm = this.fb.group({
-      marketName: ['', Validators.required],
-      marketCode: [
-        '',
-        [Validators.required, Validators.maxLength(CreateMarketConfig.MIN_MARKET_CODE_LENGTH), Validators.minLength(CreateMarketConfig.MAX_MARKET_CODE_LENGTH)],
-      ],
-      longCode: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(CreateMarketConfig.MIN_LONG_CODE_LENGTH),
-          Validators.maxLength(CreateMarketConfig.MAX_LONG_CODE_LENGTH),
-        ],
-      ],
-      region: ['', Validators.required],
-      subregion: [''],
+      region: [null, Validators.required],
+      shortCode: [null, [Validators.required, Validators.maxLength(2)]],
+      marketName: [null, Validators.required],
+      longCode: [null, Validators.required],
+      subGroups: this.fb.array([])
     });
   }
 
-  private setupFieldListeners(): void {
+  ngOnInit(): void {}
 
-
-    this.marketForm
-      .get('region')
-      ?.valueChanges.pipe(distinctUntilChanged())
-      .subscribe(() => {
-        this.updateLongCode();
-      });
-
-    this.marketForm
-      .get('marketCode')
-      ?.valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((code) => {
-          if (!this.hasEditedCode) return [false];
-          this.hasCodeExistsError = false;
-          if (!code) {
-            this.marketForm.get('marketCode')?.setErrors({ required: true });
-            return [false];
-          }
-          return this.marketService.checkMarketCodeExists(code);
-        })
-      )
-      .subscribe((exists) => {
-        this.hasCodeExistsError = exists;
-        if (exists) {
-          this.marketForm.get('marketCode')?.setErrors({ exists: true });
-        }
-        this.updateLongCode();
-      });
-
-    this.marketForm
-      .get('marketName')
-      ?.valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((name) => {
-          if (!this.hasEditedName) return [false];
-          this.hasNameExistsError = false;
-          if (!name) {
-            this.marketForm.get('marketName')?.setErrors({ required: true });
-            return [false];
-          }
-          return this.marketService.checkMarketNameExists(name);
-        })
-      )
-      .subscribe((exists) => {
-        this.hasNameExistsError = exists;
-        if (exists) {
-          this.marketForm.get('marketName')?.setErrors({ exists: true });
-        }
-      });
-  }
-
-  onSubregionChange(event: any, subregionId: number): void {
-    this.selectedSubregion = subregionId.toString();
-    this.marketForm.get('subregion')?.setValue(subregionId);
-  }
-
-  onMarketCodeInput(event: KeyboardEvent) {
-    const allowedChars =CreateMarketConfig.MARKET_CODE_VALIDATION_REGEX;
-
-    const key = event.key;
-
-    if (
-      key === 'Backspace' ||
-      key === 'Tab' ||
-      key === 'ArrowLeft' ||
-      key === 'ArrowRight' ||
-      key === 'Delete' ||
-      key === 'Escape'
-    ) {
-      return
-    }
-
-    if (!allowedChars.test(key)) {
-      event.preventDefault();
-    }
-  }
-
-  private updateLongCode(): void {
-    const region = this.regions.find(
-      (r) => r.key === this.marketForm.get('region')?.value
-    );
-    const marketCode =
-      this.marketForm.get('marketCode')?.value.toUpperCase() || '';
-
-    if (region && marketCode.length === 2) {
-      const firstChar = region.value.charAt(0).toUpperCase();
-      const newLongCode = `${firstChar}XXXX${marketCode}`;
-      this.marketForm
-        .get('longCode')
-        ?.setValue(newLongCode, { emitEvent: false });
-    } else if (region) {
-      const firstChar = region.value.charAt(0).toUpperCase();
-      this.marketForm
-        .get('longCode')
-        ?.setValue(firstChar, { emitEvent: false });
-    } else {
-      this.marketForm.get('longCode')?.setValue('', { emitEvent: false });
-    }
-  }
-
-  fetchMarketData(marketId: number): void {
-    this.marketService.getMarketDetailsById(marketId).subscribe((data) => {
-      this.marketForm.patchValue({
-        marketName: data.name,
-        marketCode: data.code,
-        longCode: data.longMarketCode,
-        region: data.region,
-        subregion: data.subRegion,
-      });
-      this.subGroups = data.marketSubGroups || [];
-
-     
-      if (this.subGroups.length > 0) {
-        this.showSubgroupComponent = true;
-      }
-
-      
-      this.onRegionSelect(Number(data.region));
-    });
-  }
-
-  getSubmitButtonText(): string {
-    return this.isEditMode
-      ? CreateMarketConfig.BUTTONS.UPDATE_MARKET
-      : CreateMarketConfig.BUTTONS.CREATE_MARKET;
-  }
-
-  onSubmit(): void {
+  onSubmit() {
     if (this.marketForm.valid) {
-      const marketData: Market = {
-        id: this.marketId,
-        name: this.marketForm.value.marketName,
-        code: this.marketForm.value.marketCode,
-        longMarketCode: this.marketForm.value.longCode,
-        region: this.marketForm.value.region,
-        subRegion: this.marketForm.value.subregion,
-        marketSubGroups: this.subGroups.map((subGroup) => ({
-          subGroupId: subGroup.subGroupId || 0,
-          subGroupName: subGroup.subGroupName,
-          subGroupCode: subGroup.subGroupCode,
-          marketId: subGroup.marketId || this.marketId,
-          marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
-        })),
-      };
-
-      if (this.isEditMode) {
-        this.updateMarket(marketData);
-      } else {
-        this.createMarket(marketData);
-      }
+      console.log(this.marketForm.value);
     }
-  }
-
-  private createMarket(marketData: Market): void {
-    this.marketService.createMarket(marketData).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: this.translateService.instant(CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_CREATED),
-        });
-        setTimeout(()=>{
-          this.router.navigate(['/markets']);
-        },1000)
-        
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: this.translateService.instant(CreateMarketConfig.MESSAGES.ERROR_MESSAGES.CREATE),
-        });
-      },
-    });
-  }
-
-  private updateMarket(marketData: Market): void {
-    this.marketService.updateMarket(this.marketId!, marketData).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: this.translateService.instant(CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_UPDATED),
-        });
-        setTimeout(()=>{
-          this.router.navigate(['/markets']);
-        },1000)
-        
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail:this.translateService.instant(CreateMarketConfig.MESSAGES.ERROR_MESSAGES.UPDATE),
-        });
-      },
-    });
-  }
-
-  onRegionSelect(regionId: number): void {
-    this.selectedRegion = regionId;
-    this.marketForm.get('region')?.setValue(regionId);
-    this.updateLongCode();
-
-    this.regionService
-      .getSubRegionsByRegion(regionId)
-      .subscribe((subregions) => {
-        this.subregions = subregions;
-        this.selectedSubregion = null;
-      });
-  }
-
-  onCancel(): void {
-    this.confirmationService.confirm({
-      message: this.translateService.instant(CreateMarketConfig.MESSAGES.CONFIRM),
-      header: 'Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.marketForm.reset();
-        this.router.navigate(['/markets']);
-      },
-    });
-  }
-
-  showSubgroup() {
-    this.showSubgroupComponent = true;
-  }
-
-  onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
-    this.subGroups = subGroups;
-  }
-
-  onNoRowsLeftChanged(event: {
-    noRowsLeft: boolean;
-    subGroups: MarketSubgroup[];
-  }): void {
-    this.subGroups = [...event.subGroups];
-    if (event.noRowsLeft) {
-      this.showSubgroupComponent = false;
-    }
-  }
-
-  onHasErrorsChanged(hasErrors: boolean): void {
-    if (hasErrors) {
-      this.marketForm.setErrors({ subgroupErrors: true });
-    } else {
-      this.marketForm.setErrors(null);
-    }
-  }
-
-  loadRegions(): void {
-    this.regionService.getAllRegions().subscribe((regions) => {
-      this.regions = regions;
-    });
   }
 }

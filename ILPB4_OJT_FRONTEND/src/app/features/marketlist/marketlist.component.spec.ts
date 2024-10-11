@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MarketlistComponent } from './market-list.component';
+import { MarketlistComponent } from './marketlist.component';
 
 describe('MarketlistComponent', () => {
   let component: MarketlistComponent;

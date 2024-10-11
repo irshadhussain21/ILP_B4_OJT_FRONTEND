@@ -1,175 +1,47 @@
-<p-toast></p-toast>
-<p-confirmDialog></p-confirmDialog>
-
-<div class="market-form-container">
-  <app-header [title]="title"></app-header>
-
+<div class="create-market-container">
+  <h1>Create Market</h1>
+  <hr>
+  <!-- Scrollable Content Wrapper -->
   <div class="scrollable-content">
-    <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
-      <!-- Region Selection -->
-      <div class="form-section">
-        <label for="region" class="form-label">
-          {{ "PAGE.LABELS.REGION" | translate }}
-          <span class="asterik">*</span>
-        </label>
-        <p class="form-sub-label">{{ "PAGE.PLACEHOLDERS.SELECT_REGION" | translate }}</p>
-        <div class="region-options">
-          <div
-            class="region-option"
-            *ngFor="let region of regions"
-            [ngClass]="{ selected: selectedRegion === region.key }"
-            (click)="onRegionSelect(region.key)"
-          >
-            <p-radioButton
-              [name]="'region'"
-              [label]="region.value"
-              [inputId]="region.key.toString()"
-              [value]="region.key"
-              formControlName="region"
-            ></p-radioButton>
-            <label class="check-box-labels" [for]="region.key.toString()">- {{ region.value }}</label>
+      <!-- Form for creating a market -->
+      <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
+          <!-- Region Selection -->
+          <label for="region" class="form-label">Region <span class="asterik">*</span></label>
+          <p class="form-sub-label">Select a Region</p>
+          <div class="region-options">
+              <div class="region-option" *ngFor="let region of regions">
+                  <p-radioButton [label]="region.name" [value]="region.value" formControlName="region"></p-radioButton>
+              </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Subregion Selection -->
-      <div *ngIf="subregions.length > 0" class="form-section">
-        <label for="subregion" class="form-label">
-          {{ "PAGE.LABELS.SUBREGION" | translate }}
-          <span class="asterik">*</span>
-        </label>
-        <p class="form-sub-label">{{ "PAGE.PLACEHOLDERS.SELECT_SUBREGION" | translate }}</p>
-        <div class="subregion-options">
-          <div
-            class="subregion-option"
-            *ngFor="let subregion of subregions"
-            [ngClass]="{ selected: selectedSubregion === subregion.key.toString() }"
-            (click)="onSubregionChange($event, subregion.key)"
-          >
-            <p-radioButton
-              [name]="'subregion'"
-              [label]="subregion.value"
-              [inputId]="subregion.key.toString()"
-              [value]="subregion.key"
-              formControlName="subregion"
-            ></p-radioButton>
+          <!-- Short Code / Market Name -->
+          <div class="form-section">
+              <label class="form-label">Short Code/Market Name <span class="asterik">*</span></label>
+              <p class="form-sub-label">Enter a two-letter Market Code, a Market Name</p>
+
+              <!-- Short Code and Market Name as combined input with divider -->
+              <div class="shortcode-marketname-container">
+                  <input formControlName="shortCode" type="text" placeholder="Code" class="shortcode-input" />
+                  <span class="divider"></span>
+                  <input formControlName="marketName" type="text" placeholder="Name" class="marketname-input" />
+              </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Market Code and Name -->
-      <div class="form-section">
-        <label class="form-label">
-          {{ "PAGE.LABELS.SHORT_CODE_MARKET_NAME" | translate }}
-          <span class="asterik">*</span>
-        </label>
-        <p class="form-sub-label">
-          {{ "PAGE.PLACEHOLDERS.ENTER_CODE" | translate }} and
-          {{ "PAGE.PLACEHOLDERS.ENTER_NAME" | translate }}
-        </p>
-        <div class="shortcode-marketname-container">
-          <input
-            formControlName="marketCode"
-            type="text"
-            placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_CODE' | translate }}"
-            class="shortcode-input"
-            maxlength="2"
-            autocapitalize="on"
-            (input)="hasEditedCode = true"
-            (keydown)="onMarketCodeInput($event)"
-          />
-          <span class="divider"></span>
-          <input
-            formControlName="marketName"
-            type="text"
-            placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_NAME' | translate }}"
-            class="marketname-input"
-            (input)="hasEditedName = true"
-          />
-        </div>
-        <div class="error-msg-container">
-            <p *ngIf="marketForm.get('marketCode')?.touched && marketForm.get('marketCode')?.hasError('required')" class="error-message">
-                <span class="error-icon">❗</span>
-                {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_REQUIRED" | translate }}
-              </p>
-      
-              <p *ngIf="marketForm.get('marketName')?.touched && marketForm.get('marketName')?.hasError('required')" class="error-message">
-                <span class="error-icon">❗</span>
-                {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_REQUIRED" | translate }}
-              </p>
-      
-              <p *ngIf="hasCodeExistsError && hasEditedCode" class="error-message">
-                <span class="error-icon">❗</span>
-                {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS" | translate }}
-              </p>
-      
-              <p *ngIf="hasNameExistsError && hasEditedName" class="error-message">
-                <span class="error-icon">❗</span>
-                {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS" | translate }}
-              </p>
-        </div>
-      </div>
-
-      <!-- Long Code -->
-      <div class="form-section">
-        <label class="form-label">
-          {{ "PAGE.LABELS.LONG_MARKET_CODE" | translate }} <span class="asterik">*</span>
-        </label>
-        <p class="form-sub-label">{{ "PAGE.PLACEHOLDERS.LONG_CODE_FORMAT_INFO" | translate }}</p>
-
-        <p-inputMask
-          formControlName="longCode"
-          mask="a-aa.aa.aa"
-          placeholder="_-__.__.__"
-          class="longcode-input"
-        ></p-inputMask>
-      </div>
-
-      <!-- Subgroups -->
-      <div class="form-section">
-        <label class="form-label">{{ "PAGE.LABELS.SUBGROUPS" | translate }}</label>
-  
-        <ng-container *ngIf="!showSubgroupComponent && subGroups.length === 0; else subgroupTemplate">
-          <div class="empty-subgroup-template">
-            <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
-            <p *ngIf="marketForm.invalid">
-              {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_INVALID" | translate }}
-            </p>
-            <p *ngIf="marketForm.valid">
-              {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_VALID" | translate }}
-            </p>
-    
-            <button
-              type="button"
-              pButton
-              icon="pi pi-plus"
-              label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP' | translate }}"
-              [outlined]="true"
-              (click)="showSubgroup()"
-              [disabled]="marketForm.invalid"
-            ></button>
+          <!-- Long Code -->
+          <div class="form-section">
+              <label for="longCode" class="form-label">Long Code <span class="asterik">*</span></label>
+              <p class="form-sub-label">Enter Long Market Code in the defined format</p>
+              <input formControlName="longCode" type="text" class="longcode-input" />
           </div>
-        </ng-container>
-  
-        <ng-template #subgroupTemplate>
-          <app-sub-group
-            [marketCode]="marketForm.get('marketCode')?.value"
-            [fetchSubGroups]="subGroups"
-            (subGroupsChanged)="onSubGroupsChanged($event)"
-            (noRowsLeftChanged)="onNoRowsLeftChanged($event)"
-            (hasErrorsChanged)="onHasErrorsChanged($event)"
-          ></app-sub-group>
-        </ng-template>
-      </div>
-  
-      <!-- Submit and Cancel Buttons -->
-      <button type="submit" class="submit-button" [disabled]="marketForm.invalid">
-        {{ getSubmitButtonText() | translate }}
-      </button>
-  
-      <button type="button" class="cancel-button" (click)="onCancel()">
-        {{ "PAGE.BUTTONS.CANCEL" | translate }}
-      </button>
-    </form>
+
+          <!-- Subgroups Section -->
+          <div class="form-section">
+              <label class="form-label">Subgroup(s)</label>
+              <!-- Subgroup list and actions will go here -->
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="submit-button" [disabled]="marketForm.invalid">Submit</button>
+      </form>
   </div>
 </div>
