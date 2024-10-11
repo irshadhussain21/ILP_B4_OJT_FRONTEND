@@ -51,7 +51,7 @@ export class HeaderComponent {
           : `/markets/edit/${editId}`;
         this.items = [
           { label: 'Home', url: '/' },
-          { label: 'Markets', url: '/market' },
+          { label: 'Markets', url: '/markets' },
           { label: market.name, url: currentUrl }
         ];
       });
