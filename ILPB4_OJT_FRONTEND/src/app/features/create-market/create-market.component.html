@@ -53,7 +53,7 @@
               [value]="subregion.key"
               formControlName="subregion"
             ></p-radioButton>
-              </div>
+          </div>
         </div>
       </div>
 
@@ -98,24 +98,24 @@
                 {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_REQUIRED" | translate }}
               </p>
       
-              <p *ngIf="codeExistsError && hasEditedCode" class="error-message">
+              <p *ngIf="hasCodeExistsError && hasEditedCode" class="error-message">
                 <span class="error-icon">❗</span>
                 {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS" | translate }}
               </p>
       
-              <p *ngIf="nameExistsError && hasEditedName" class="error-message">
+              <p *ngIf="hasNameExistsError && hasEditedName" class="error-message">
                 <span class="error-icon">❗</span>
                 {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS" | translate }}
               </p>
         </div>
-        <!-- Error messages for market code and name -->
-        
       </div>
 
       <!-- Long Code -->
       <div class="form-section">
-        <label class="form-label">Long Code <span class="asterik">*</span></label>
-        <p class="form-sub-label">The format will be automatically set based on selections</p>
+        <label class="form-label">
+          {{ "PAGE.LABELS.LONG_MARKET_CODE" | translate }} <span class="asterik">*</span>
+        </label>
+        <p class="form-sub-label">{{ "PAGE.PLACEHOLDERS.LONG_CODE_FORMAT_INFO" | translate }}</p>
 
         <p-inputMask
           formControlName="longCode"
@@ -126,46 +126,47 @@
       </div>
 
       <!-- Subgroups -->
-     <!-- Subgroups -->
-<div class="form-section">
-    <label class="form-label">Subgroup(s)</label>
+      <div class="form-section">
+        <label class="form-label">{{ "PAGE.LABELS.SUBGROUPS" | translate }}</label>
   
-    <ng-container *ngIf="!showSubgroupComponent && subGroups.length === 0; else subgroupTemplate">
-      <div class="empty-subgroup-template">
-        <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
-        <p *ngIf="marketForm.invalid">Enter the Market Code/Name before adding Subgroup(s)</p>
-        <p *ngIf="marketForm.valid">Start adding Subgroup(s) for the Market</p>
+        <ng-container *ngIf="!showSubgroupComponent && subGroups.length === 0; else subgroupTemplate">
+          <div class="empty-subgroup-template">
+            <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
+            <p *ngIf="marketForm.invalid">
+              {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_INVALID" | translate }}
+            </p>
+            <p *ngIf="marketForm.valid">
+              {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_VALID" | translate }}
+            </p>
+    
+            <button
+              type="button"
+              pButton
+              icon="pi pi-plus"
+              label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP' | translate }}"
+              [outlined]="true"
+              (click)="showSubgroup()"
+              [disabled]="marketForm.invalid"
+            ></button>
+          </div>
+        </ng-container>
   
-        <button
-          type="button"
-          pButton
-          icon="pi pi-plus"
-          label="Add Subgroup"
-          [outlined]="true"
-          (click)="showSubgroup()"
-          [disabled]="marketForm.invalid"
-        ></button>
+        <ng-template #subgroupTemplate>
+          <app-sub-group
+            [marketCode]="marketForm.get('marketCode')?.value"
+            [fetchSubGroups]="subGroups"
+            (subGroupsChanged)="onSubGroupsChanged($event)"
+            (noRowsLeftChanged)="onNoRowsLeftChanged($event)"
+            (hasErrorsChanged)="onHasErrorsChanged($event)"
+          ></app-sub-group>
+        </ng-template>
       </div>
-    </ng-container>
   
-    <ng-template #subgroupTemplate>
-      <app-sub-group
-        [marketCode]="marketForm.get('marketCode')?.value"
-        [fetchSubGroups]="subGroups"
-        (subGroupsChanged)="onSubGroupsChanged($event)"
-        (noRowsLeftChanged)="onNoRowsLeftChanged($event)"
-        (hasErrorsChanged)="onHasErrorsChanged($event)"
-      ></app-sub-group>
-    </ng-template>
-  </div>
-  
-
       <!-- Submit and Cancel Buttons -->
       <button type="submit" class="submit-button" [disabled]="marketForm.invalid">
         {{ getSubmitButtonText() | translate }}
       </button>
-      
-
+  
       <button type="button" class="cancel-button" (click)="onCancel()">
         {{ "PAGE.BUTTONS.CANCEL" | translate }}
       </button>

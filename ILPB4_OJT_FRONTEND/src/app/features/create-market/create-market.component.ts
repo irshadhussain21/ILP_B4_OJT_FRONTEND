@@ -15,7 +15,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 /**Local imports */
@@ -25,7 +25,7 @@ import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { SubgroupComponent } from '../subgroup/subgroup.component';
-import { MarketFormConfig } from '../../config/market-form-config';
+import { CreateMarketConfig } from '../../config/create-market-config';
 @Component({
   selector: 'app-market-form',
   standalone: true,
@@ -46,7 +46,7 @@ import { MarketFormConfig } from '../../config/market-form-config';
 })
 export class CreateMarketComponent implements OnInit {
   marketForm!: FormGroup;
-  title: string = '';
+  title: string = CreateMarketConfig.TITLE_CREATE;
   isEditMode: boolean = false;
   marketId?: number;
   regions: Region[] = [];
@@ -54,8 +54,8 @@ export class CreateMarketComponent implements OnInit {
   subGroups: MarketSubgroup[] = [];
   selectedRegion: number | null = null;
   selectedSubregion: string | null = null;
-  codeExistsError: boolean = false;
-  nameExistsError: boolean = false;
+  hasCodeExistsError: boolean = false;
+  hasNameExistsError: boolean = false;
   hasEditedCode = false;
   hasEditedName = false;
   showSubgroupComponent: boolean = false;
@@ -67,7 +67,8 @@ export class CreateMarketComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private translateService:TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -85,7 +86,7 @@ export class CreateMarketComponent implements OnInit {
       if (params['id']) {
         this.isEditMode = true;
         this.marketId = +params['id'];
-        this.title = MarketFormConfig.TITLE_EDIT;
+        this.title = CreateMarketConfig.TITLE_EDIT;
         this.fetchMarketData(this.marketId); 
       }
     });
@@ -96,14 +97,14 @@ export class CreateMarketComponent implements OnInit {
       marketName: ['', Validators.required],
       marketCode: [
         '',
-        [Validators.required, Validators.maxLength(MarketFormConfig.MIN_MARKET_CODE_LENGTH), Validators.minLength(MarketFormConfig.MAX_MARKET_CODE_LENGTH)],
+        [Validators.required, Validators.maxLength(CreateMarketConfig.MIN_MARKET_CODE_LENGTH), Validators.minLength(CreateMarketConfig.MAX_MARKET_CODE_LENGTH)],
       ],
       longCode: [
         '',
         [
           Validators.required,
-          Validators.minLength(MarketFormConfig.MIN_LONG_CODE_LENGTH),
-          Validators.maxLength(MarketFormConfig.MAX_LONG_CODE_LENGTH),
+          Validators.minLength(CreateMarketConfig.MIN_LONG_CODE_LENGTH),
+          Validators.maxLength(CreateMarketConfig.MAX_LONG_CODE_LENGTH),
         ],
       ],
       region: ['', Validators.required],
@@ -128,7 +129,7 @@ export class CreateMarketComponent implements OnInit {
         distinctUntilChanged(),
         switchMap((code) => {
           if (!this.hasEditedCode) return [false];
-          this.codeExistsError = false;
+          this.hasCodeExistsError = false;
           if (!code) {
             this.marketForm.get('marketCode')?.setErrors({ required: true });
             return [false];
@@ -137,7 +138,7 @@ export class CreateMarketComponent implements OnInit {
         })
       )
       .subscribe((exists) => {
-        this.codeExistsError = exists;
+        this.hasCodeExistsError = exists;
         if (exists) {
           this.marketForm.get('marketCode')?.setErrors({ exists: true });
         }
@@ -151,7 +152,7 @@ export class CreateMarketComponent implements OnInit {
         distinctUntilChanged(),
         switchMap((name) => {
           if (!this.hasEditedName) return [false];
-          this.nameExistsError = false;
+          this.hasNameExistsError = false;
           if (!name) {
             this.marketForm.get('marketName')?.setErrors({ required: true });
             return [false];
@@ -160,7 +161,7 @@ export class CreateMarketComponent implements OnInit {
         })
       )
       .subscribe((exists) => {
-        this.nameExistsError = exists;
+        this.hasNameExistsError = exists;
         if (exists) {
           this.marketForm.get('marketName')?.setErrors({ exists: true });
         }
@@ -173,7 +174,7 @@ export class CreateMarketComponent implements OnInit {
   }
 
   onMarketCodeInput(event: KeyboardEvent) {
-    const allowedChars =MarketFormConfig.MARKET_CODE_VALIDATION_REGEX;
+    const allowedChars =CreateMarketConfig.MARKET_CODE_VALIDATION_REGEX;
 
     const key = event.key;
 
@@ -239,8 +240,8 @@ export class CreateMarketComponent implements OnInit {
 
   getSubmitButtonText(): string {
     return this.isEditMode
-      ? MarketFormConfig.BUTTONS.UPDATE_MARKET
-      : MarketFormConfig.BUTTONS.CREATE_MARKET;
+      ? CreateMarketConfig.BUTTONS.UPDATE_MARKET
+      : CreateMarketConfig.BUTTONS.CREATE_MARKET;
   }
 
   onSubmit(): void {
@@ -275,15 +276,18 @@ export class CreateMarketComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: 'Market created successfully',
+          detail: this.translateService.instant(CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_CREATED),
         });
-        this.router.navigate(['/markets']);
+        setTimeout(()=>{
+          this.router.navigate(['/markets']);
+        },1000)
+        
       },
       error: () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'An error occurred while creating the market',
+          detail: this.translateService.instant(CreateMarketConfig.MESSAGES.ERROR_MESSAGES.CREATE),
         });
       },
     });
@@ -295,15 +299,18 @@ export class CreateMarketComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: 'Market updated successfully',
+          detail: this.translateService.instant(CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_UPDATED),
         });
-        this.router.navigate(['/markets']);
+        setTimeout(()=>{
+          this.router.navigate(['/markets']);
+        },1000)
+        
       },
       error: () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'An error occurred while updating the market',
+          detail:this.translateService.instant(CreateMarketConfig.MESSAGES.ERROR_MESSAGES.UPDATE),
         });
       },
     });
@@ -324,7 +331,7 @@ export class CreateMarketComponent implements OnInit {
 
   onCancel(): void {
     this.confirmationService.confirm({
-      message: 'You have unsaved changes. Are you sure you want to proceed?',
+      message: this.translateService.instant(CreateMarketConfig.MESSAGES.CONFIRM),
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
