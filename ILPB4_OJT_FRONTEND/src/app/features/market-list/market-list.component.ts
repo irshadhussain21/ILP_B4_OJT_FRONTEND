@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
-import { Market, MarketDetails, MarketSubgroup } from '../../core/models/market';
+import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { DropdownModule } from 'primeng/dropdown';
 import { PaginatorModule } from 'primeng/paginator';
@@ -179,7 +179,7 @@ removeRegion(region: any) {
   loadMarketDetails(market: Market) {
     if (market.id) {
       this.marketService.getMarketDetailsById(market.id).subscribe(
-        (details: MarketDetails) => {
+        (details: Market) => {
           market.marketSubGroups = details.marketSubGroups;
           market.region = this.regionsMap[market.region] || market.region;
           market.subRegion = this.subRegionsMap[market.subRegion] || market.subRegion;
@@ -191,7 +191,6 @@ removeRegion(region: any) {
     }
   }
   
-
   //Filters the list of markets based on the search text entered by the user.
   filterMarkets() {
     if (this.searchText) {
