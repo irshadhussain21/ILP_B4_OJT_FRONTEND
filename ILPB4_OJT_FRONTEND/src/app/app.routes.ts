@@ -1,10 +1,7 @@
 import { Routes } from '@angular/router';
 import { MarketlistComponent } from './features/market-list/market-list.component'; // Make sure to update the path
-import { CreateMarketComponent } from './features/create-market/create-market.component';
 import { ViewMarketDetailsComponent } from './features/view-market-details/view-market-details.component';
-import { EditMarketComponent } from './features/edit-market/edit-market.component';
-import { SubgroupComponent } from './features/subgroup/subgroup.component';
-import { MarketFormComponent } from './features/market-form/market-form.component';
+import { CreateMarketComponent } from './features/market-form/create-market.component';
 
 export const routes: Routes = [
   {
@@ -18,11 +15,11 @@ export const routes: Routes = [
   },
   {
     path: 'markets/create',
-    component: MarketFormComponent,
+    component: CreateMarketComponent,
   },
   {
     path: 'markets/edit/:id',
-    component: MarketFormComponent,
+    component: CreateMarketComponent,
   },
   {
     path: 'markets/:marketId',

@@ -29,8 +29,8 @@ import { MarketFormConfig } from '../../config/market-form-config';
 @Component({
   selector: 'app-market-form',
   standalone: true,
-  templateUrl: './market-form.component.html',
-  styleUrls: ['./market-form.component.css'],
+  templateUrl: './create-market.component.html',
+  styleUrls: ['./create-market.component.css'],
   imports: [
     ReactiveFormsModule,
     CommonModule,
@@ -44,7 +44,7 @@ import { MarketFormConfig } from '../../config/market-form-config';
   ],
   providers: [MessageService, ConfirmationService],
 })
-export class MarketFormComponent implements OnInit {
+export class CreateMarketComponent implements OnInit {
   marketForm!: FormGroup;
   title: string = '';
   isEditMode: boolean = false;
