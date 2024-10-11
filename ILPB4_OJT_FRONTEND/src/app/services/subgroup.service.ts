@@ -13,8 +13,8 @@ export class MarketSubgroupService {
   constructor(private http: HttpClient) {}
 
   // Retrieve subgroups related to the existing market code
-  getSubgroups(marketCode: string): Observable<MarketSubgroup[]> {
-    return this.http.get<MarketSubgroup[]>(`${this.apiUrl}?marketCode=${marketCode}`);
+  getSubgroups(marketId?: number): Observable<MarketSubgroup[]> {
+    return this.http.get<MarketSubgroup[]>(`${this.apiUrl}?marketId=${marketId}`);
   }
 
 } 

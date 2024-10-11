@@ -95,10 +95,12 @@ export class SubgroupComponent implements OnInit {
   // Accept the marketCode as an input from the parent component
   @Input() marketCode: string = '';
   @Input() fetchSubGroups: MarketSubgroup[] = [];
+  @Input() marketId?: number;
   @Output() subGroupsChanged = new EventEmitter<MarketSubgroup[]>();
   @Output() noRowsLeftChanged = new EventEmitter<{ noRowsLeft: boolean, subGroups: MarketSubgroup[] }>();
   @Output() hasErrorsChanged = new EventEmitter<boolean>();
 
+  
   hasErrors: boolean = false;
   isInitialLoad = true; // Initially, the Add Subgroup button is enabled.
   submitting = false; // Add this flag to track the form submission status
@@ -126,7 +128,7 @@ export class SubgroupComponent implements OnInit {
       rows: this.fb.array([]) // FormArray to manage rows
     });
       // Fetch subgroups based on the passed marketCode
-      if (this.marketCode.toLowerCase()) {
+      if (this.marketId) {
         this.loadSubGroups(); 
       } else {
         this.addRow(); // If no marketCode, add an empty row by default
@@ -166,7 +168,6 @@ export class SubgroupComponent implements OnInit {
       .map(row => row.value); // Extract the values of valid rows
 
       console.log('Emitting valid subgroups:', validSubGroups);
-    // Emit the valid subgroups
     this.subGroupsChanged.emit(validSubGroups);
   }
 
@@ -176,7 +177,7 @@ export class SubgroupComponent implements OnInit {
    * Handles error logging if the request fails.
    */
   loadSubGroups(): void {
-    this.marketSubgroupService.getSubgroups(this.marketCode.toLowerCase()).subscribe({
+    this.marketSubgroupService.getSubgroups(this.marketId).subscribe({
       next: (subGroups: MarketSubgroup[]) => {
         if (subGroups.length > 0) {
           this.form.setControl('rows', this.fb.array(subGroups.map(subGroup => this.createRow(subGroup))));
@@ -377,7 +378,7 @@ validateSubgroupName(row: AbstractControl): void {
  */
   canAddSubgroup(): boolean {
     if (!this.rows || this.rows.length === 0) {
-      return true; // Initially, allow adding the first row
+      return true;
     }
   
    const hasInvalidRow = this.rows.controls.some(row => row.invalid);

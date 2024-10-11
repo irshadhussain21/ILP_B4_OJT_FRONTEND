@@ -154,6 +154,7 @@
         <ng-template #subgroupTemplate>
           <app-sub-group
             [marketCode]="marketForm.get('marketCode')?.value"
+            [marketId]="marketId"
             [fetchSubGroups]="subGroups"
             (subGroupsChanged)="onSubGroupsChanged($event)"
             (noRowsLeftChanged)="onNoRowsLeftChanged($event)"
