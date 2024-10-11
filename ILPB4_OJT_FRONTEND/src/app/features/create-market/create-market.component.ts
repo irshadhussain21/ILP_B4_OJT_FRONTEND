@@ -44,6 +44,19 @@ import { CreateMarketConfig } from '../../config/create-market-config';
  *  - Create Market: Allows users to create a new market by submitting the form data.
  *  - Edit Market: Allows users to modify existing market details and subgroups.
  *  - Error Handling: Validates the form inputs and handles cases where the market code or name already exists.
+ *
+ * Fields:
+ *  - **Region**: Dropdown selection to choose the region for the market.
+ *  - **Subregion**: Dropdown selection to choose the subregion under the selected region.
+ *  - **Market Code**: Input field to enter a short code for the market, restricted to 2 alphabetic characters.
+ *  - **Market Name**: Input field to enter the market name.
+ *  - **Long Code**: Input field (masked) to display and edit the market's long code.
+ *  - **Subgroups**: Section to add and manage subgroups within the market, which becomes available after entering market code/name.
+ *
+ * Buttons:
+ *  - **Add Subgroup**: Button to display the subgroup form if the market code and name are valid.
+ *  - **Submit (Create/Update Market)**: Button to submit the form data for either creating or updating a market.
+ *  - **Cancel**: Button to reset the form and navigate back, with a confirmation prompt for unsaved changes.
  * 
  * API Endpoints:
  *  - `GET /api/Market/{marketId}/details`: Fetches details for a specific market by its ID.
