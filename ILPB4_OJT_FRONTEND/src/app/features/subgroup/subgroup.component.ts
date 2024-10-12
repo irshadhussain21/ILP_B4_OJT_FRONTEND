@@ -102,7 +102,6 @@ export class SubgroupComponent implements OnInit {
 
   
   hasErrors: boolean = false;
-  isInitialLoad = true; // Initially, the Add Subgroup button is enabled.
   submitting = false; // Add this flag to track the form submission status
   noRowsLeft: boolean = false; //A boolean flag that is set to true when there are no rows left in the form.
 
@@ -190,7 +189,7 @@ export class SubgroupComponent implements OnInit {
       }
     });
 
-    this.isInitialLoad = false;
+    // this.isInitialLoad = false;
   }
 
 /**
@@ -343,30 +342,6 @@ validateSubgroupName(row: AbstractControl): void {
   }
 }
 
-  
-  // private emitSubGroups(): void {
-  //   const subGroupValues = this.form.value.rows.map((subGroup: SubGroup) => ({
-  //     subGroupName: subGroup.subGroupName,
-  //     subGroupCode: subGroup.subGroupCode,
-  //     marketCode: subGroup.marketCode,
-  //   }));
-
-  //   this.subGroupsChanged.emit(subGroupValues);
-  // }
-/**
- * @method onCancel
- * Resets the form and reloads the existing subgroups, after confirming with the user.
- */
-  // onCancel(): void {
-  //   this.confirmationService.confirm({
-  //     message: 'You have unsaved changes. Are you sure you want to proceed?',
-  //     header: 'Confirmation',
-  //     icon: 'pi pi-exclamation-triangle',
-  //     accept: () => {
-  //       this.loadSubGroups();
-  //     }
-  //   });
-  // }
 
 /**
  * @method canAddSubgroup
@@ -383,7 +358,7 @@ validateSubgroupName(row: AbstractControl): void {
   
    const hasInvalidRow = this.rows.controls.some(row => row.invalid);
 
-   return !hasInvalidRow && !this.isInitialLoad;
+   return !hasInvalidRow;
   }
   
 }
