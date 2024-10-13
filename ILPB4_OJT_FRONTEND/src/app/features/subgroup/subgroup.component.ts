@@ -97,12 +97,12 @@ export class SubgroupComponent implements OnInit {
   @Input() fetchSubGroups: MarketSubgroup[] = [];
   @Input() marketId?: number;
   @Output() subGroupsChanged = new EventEmitter<MarketSubgroup[]>();
-  @Output() noRowsLeftChanged = new EventEmitter<{ noRowsLeft: boolean, subGroups: MarketSubgroup[] }>();
+  @Output() hasNoSubgroups = new EventEmitter<{ noRowsLeft: boolean, subGroups: MarketSubgroup[] }>();
   @Output() hasErrorsChanged = new EventEmitter<boolean>();
 
   
   hasErrors: boolean = false;
-  submitting = false; // Add this flag to track the form submission status
+  submitting: boolean = false; // Add this flag to track the form submission status
   noRowsLeft: boolean = false; //A boolean flag that is set to true when there are no rows left in the form.
 
   form!: FormGroup;
@@ -271,9 +271,9 @@ deleteRow(rowIndex: number): void {
     accept: () => {
       rowsArray.removeAt(rowIndex);
       if (rowsArray.length === 0) {
-        this.noRowsLeftChanged.emit({ noRowsLeft: true, subGroups: [] });
+        this.hasNoSubgroups.emit({ noRowsLeft: true, subGroups: [] });
       } else {
-        this.noRowsLeftChanged.emit({ noRowsLeft: false, subGroups: this.subGroups });
+        this.hasNoSubgroups.emit({ noRowsLeft: false, subGroups: this.subGroups });
       }
     },
     reject: () => {}
