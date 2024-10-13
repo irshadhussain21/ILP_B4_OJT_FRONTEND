@@ -1,5 +1,5 @@
 
-import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -94,13 +94,13 @@ export class SubgroupComponent implements OnInit {
 
   // Accept the marketCode as an input from the parent component
   @Input() marketCode: string = '';
-  @Input() fetchSubGroups: MarketSubgroup[] = [];
   @Input() marketId?: number;
+  @Input() isFormValid: boolean | undefined;
   @Output() subGroupsChanged = new EventEmitter<MarketSubgroup[]>();
   @Output() hasNoSubgroups = new EventEmitter<{ noRowsLeft: boolean, subGroups: MarketSubgroup[] }>();
   @Output() hasErrorsChanged = new EventEmitter<boolean>();
 
-  
+  showSubgroup: boolean = false;
   hasErrors: boolean = false;
   submitting: boolean = false; // Add this flag to track the form submission status
   noRowsLeft: boolean = false; //A boolean flag that is set to true when there are no rows left in the form.
@@ -121,8 +121,6 @@ export class SubgroupComponent implements OnInit {
    * from the backend service to populate the form.
    */
   ngOnInit(): void {
-    this.marketCode = this.marketCode.toUpperCase();
-    console.log('Market Code in SubGroupComponent:', this.marketCode);
     this.form = this.fb.group({
       rows: this.fb.array([]) // FormArray to manage rows
     });
@@ -131,10 +129,6 @@ export class SubgroupComponent implements OnInit {
         this.loadSubGroups(); 
       } else {
         this.addRow(); // If no marketCode, add an empty row by default
-      }
-
-      if (this.fetchSubGroups && this.fetchSubGroups.length > 0) {
-        this.form.setControl('rows', this.fb.array(this.fetchSubGroups.map(subGroup => this.createRow(subGroup))));
       }
 
       // Track changes to the form array and emit valid subgroups
@@ -146,6 +140,18 @@ export class SubgroupComponent implements OnInit {
       });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['marketCode'] && changes['marketCode'].currentValue) {
+      this.marketCode = changes['marketCode'].currentValue.toUpperCase();
+      console.log('Market Code in SubGroupComponent:', this.marketCode);
+
+      this.rows.controls.forEach(row => {
+        row.get('marketCode')?.setValue(this.marketCode, { emitEvent: false });
+      });
+    }
+  }
+
+
   checkForErrors(): void {
     this.hasErrors = this.rows.controls.some(row =>
       row.get('subGroupCode')?.hasError('invalidFormat') ||
@@ -154,17 +160,21 @@ export class SubgroupComponent implements OnInit {
       row.get('subGroupCode')?.hasError('duplicateSubgroupCode') ||
       row.get('subGroupName')?.hasError('duplicateSubgroupName')
     );
-  
-    // Emit the updated value of hasErrors
     this.hasErrorsChanged.emit(this.hasErrors);
+  }
+  
+  showSubgroupFunc() {
+    this.showSubgroup = true;
+    if (this.rows.length === 0) {
+      this.addRow();  // Immediately add a new row if there are no existing rows
+    }
   }
   
 
   emitValidSubGroups(): void {
-    // Filter out only valid rows
     const validSubGroups = this.rows.controls
-      .filter(row => row.valid) // Only emit if the row is valid
-      .map(row => row.value); // Extract the values of valid rows
+      .filter(row => row.valid) 
+      .map(row => row.value);
 
       console.log('Emitting valid subgroups:', validSubGroups);
     this.subGroupsChanged.emit(validSubGroups);
@@ -180,6 +190,7 @@ export class SubgroupComponent implements OnInit {
       next: (subGroups: MarketSubgroup[]) => {
         if (subGroups.length > 0) {
           this.form.setControl('rows', this.fb.array(subGroups.map(subGroup => this.createRow(subGroup))));
+          this.showSubgroup = true;
         } else {
           this.addRow(); // If no subgroups are returned, add an empty row by default
         }
@@ -272,6 +283,7 @@ deleteRow(rowIndex: number): void {
       rowsArray.removeAt(rowIndex);
       if (rowsArray.length === 0) {
         this.hasNoSubgroups.emit({ noRowsLeft: true, subGroups: [] });
+        this.showSubgroup = false;
       } else {
         this.hasNoSubgroups.emit({ noRowsLeft: false, subGroups: this.subGroups });
       }

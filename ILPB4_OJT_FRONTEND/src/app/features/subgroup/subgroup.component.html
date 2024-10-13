@@ -1,6 +1,30 @@
 <p-confirmDialog></p-confirmDialog>
 
 <div class="form-container">
+
+  <ng-container *ngIf="!showSubgroup && subGroups.length === 0; else subgroupTemplate">
+    <div class="empty-subgroup-template">
+      <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
+      <p *ngIf="!isFormValid">
+        {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_INVALID" }}
+      </p>
+      <p *ngIf="isFormValid">
+        {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_VALID" }}
+      </p>
+
+      <button
+        type="button"
+        pButton
+        icon="pi pi-plus"
+        label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP' }}"
+        [outlined]="true"
+        (click)="showSubgroupFunc()"
+        [disabled]="!isFormValid"
+      ></button>
+    </div>
+  </ng-container>
+  
+  <ng-template #subgroupTemplate>
   <form [formGroup]="form">
 
 
@@ -66,8 +90,9 @@
     </p-table>
 
     <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true" (click)="addRow()"
-      [disabled]="!canAddSubgroup()"></button>
+      [disabled]="!canAddSubgroup() || !isFormValid"></button>
 
     <!-- <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button> -->
   </form>
+  </ng-template>
 </div>

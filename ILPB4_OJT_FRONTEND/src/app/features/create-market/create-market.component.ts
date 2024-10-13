@@ -44,7 +44,11 @@ import { CreateMarketConfig } from '../../config/create-market-config';
   ],
   providers: [MessageService, ConfirmationService],
 })
+
+
 export class CreateMarketComponent implements OnInit {
+
+  isFormValid: boolean = false;
   marketForm!: FormGroup;
   title: string = CreateMarketConfig.TITLE_CREATE;
   isEditMode: boolean = false;
@@ -58,7 +62,6 @@ export class CreateMarketComponent implements OnInit {
   hasNameExistsError: boolean = false;
   hasEditedCode = false;
   hasEditedName = false;
-  showSubgroupComponent: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -74,10 +77,7 @@ export class CreateMarketComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.loadRegions();
-
-    
     this.getRoute();
-
     this.setupFieldListeners();
   }
 
@@ -109,6 +109,10 @@ export class CreateMarketComponent implements OnInit {
       ],
       region: ['', Validators.required],
       subregion: [''],
+    });
+
+    this.marketForm.statusChanges.subscribe(status => {
+      this.isFormValid = status === 'VALID';
     });
   }
 
@@ -228,11 +232,6 @@ export class CreateMarketComponent implements OnInit {
       });
       this.subGroups = data.marketSubGroups || [];
 
-     
-      if (this.subGroups.length > 0) {
-        this.showSubgroupComponent = true;
-      }
-
       
       this.onRegionSelect(Number(data.region));
     });
@@ -253,13 +252,13 @@ export class CreateMarketComponent implements OnInit {
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
-        marketSubGroups: this.subGroups.map((subGroup) => ({
+        marketSubGroups: this.subGroups.length > 0 ? this.subGroups.map((subGroup) => ({
           subGroupId: subGroup.subGroupId || 0,
           subGroupName: subGroup.subGroupName,
           subGroupCode: subGroup.subGroupCode,
           marketId: subGroup.marketId || this.marketId,
           marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
-        })),
+        })) : [],
       };
 
       if (this.isEditMode) {
@@ -341,12 +340,11 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
-  showSubgroup() {
-    this.showSubgroupComponent = true;
-  }
-
   onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
     this.subGroups = subGroups;
+    if (this.subGroups.length === 0) {
+      this.marketForm.setErrors(null);
+    }
   }
 
   onNoRowsLeftChanged(event: {
@@ -354,18 +352,20 @@ export class CreateMarketComponent implements OnInit {
     subGroups: MarketSubgroup[];
   }): void {
     this.subGroups = [...event.subGroups];
+    // Disable subgroup errors if no rows are left
     if (event.noRowsLeft) {
-      this.showSubgroupComponent = false;
+      this.marketForm.setErrors(null); // Clear errors related to subgroups
     }
   }
 
   onHasErrorsChanged(hasErrors: boolean): void {
-    if (hasErrors) {
+    // Only set subgroup-related errors when there are subgroups
+    if (this.subGroups.length > 0 && hasErrors) {
       this.marketForm.setErrors({ subgroupErrors: true });
     } else {
-      this.marketForm.setErrors(null);
+      this.marketForm.setErrors(null); // No subgroup errors if there are no subgroups or no errors
     }
-  }
+  }  
 
   loadRegions(): void {
     this.regionService.getAllRegions().subscribe((regions) => {
