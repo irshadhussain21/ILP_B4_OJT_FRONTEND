@@ -1,3 +1,5 @@
+import { RegionEnum } from "../core/enums/region.enum";
+
 export const CreateMarketConfig = {
     TITLE_CREATE: 'Create Market',
     TITLE_EDIT: 'Edit Market',
@@ -27,5 +29,12 @@ export const CreateMarketConfig = {
       CREATE_MARKET: 'PAGE.BUTTONS.CREATE_MARKET',
     },
     
+  };
+  
+
+  export const RegionNames: { [key in RegionEnum]: string } = {
+    [RegionEnum.EURO]: 'Europe',
+    [RegionEnum.LAAPA]: 'Latin America, Asia Pacific, Africa',
+    [RegionEnum.NOAM]: 'America, Canada',
   };
   

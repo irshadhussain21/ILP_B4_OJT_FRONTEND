@@ -24,7 +24,8 @@ import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { SubgroupComponent } from '../subgroup/subgroup.component';
-import { CreateMarketConfig } from '../../config/create-market-config';
+import { CreateMarketConfig, RegionNames } from '../../config/market';
+import { RegionEnum } from '../../core/enums/region.enum';
 
 /**
  * LLD
@@ -269,6 +270,13 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
+
+  getRegionName(regionId:number){
+    const regionEnum = regionId as RegionEnum;
+    const regionName = RegionNames[regionEnum];
+    return regionName;
+    
+  }
   /**
    * Updates the long code field based on the selected region and market code.
    */
