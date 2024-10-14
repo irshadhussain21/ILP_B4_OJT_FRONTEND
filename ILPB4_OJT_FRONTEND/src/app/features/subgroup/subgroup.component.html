@@ -65,7 +65,7 @@
         <tr>
           <td colspan="2">
             <small class="p-error"
-              *ngIf="row.get('subGroupCode')?.hasError('invalidFormat') && row.get('subGroupCode')?.touched">
+              *ngIf="row.get('subGroupCode')?.hasError('pattern') && row.get('subGroupCode')?.touched">
               <span class="error-icon">❗</span>Invalid code format. Only a single alphanumeric character is allowed.
             </small>
             <small class="p-error"
@@ -76,13 +76,16 @@
               *ngIf="row.get('subGroupName')?.hasError('required') && row.get('subGroupName')?.touched">
               <span class="error-icon">❗</span>Subgroup Name is required.
             </small>
+            <!-- Check for the 'duplicateSubgroupCode' error at the FormGroup (row) level -->
             <small class="p-error"
-              *ngIf="row.get('subGroupCode')?.hasError('duplicateSubgroupCode') && row.get('subGroupCode')?.touched">
+              *ngIf="row.hasError('duplicateSubgroupCode') && row.get('subGroupCode')?.touched">
               <span class="error-icon">❗</span>Subgroup Code already exists for this market.
             </small>
+
+            <!-- Check for the 'duplicateSubgroupName' error at the FormGroup (row) level -->
             <small class="p-error"
-              *ngIf="row.get('subGroupName')?.hasError('duplicateSubgroupName') && row.get('subGroupName')?.touched">
-              <span class="error-icon">❗</span>Subgroup Name already exists.
+              *ngIf="row.hasError('duplicateSubgroupName') && row.get('subGroupName')?.touched">
+              <span class="error-icon">❗</span>Subgroup Name already exists for this market.
             </small>
           </td>
         </tr>
@@ -92,7 +95,6 @@
     <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true" (click)="addRow()"
       [disabled]="!canAddSubgroup() || !isFormValid"></button>
 
-    <!-- <button type="button" pButton label="Cancel" class="p-button-danger p-mt-3" (click)="onCancel()"></button> -->
-  </form>
+    </form>
   </ng-template>
 </div>

@@ -352,20 +352,22 @@ export class CreateMarketComponent implements OnInit {
     subGroups: MarketSubgroup[];
   }): void {
     this.subGroups = [...event.subGroups];
-    // Disable subgroup errors if no rows are left
     if (event.noRowsLeft) {
-      this.marketForm.setErrors(null); // Clear errors related to subgroups
+      this.marketForm.setErrors(null);
     }
   }
 
-  onHasErrorsChanged(hasErrors: boolean): void {
-    // Only set subgroup-related errors when there are subgroups
-    if (this.subGroups.length > 0 && hasErrors) {
+  onSubgroupErrorsFound(hasErrors: boolean): void {
+    if (hasErrors) {
       this.marketForm.setErrors({ subgroupErrors: true });
     } else {
-      this.marketForm.setErrors(null); // No subgroup errors if there are no subgroups or no errors
+      if (this.marketForm.errors?.['subgroupErrors']) {
+        const errors = { ...this.marketForm.errors };
+        delete errors['subgroupErrors'];
+        this.marketForm.setErrors(Object.keys(errors).length > 0 ? errors : null);
+      }
     }
-  }  
+  }
 
   loadRegions(): void {
     this.regionService.getAllRegions().subscribe((regions) => {
