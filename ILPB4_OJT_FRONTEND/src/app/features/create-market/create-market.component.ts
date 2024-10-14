@@ -85,7 +85,7 @@ import { CreateMarketConfig } from '../../config/create-market-config';
   selector: 'app-market-form',
   standalone: true,
   templateUrl: './create-market.component.html',
-  styleUrls: ['./create-market.component.css'],
+  styleUrls: ['./create-market.component.scss'],
   imports: [
     ReactiveFormsModule,
     CommonModule,

@@ -73,7 +73,7 @@ import { HeaderComponent } from "../../shared/header/header.component";
     HeaderComponent
 ],
   templateUrl: './market-list.component.html',
-  styleUrls: ['./market-list.component.css']
+  styleUrls: ['./market-list.component.scss']
 })
 export class MarketlistComponent implements OnInit {
  // Title for the market list component

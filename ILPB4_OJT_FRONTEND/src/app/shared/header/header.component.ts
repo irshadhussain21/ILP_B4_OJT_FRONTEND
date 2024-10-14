@@ -24,7 +24,7 @@ import { MarketService } from '../../services/market.service';
   standalone: true,
   imports: [BreadcrumbModule, RouterModule],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
   @Input() title: string = '';
