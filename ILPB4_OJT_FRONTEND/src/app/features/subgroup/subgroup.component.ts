@@ -88,7 +88,7 @@ import { debounceTime } from 'rxjs/operators'; // Import debounceTime for perfor
   ],
   providers: [ConfirmationService],
   templateUrl: './subgroup.component.html',
-  styleUrls: ['./subgroup.component.css']
+  styleUrls: ['./subgroup.component.scss']
 })
 export class SubgroupComponent implements OnInit {
 

@@ -1,13 +1,14 @@
+<app-header [title]="title"></app-header>
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
-
+<app-header [title]="title"></app-header>
 <div class="market-form-container">
-  <app-header [title]="title"></app-header>
+  
 
   <div class="scrollable-content">
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
       <!-- Region Selection -->
-      <div class="form-section">
+      <div class="form-section"> 
         <label for="region" class="form-label">
           {{ "PAGE.LABELS.REGION" | translate }}
           <span class="asterik">*</span>
@@ -32,7 +33,7 @@
         </div>
       </div>
 
-      <!-- Subregion Selection -->
+     
       <div *ngIf="subregions.length > 0" class="form-section">
         <label for="subregion" class="form-label">
           {{ "PAGE.LABELS.SUBREGION" | translate }}

@@ -10,31 +10,49 @@ import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 
 import { HeaderComponent } from '../../shared/header/header.component';
-
-
 import { MarketService } from '../../services/market.service';
-import { Market, MarketDetails } from '../../core/models/market';
-import { MenuItem, ConfirmationService,MessageService } from 'primeng/api';
+import { Market } from '../../core/models/market';
+import { MenuItem, ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 /**
  * LLD
- * 
+ *
  * This component is used to display details of the selected market.
- * 
+ *
  * Execution Flow:
  *  - On initialization, the market ID is fetched from the route parameters.
  *  - The `MarketService` is used to fetch market details using the retrieved `marketId`.
- *  - The market details are then displayed using Primeng components.
- * 
- * This screen contains the following actions:
- *  - Fetch Market Details: Retrieves the market details based on `marketId`.
- *  - Error Handling: Logs errors if the market ID is missing or the API call fails.
- * 
+ *  - The market details are then displayed using PrimeNG components.
+ *
+ * Fields:
+ *  - **Market Name**: Displays the name of the market.
+ *  - **Market Code**: Displays the market code (e.g., AA, Antarctica).
+ *  - **Long Market Code**: Shows the formatted long market code (e.g., L-AQ.AA.AA).
+ *  - **Region**: Shows the region the market belongs to (e.g., LAAPA).
+ *  - **Sub-Region**: Displays the sub-region (e.g., Africa).
+ *  - **Sub-Groups**: A list of subgroups that are part of the market.
+ *    Each subgroup is displayed with its code and name in the format:
+ *    `MarketCode + SubGroupCode - SubGroupName` (e.g., AAQ - Q-Island).
+ *
+ * Buttons:
+ *  - **Delete Market**: Displays a button in the menu that, when clicked, opens a confirmation dialog for deleting the market.
+ *                       This button is disabled if the market has subgroups.
+ *  - **Edit Market**: A button to navigate to the edit page for the current market.
+ *
+ * Actions:
+ *  - **Fetch Market Details**: Retrieves the market details based on `marketId` via the `loadMarketDetails` method.
+ *  - **Delete Market**: Deletes the market if confirmed by the user through the confirmation dialog.
+ *  - **Edit Market**: Navigates to the market edit page.
+ *
+ * Error Handling:
+ *  - Logs errors if the market ID is missing or the API call fails.
+ *
  * API Endpoints:
- *  - `GET https://localhost:7058/api/Market/1/details`: Fetches details for a specific market.
- * 
+ *  - `GET https://localhost:7058/api/Market/1`: Fetches details for a specific market.
+ *
  * Sample API Response:
  *  {
  *    "marketId": 1,
@@ -62,114 +80,152 @@ import { ToastModule } from 'primeng/toast';
   selector: 'app-view-market-details',
   standalone: true,
   imports: [
-    CardModule, PanelModule, TagModule, ChipModule, 
-    MenuModule, ButtonModule, HeaderComponent, NgFor, 
-    CommonModule,ConfirmDialogModule,ToastModule
+    CardModule,
+    PanelModule,
+    TagModule,
+    ChipModule,
+    MenuModule,
+    ButtonModule,
+    HeaderComponent,
+    NgFor,
+    CommonModule,
+    ConfirmDialogModule,
+    ToastModule,
+    TranslateModule,
   ],
   templateUrl: './view-market-details.component.html',
-  styleUrls: ['./view-market-details.component.css'],
+  styleUrls: ['./view-market-details.component.scss'],
   providers: [ConfirmationService,MessageService] 
 })
 export class ViewMarketDetailsComponent implements OnInit {
- 
-
-  marketDetails: MarketDetails | null = null;
+  marketDetails: Market | null = null;
   marketId: number | undefined;
-  market!: Market;
-  items: MenuItem[] | undefined;
-  marketName: string | undefined = '';
+  market: Market | null = null;
+  marketName: string = '';
+  combinedSubGroupDetails: string[] = [];
+  items: MenuItem[] = [];
 
-  constructor(private route: ActivatedRoute, private marketService: MarketService, private router: Router, private confirmationService: ConfirmationService, private messageService: MessageService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private marketService: MarketService,
+    private router: Router,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
+    private translate: TranslateService 
+  ) {
+    this.translate.setDefaultLang('en');
+    this.translate.use('en');
+  }
 
   ngOnInit() {
     this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);
-    
     if (this.marketId) {
-      this.getMarketDetails(this.marketId);
+      this.loadMarketDetails();
+    
     } else {
       console.error('Market ID not found in the route');
     }
+    
+  }
 
-    this.marketService.getMarketById(this.marketId).subscribe(
-      (data: Market) => {
-        this.market = data;
-        this.marketName = this.marketDetails?.name;
-        this.setupMenuItems();
-      },
-      (error) => {
-        console.error('Error fetching market details:', error);
-      }
+ /**
+   * The `combineSubGroupDetails` method processes the `marketDetails` object by mapping over its `marketSubGroups`.
+   * It returns an array of formatted strings, where each string combines the market code with the subgroup code and name.
+   * @param marketDetails - The market object containing subgroups.
+   * @returns An array of strings combining the market code with each subgroup's code and name.
+   */
+  private combineSubGroupDetails(marketDetails: Market | null): string[] {
+    return (
+      marketDetails?.marketSubGroups?.map(
+        (subgroup) =>
+          `${marketDetails?.code}${subgroup.subGroupCode} - ${subgroup.subGroupName}`
+      ) ?? []
     );
   }
 
+  /*
+   *The loadMarketDetails method fetches market data via the MarketService, assigns the retrieved data to the marketDetails properties.
+   */
+  private loadMarketDetails() {
+    this.marketService.getMarketById(this.marketId!).subscribe({
+      next: (data: Market) => {
+        this.marketDetails = data;
+        this.marketName = this.marketDetails?.name ?? '';
+        this.combinedSubGroupDetails = this.combineSubGroupDetails(
+          this.marketDetails
+        );
+        this.setupMenuItems();
+      },
+      error: (err) => {
+        console.error('Failed to fetch market details', err);
+      },
+    });
+  }
+  /*
+   * The setupMenuItems method initializes the UI's menu items "Delete Market"
+   * option that is disabled if the market has subgroups, and configures commands to trigger methods like
+   * confirmDeleteMarket when an option is selected.
+   */
   private setupMenuItems() {
     this.items = [
       {
         items: [
           {
-            label: 'Delete Market',
+            label: this.translate.instant('PAGE.BUTTONS.DELETE_BUTTON'),
             command: () => this.confirmDeleteMarket(),
-            disabled: !this.market || !this.market.marketSubGroups || this.market.marketSubGroups.length > 0 // Disable if subgroups exist
-          }
-        ]
-      }
+            disabled:
+              !this.market ||
+              !this.market.marketSubGroups ||
+              this.market.marketSubGroups.length > 0,
+          },
+        ],
+      },
     ];
   }
-
-  confirmDeleteMarket() {
+  /**
+   *The confirmDeleteMarket method opens a confirmation dialog using PrimeNG's ConfirmationService to prompt the user
+   *for market deletion, calling the deleteMarket method if confirmed, while taking no action if rejected.
+   */
+  private confirmDeleteMarket() {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to delete this market?',
-      header: 'Confirm Delete',
-      acceptLabel: 'Confirm',
-      rejectLabel: 'Cancel',
-      rejectButtonStyleClass:'p-button-transparent',
-      accept: () => {
-        this.deleteMarket();
-      },
-      reject: () => {
-        console.log('Delete action canceled');
-      }
+      message: this.translate.instant('PAGE.CONFIRM_DELETE_MESSAGE'), 
+      header: this.translate.instant('PAGE.CONFIRM_DELETE_HEADER'),   
+      acceptLabel: this.translate.instant('PAGE.BUTTONS.CONFIRM'),    
+      rejectLabel: this.translate.instant('PAGE.BUTTONS.CANCEL'),    
+      rejectButtonStyleClass: 'p-button-transparent',
+      accept: () => this.deleteMarket(),
+      reject: () => console.log('Delete action canceled'),
     });
   }
 
-  deleteMarket(){
+  /**
+   *The deleteMarket method handles market deletion by invoking the MarketService.deleteMarket API with the current 
+   *marketId. On success, a success message is displayed using PrimeNG's MessageServiceand the user is 
+   *redirected to the markets list. If an error occurs, it logs the error to the console.
+   */
+  private deleteMarket() {
     if (this.marketId) {
       this.marketService.deleteMarket(this.marketId).subscribe({
-        next: (response) => {
-          console.log('Market deleted successfully:', response);
-          this.messageService.add({ 
-            severity: 'success', 
-            summary: 'Success', 
-            detail: `Market deleted successfully` 
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant('PAGE.SUCCESS'), 
+            detail: this.translate.instant('PAGE.MARKET_DELETED_SUCCESS', { marketName: this.market?.name }), 
           });
+          this.router.navigate(['/markets']);
           this.router.navigate(['/markets']);
         },
         error: (error) => {
           console.error('Error deleting market:', error);
-        }
+        },
       });
-    } else {
-      console.error('Market ID is undefined');
     }
   }
-
-
   /**
-   * get market details from the backend.
-   * 
-   * @param marketId The ID of the market to fetch details for.
+   The navigateToEdit method navigates the user to the market edit page using Angular's Router, 
+   directing them to the /markets/edit/:marketId URL, where the marketId is dynamically inserted.
+   If the marketId is undefined, an error message is logged to the console..
    */
-  getMarketDetails(marketId: number) {
-    this.marketService.getMarketById(marketId).subscribe({
-      next: (data) => {
-        this.marketDetails = data;
-      },
-      error: (err) => {
-        console.error('Failed to fetch market details', err);
-      }
-    });
-  }
-
   navigateToEdit() {
     if (this.marketId) {
       this.router.navigate([`/markets/edit/${this.marketId}`]);
