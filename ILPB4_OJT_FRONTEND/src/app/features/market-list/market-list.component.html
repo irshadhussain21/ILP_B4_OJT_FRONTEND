@@ -1,90 +1,91 @@
-<app-header title="Markets">
+<app-header title="{{ 'PAGE.LABELS.MARKETS' | translate }}">
     <button id="add-market-btn" class="add-market-button" [routerLink]="['/markets/create']" routerLinkActive="router-link-active">
-        <i class="pi pi-plus"></i> Create Market
+        <i class="pi pi-plus"></i> {{ 'PAGE.BUTTONS.MARKET_LIST_CREATE_MARKET' | translate }}
     </button>
 </app-header>
 <div class="container">
-    
     <div class="search-container">
         <span class="p-input-icon-left">
             <i class="pi pi-search" style=" margin-top: -10px;"></i>
-            <input type="text" pInputText placeholder="Search markets..." [(ngModel)]="searchText" (input)="filterMarkets()" />
+            <input type="text" pInputText placeholder="{{ 'PAGE.PLACEHOLDERS.SEARCH_MARKETS' | translate }}" [(ngModel)]="searchText" (input)="filterMarkets()" />
             <i class="pi pi-times" *ngIf="searchText" (click)="clearFilter()" style="cursor: pointer;"></i>
         </span>
-    
-    <!-- MultiSelect Dropdown for Regions -->
-    <div class="filter-container" style="margin-bottom: 20px;">
-        <p-multiSelect 
-            [options]="regions" 
-            [(ngModel)]="selectedRegions" 
-            optionLabel="label" 
-            placeholder="Region" 
-            [filter]="true" 
-            filterPlaceHolder="Search"
-            [showToggleAll]="false"
-            appendTo="body"
-            class="region-multiselect"
-            [ngClass]="{'selected-options': selectedRegions.length > 0}"
-            (onChange)="handleSelectionChange()">
-        </p-multiSelect>
+
+        <!-- MultiSelect Dropdown for Regions -->
+        <div class="filter-container" style="margin-bottom: 20px;">
+            <p-multiSelect 
+                [options]="regions" 
+                [(ngModel)]="selectedRegions" 
+                optionLabel="label" 
+                placeholder="{{ 'PAGE.PLACEHOLDERS.REGION' | translate }}" 
+                [filter]="true" 
+                filterPlaceHolder="{{ 'PAGE.PLACEHOLDERS.SEARCH' | translate }}"
+                [showToggleAll]="false"
+                appendTo="body"
+                class="region-multiselect"
+                [ngClass]="{'selected-options': selectedRegions.length > 0}"
+                (onChange)="handleSelectionChange()">
+            </p-multiSelect>
+        </div>
     </div>
-</div>
 
     <!-- Container for Chips and Clear All Button -->
     <div class="selected-chips-container">
-        <span *ngIf="selectedRegions.length > 0" class="selected-label">Region</span>
+        <span *ngIf="selectedRegions.length > 0" class="selected-label">{{ 'PAGE.LABELS.REGION' | translate }}</span>
         <span *ngFor="let region of selectedRegions" class="chip">
             {{ region.label }}
             <i class="pi pi-times" (click)="removeRegion(region)"></i>
         </span>
-        <span *ngIf="selectedRegions.length > 0" class="clear-all" (click)="clearAll()">Clear All</span>
+        <span *ngIf="selectedRegions.length > 0" class="clear-all" (click)="clearAll()">{{ 'PAGE.BUTTONS.FILTER_CLEAR_ALL' | translate }}</span>
     </div>
-
-
 
     <div class="p-table-container">
         <p-table [value]="filteredMarkets" scrollable="true" [scrollHeight]="'400px'" [tableStyle]="{'min-width': '60rem'}" sortMode="single" (onSort)="onSort($event)">
             <ng-template pTemplate="header">
                 <tr class="custom-header">
                     <th pSortableColumn="longcode" style="width:25%">
-                        Long Code 
+                        {{ 'PAGE.LABELS.LONG_CODE' | translate }} 
                         <p-sortIcon field="longcode" *ngIf="sortField === 'longcode'"></p-sortIcon>
                     </th>
                     <th pSortableColumn="marketcode" style="width:25%">
-                        Market Code 
+                        {{ 'PAGE.LABELS.MARKET_CODE' | translate }} 
                         <p-sortIcon field="marketcode" *ngIf="sortField === 'marketcode'"></p-sortIcon>
                     </th>
                     <th pSortableColumn="name" style="width:25%">
-                        Market Name 
+                        {{ 'PAGE.LABELS.MARKET_NAME' | translate }} 
                         <p-sortIcon field="name" *ngIf="sortField === 'name'"></p-sortIcon>
                     </th>
-                    <th pSortableColumn="subgroups" style="width:25%">
-                        Subgroups 
+                    <th style="width:25%">
+                        {{ 'PAGE.LABELS.SUBGROUPS' | translate }} 
                         <p-sortIcon field="subgroups" *ngIf="sortField === 'subgroups'"></p-sortIcon>
                     </th>
                     <th pSortableColumn="region" style="width:25%">
-                        Region 
+                        {{ 'PAGE.LABELS.REGION' | translate }} 
                         <p-sortIcon field="region" *ngIf="sortField === 'region'"></p-sortIcon>
                     </th>
                     <th pSortableColumn="subregion" style="width:25%">
-                        Subregion 
+                        {{ 'PAGE.LABELS.SUBREGION' | translate }} 
                         <p-sortIcon field="subregion" *ngIf="sortField === 'subregion'"></p-sortIcon>
                     </th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-market>
                 <tr>
-                    <td [pTooltip]="market.longMarketCode" tooltipPosition="top">{{ market.longMarketCode | uppercase}}</td>
-                    <td>{{ market.code | uppercase}}</td>
-                    <td [pTooltip]="market.name" tooltipPosition="top" class="truncate capitalize-first"><a [routerLink]="['/markets', market.id]" class="market-link">{{ market.name }}</a></td>
-                    <td>  <ng-container *ngIf="market.marketSubGroups && market.marketSubGroups.length > 0">
-                        <span *ngFor="let subgroup of market.marketSubGroups" 
-                        class="subgroup-badge" 
-                        pTooltip="{{ getFormattedSubGroupCode(market.code, subgroup.subGroupCode) }} - {{ subgroup.subGroupName }}" 
-                        tooltipPosition="top">
-                        {{ getFormattedSubGroupCode(market.code, subgroup.subGroupCode) }}  
-                  </span>
-                      </ng-container></td>
+                    <td [pTooltip]="market.longMarketCode" tooltipPosition="top">{{ market.longMarketCode | uppercase }}</td>
+                    <td>{{ market.code }}</td>
+                    <td [pTooltip]="market.name" tooltipPosition="top" class="truncate capitalize-first">
+                        <a [routerLink]="['/markets', market.id]" class="market-link">{{ market.name }}</a>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="market.marketSubGroups && market.marketSubGroups.length > 0">
+                            <span *ngFor="let subgroup of market.marketSubGroups" 
+                                  class="subgroup-badge" 
+                                  pTooltip="{{ getFormattedSubGroupCode(market.code, subgroup.subGroupCode) }} - {{ subgroup.subGroupName }}" 
+                                  tooltipPosition="top">
+                                {{ getFormattedSubGroupCode(market.code, subgroup.subGroupCode) }}  
+                            </span>
+                        </ng-container>
+                    </td>
                     <td>{{ market.region }}</td>
                     <td>{{ market.subRegion }}</td>
                 </tr>

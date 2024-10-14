@@ -10,6 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DropdownModule } from 'primeng/dropdown';
 import { PaginatorModule } from 'primeng/paginator';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
 /** Local imports */
 import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
@@ -70,7 +71,8 @@ import { HeaderComponent } from "../../shared/header/header.component";
     TooltipModule,
     TagModule, RouterLink, FormsModule,DropdownModule,PaginatorModule,
     MultiSelectModule,
-    HeaderComponent
+    HeaderComponent,
+    TranslateModule
   ],
   templateUrl: './market-list.component.html',
   styleUrls: ['./market-list.component.scss']
@@ -173,7 +175,7 @@ export class MarketlistComponent implements OnInit {
   subRegionsMap: { [key: string]: string } = {}; 
 
    
-  constructor(private marketService: MarketService, private regionService: RegionService) {
+  constructor(private marketService: MarketService, private regionService: RegionService,private translateService: TranslateService) {
     this.regions = [
       { label: 'EURO - Europe', value: 'EURO' },
       { label: 'LAAPA - Latin America, Asia Pacific and Africa', value: 'LAAPA' },

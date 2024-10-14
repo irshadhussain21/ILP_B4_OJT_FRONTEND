@@ -5,11 +5,17 @@
           "CREATE_MARKET": "Submit",
           "UPDATE_MARKET": "Update Market",
           "ADD_SUBGROUP":"Add Subgroup",
-          "CANCEL": "Cancel"
+          "CANCEL": "Cancel",
+          "MARKET_LIST_CREATE_MARKET": "Create Market",
+          "FILTER_CLEAR_ALL": "Clear All"
       },
       "LABELS": {
           "CREATE_MARKET": "Create Market",
           "EDIT_MARKET": "Edit Market",
+          "MARKETS": "Markets",
+          "LONG_CODE": "Long Code",
+          "MARKET_CODE": "Market Code",
+          "MARKET_NAME": "Market Name",
           "REGION": "Region",
           "SUBREGION": "Subregion",
           "SHORT_CODE_MARKET_NAME": "Short Code/Market Name",
@@ -28,7 +34,10 @@
           "ERROR_MARKET_CODE_REQUIRED": "Market Code is required",
           "LONG_CODE_FORMAT_INFO": "The format will be automatically set based on selections",
           "ADD_SUBGROUP_INFO_VALID": "Start adding Subgroup(s) for the Market",
-          "ADD_SUBGROUP_INFO_INVALID": "Enter the Market Code/Name before adding Subgroup(s)"
+          "ADD_SUBGROUP_INFO_INVALID": "Enter the Market Code/Name before adding Subgroup(s)",
+          "SEARCH_MARKETS": "Search markets...",
+          "REGION": "Region",
+          "SEARCH": "Search"
       },
       "TOAST_MESSAGE": {
           "SUCCESS_MARKET": {
