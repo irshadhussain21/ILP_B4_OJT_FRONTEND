@@ -1,18 +1,20 @@
 .container {
   padding: 20px;
-  height: 89vh;
+  height: 70vh;
   display: flex;
   flex-direction: column;
-  top: 100px;
+  top: 110px;
   position: relative;
- 
+ overflow-y:scroll;
+ -webkit-overflow-scrolling: touch;
+
 }
 
 .card {
   margin-top: 10px;
   border-radius: 6px;
   background-color: white;
-  overflow: auto;
+
   position: relative;
 }
  .header h1 {

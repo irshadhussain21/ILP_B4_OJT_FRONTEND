@@ -22,5 +22,5 @@ import { ViewMarketDetailsComponent } from "./features/view-market-details/view-
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'ILPB4_OJT_FRONTEND';
+ 
 }

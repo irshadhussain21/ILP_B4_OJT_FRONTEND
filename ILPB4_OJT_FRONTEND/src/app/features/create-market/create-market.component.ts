@@ -100,7 +100,11 @@ import { RegionEnum } from '../../core/enums/region.enum';
   ],
   providers: [MessageService, ConfirmationService],
 })
+
+
 export class CreateMarketComponent implements OnInit {
+
+  isFormValid: boolean = false;
   marketForm!: FormGroup;
   title: string = CreateMarketConfig.TITLE_CREATE;
   isEditMode: boolean = false;
@@ -114,7 +118,7 @@ export class CreateMarketComponent implements OnInit {
   hasNameExistsError: boolean = false;
   hasEditedCode: boolean = false;
   hasEditedName: boolean = false;
-  showSubgroupComponent: boolean = false;
+
 
   constructor(
     private fb: FormBuilder,
@@ -177,12 +181,15 @@ export class CreateMarketComponent implements OnInit {
       region: ['', Validators.required],
       subregion: [''],
     });
+
+    this.marketForm.statusChanges.subscribe(status => {
+      this.isFormValid = status === 'VALID';
+    });
   }
 
-  /**
-   * Sets up field listeners to track changes in form fields like marketCode and region, and triggers validation or long code updates.
-   */
-  setupFieldListeners(): void {
+  private setupFieldListeners(): void {
+
+
     this.marketForm
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
@@ -318,10 +325,7 @@ export class CreateMarketComponent implements OnInit {
       });
       this.subGroups = data.marketSubGroups || [];
 
-      if (this.subGroups.length > 0) {
-        this.showSubgroupComponent = true;
-      }
-
+      
       this.onRegionSelect(Number(data.region));
     });
   }
@@ -347,13 +351,13 @@ export class CreateMarketComponent implements OnInit {
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
-        marketSubGroups: this.subGroups.map((subGroup) => ({
+        marketSubGroups: this.subGroups.length > 0 ? this.subGroups.map((subGroup) => ({
           subGroupId: subGroup.subGroupId || 0,
           subGroupName: subGroup.subGroupName,
           subGroupCode: subGroup.subGroupCode,
           marketId: subGroup.marketId || this.marketId,
           marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
-        })),
+        })) : [],
       };
 
       if (this.isEditMode) {
@@ -458,19 +462,11 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
-  /**
-   * Displays the subgroup component when the user clicks to add subgroups.
-   */
-  showSubgroup() {
-    this.showSubgroupComponent = true;
-  }
-
-  /**
-   * Handles changes to the list of subgroups.
-   * @param subGroups - The updated list of subgroups.
-   */
   onSubGroupsChanged(subGroups: MarketSubgroup[]): void {
     this.subGroups = subGroups;
+    if (this.subGroups.length === 0) {
+      this.marketForm.setErrors(null);
+    }
   }
 
   /**
@@ -483,19 +479,19 @@ export class CreateMarketComponent implements OnInit {
   }): void {
     this.subGroups = [...event.subGroups];
     if (event.noRowsLeft) {
-      this.showSubgroupComponent = false;
+      this.marketForm.setErrors(null);
     }
   }
 
-  /**
-   * Updates the form's validation state based on whether subgroup errors are present.
-   * @param hasErrors - Boolean indicating if subgroup errors are present.
-   */
-  onHasErrorsChanged(hasErrors: boolean): void {
+  onSubgroupErrorsFound(hasErrors: boolean): void {
     if (hasErrors) {
       this.marketForm.setErrors({ subgroupErrors: true });
     } else {
-      this.marketForm.setErrors(null);
+      if (this.marketForm.errors?.['subgroupErrors']) {
+        const errors = { ...this.marketForm.errors };
+        delete errors['subgroupErrors'];
+        this.marketForm.setErrors(Object.keys(errors).length > 0 ? errors : null);
+      }
     }
   }
 
