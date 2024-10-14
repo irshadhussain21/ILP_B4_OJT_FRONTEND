@@ -6,17 +6,17 @@
     <div class="empty-subgroup-template">
       <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
       <p *ngIf="!isFormValid">
-        {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_INVALID" }}
+        {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_INVALID" | translate }}
       </p>
       <p *ngIf="isFormValid">
-        {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_VALID" }}
+        {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_VALID" | translate }}
       </p>
 
       <button
         type="button"
         pButton
         icon="pi pi-plus"
-        label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP' }}"
+        label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP'|translate }}"
         [outlined]="true"
         (click)="showSubgroupFunc()"
         [disabled]="!isFormValid"
@@ -92,7 +92,7 @@
       </ng-template>
     </p-table>
 
-    <button type="button" pButton icon="pi pi-plus" label="Add Subgroup" [outlined]="true" (click)="addRow()"
+    <button type="button" pButton icon="pi pi-plus" label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP'|translate }}" [outlined]="true" (click)="addRow()"
       [disabled]="!canAddSubgroup() || !isFormValid"></button>
 
     </form>
