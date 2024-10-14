@@ -109,3 +109,25 @@ cursor: not-allowed;                 /* Optional: Set cursor to not-allowed */
 border-color: #d1d5db !important;    /* Keep the original border */
 box-shadow: none !important;         /* Remove any shadow */
 }
+
+
+.empty-subgroup-template {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.empty-subgroup-template img {
+  width: 150px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.empty-subgroup-template p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}

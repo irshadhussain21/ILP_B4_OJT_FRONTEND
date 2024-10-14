@@ -127,7 +127,8 @@ export class CreateMarketComponent implements OnInit {
     private route: ActivatedRoute,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    
   ) {}
 
   /**

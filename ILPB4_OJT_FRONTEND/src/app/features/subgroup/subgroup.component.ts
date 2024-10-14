@@ -16,6 +16,7 @@ import { MarketSubgroup } from '../../core/models/market';
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { debounceTime } from 'rxjs/operators'; // Import debounceTime for performance optimization
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 
 /** LLD
  * SubGroupComponent:
@@ -84,7 +85,9 @@ import { debounceTime } from 'rxjs/operators'; // Import debounceTime for perfor
     ButtonModule, 
     InputGroupModule, 
     InputTextModule, 
-    DividerModule
+    DividerModule,
+    TranslateModule
+   
   ],
   providers: [ConfirmationService],
   templateUrl: './subgroup.component.html',
@@ -112,7 +115,8 @@ export class SubgroupComponent implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private confirmationService: ConfirmationService,
-    private marketSubgroupService: MarketSubgroupService
+    private marketSubgroupService: MarketSubgroupService,
+    private translateService:TranslateService
   ) {}
 
   /**
