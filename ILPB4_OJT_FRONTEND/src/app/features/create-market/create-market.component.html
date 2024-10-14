@@ -28,7 +28,7 @@
                 [value]="region.key"
                 formControlName="region"
               ></p-radioButton>
-              <label class="check-box-labels" [for]="region.key.toString()">- {{ region.value }}</label>
+              <label class="check-box-labels" [for]="region.key.toString()">- {{ getRegionName(region.key) }}</label>
             </div>
           </div>
         </div>
