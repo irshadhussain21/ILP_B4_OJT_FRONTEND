@@ -1,18 +1,20 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TableModule } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { TagModule } from 'primeng/tag';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+/** External Libraries */
+import { TableModule } from 'primeng/table';
+import { InputTextModule } from 'primeng/inputtext';
+import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
+import { DropdownModule } from 'primeng/dropdown';
+import { PaginatorModule } from 'primeng/paginator';
+import { MultiSelectModule } from 'primeng/multiselect';
+/** Local imports */
 import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
 import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
-import { DropdownModule } from 'primeng/dropdown';
-import { PaginatorModule } from 'primeng/paginator';
-import { MultiSelectModule } from 'primeng/multiselect';
 import { HeaderComponent } from "../../shared/header/header.component";
 
 /**
@@ -69,48 +71,108 @@ import { HeaderComponent } from "../../shared/header/header.component";
     TagModule, RouterLink, FormsModule,DropdownModule,PaginatorModule,
     MultiSelectModule,
     HeaderComponent
-],
+  ],
   templateUrl: './market-list.component.html',
   styleUrls: ['./market-list.component.css']
 })
 export class MarketlistComponent implements OnInit {
-/**
- * Title for the market list component
- */
-@Input() title: string = '';
-handleSelectionChange() {
-  console.log('Selected Cities:', this.selectedRegions);
-}
-onRegionChange() {
-throw new Error('Method not implemented.');
-}
-clearAll() {
-  this.selectedRegions = [];  
-}
-removeRegion(region: any) {
-  this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
-}
+  /**
+   * Title for the market list component
+   */
+  @Input() title: string = '';
+  
+  handleSelectionChange() {
+    console.log('Selected Cities:', this.selectedRegions);
+  }
+  
+  onRegionChange() {
+    throw new Error('Method not implemented.');
+  }
+  
+  clearAll() {
+    this.selectedRegions = [];  
+  }
+  
+  removeRegion(region: any) {
+    this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
+  }
+  
   /**
    * Array to hold the fetched markets
    */
   markets!: Market[];
+  
+  /**
+   * Array to hold the filtered markets
+   */
   filteredMarkets!: Market[];
-  selectedMarket!: Market;  
+  
+  /**
+   * Variable to hold the selected market
+   */
+  selectedMarket!: Market;
+  
+  /**
+   * Search text entered by the user
+   */
   searchText: string = ''; 
-   // Number of rows to display per page
+  
+  /**
+   * Number of rows to display per page
+   */
   rows: number = 10; 
-   // Index of the first row for pagination
+  
+  /**
+   * Index of the first row for pagination
+   */
   first: number = 0;
+  
+  /**
+   * Total number of markets
+   */
   totalMarkets: number = 0; 
-  // Options for the number of rows per page in pagination
+  
+  /**
+   * Options for the number of rows per page in pagination
+   */
   rowsPerPageOptions = [10, 25, 50, 75, 100];
+  
+  /**
+   * Selected number of rows per page
+   */
   selectedRowsPerPage: number = this.rows;
-  // List of regions for filtering markets
+  
+  /**
+   * List of regions for filtering markets
+   */
   regions: any[];
-  // Selected regions for filtering markets
+  
+  /**
+   * Selected regions for filtering markets
+   */
   selectedRegions: any[] = [];
- 
 
+  /**
+   * Field used for sorting
+   */
+  sortField: string = '';
+  
+  /**
+   * Sort order (1 for ascending, -1 for descending)
+   */
+  sortOrder: number = 1;
+
+  /**
+   * Map of regions with their corresponding names
+   */
+  regionsMap: { [key: string]: string } = {}; 
+  
+  /**
+   * Map of subregions with their corresponding names
+   */
+  subRegionsMap: { [key: string]: string } = {}; 
+
+   
   constructor(private marketService: MarketService, private regionService: RegionService) {
     this.regions = [
       { label: 'EURO - Europe', value: 'EURO' },
@@ -118,15 +180,10 @@ removeRegion(region: any) {
       { label: 'NOAM - North America', value: 'NOAM' }
     ];
   }
-  sortField: string = '';
-  sortOrder: number = 1;
-
-  regionsMap: { [key: string]: string } = {}; 
-  subRegionsMap: { [key: string]: string } = {}; 
-
+  
   onSort(event: any) {
-      this.sortField = event.field;
-      this.sortOrder = event.order;
+    this.sortField = event.field;
+    this.sortOrder = event.order;
   }
 
   ngOnInit() {
@@ -134,14 +191,18 @@ removeRegion(region: any) {
     this.loadMarkets();
   }
   
-  // Function to load regions and subregions
+  /**
+   * Function to load regions and subregions
+   */
   loadRegionsAndSubregions() {
     this.regionService.getAllRegions().subscribe(
       (regions: Region[]) => {
         regions.forEach(region => {
           this.regionsMap[region.key.toString()] = region.value;
   
-          // Fetch subregions for each region
+          /**
+           * Fetch subregions for each region
+           */
           this.regionService.getSubRegionsByRegion(region.key).subscribe(
             (subregions: Region[]) => {
               subregions.forEach(subregion => {
@@ -160,7 +221,9 @@ removeRegion(region: any) {
     );
   }
   
-  // Function to load markets and market details
+  /**
+   * Function to load markets and market details
+   */
   loadMarkets() {
     this.marketService.getAllMarkets().subscribe(
       (markets: Market[]) => {
@@ -178,7 +241,9 @@ removeRegion(region: any) {
     );
   }
   
-  // Function to load market details by market ID
+  /**
+   * Function to load market details by market ID
+   */
   loadMarketDetails(market: Market) {
     if (market.id) {
       this.marketService.getMarketDetailsById(market.id).subscribe(
@@ -194,42 +259,56 @@ removeRegion(region: any) {
     }
   }
   
-  //Filters the list of markets based on the search text entered by the user.
+  /**
+   * Filters the list of markets based on the search text entered by the user.
+   */
   filterMarkets() {
     if (this.searchText) {
-        this.marketService.searchMarkets(this.searchText).subscribe(
-            (data: Market[]) => {
-                this.filteredMarkets = data; 
-            },
-            (error) => {
-                console.error('Error searching markets:', error); 
-            }
-        );
+      this.marketService.searchMarkets(this.searchText).subscribe(
+        (data: Market[]) => {
+          this.filteredMarkets = data; 
+        },
+        (error) => {
+          console.error('Error searching markets:', error); 
+        }
+      );
     } else {
-        this.filteredMarkets = this.markets; 
+      this.filteredMarkets = this.markets; 
     }
   }
 
-  // Clear the search text
+  /**
+   * Clear the search text
+   */
   clearFilter() {
     this.searchText = ''; 
     this.filterMarkets();  
   }
 
-  //Retrieve the sub group code for displaying it in the market list.
+  /**
+   * Retrieve the sub group code for displaying it in the market list.
+   * @param market - market details to get subgroup code
+   */
   getSubgroupCode(market: Market): string {
     return market.marketSubGroups ? market.marketSubGroups.map(subgroup => subgroup.subGroupCode).join(' ') : '';
   }
+
+  /**
+   * Retrieves the Formatted SubGroupCode
+   * @param marketCode - market code 
+   * @param subGroupCode - Subgroup code in the market
+   * @returns Concatinated Subgroup code
+   */
   getFormattedSubGroupCode(marketCode: string, subGroupCode: string): string {
     return `${marketCode.toUpperCase()}${subGroupCode}`;
   }
-  
 
-    // Helper method to check if the current subgroup is the last one
+  /**
+   * Helper method to check if the current subgroup is the last one
+   */
   isLast(subGroup: MarketSubgroup, subGroups: MarketSubgroup[]): boolean {
     return subGroups.indexOf(subGroup) === subGroups.length - 1;
   }
-
 
   onPageChange(event: any) {
     this.first = event.first; 
