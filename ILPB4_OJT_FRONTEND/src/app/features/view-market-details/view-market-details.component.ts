@@ -229,6 +229,7 @@ export class ViewMarketDetailsComponent implements OnInit {
   navigateToEdit() {
     if (this.marketId) {
       this.router.navigate([`/markets/edit/${this.marketId}`]);
+      state: { marketName: this.marketName }
     } else {
       console.error('Market ID is not defined');
     }
