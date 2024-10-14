@@ -1,9 +1,9 @@
 <app-header [title]="marketDetails?.code + ' - ' + marketDetails?.name">
-  <button class="edit-button" (click)="navigateToEdit()">
-    <img src="assets/edit-icon.svg" alt="Edit Icon" width="16" height="16" />
-    <span>{{ 'EDIT_BUTTON' | translate }}</span>
+  <button class="edit-button" (click)="navigateToEdit()" >
+    <img src="./assets/edit-icon.svg" alt="Edit Icon" width="16" height="16" />
+    <span>{{ 'PAGE.BUTTONS.EDIT_BUTTON' | translate }}</span>
     <span class="notification-dot"></span>
-  </button>
+  </button> 
 
   <div class="options-card">
     <p-button class="options-btn" (onClick)="menu.toggle($event)" icon="pi pi-ellipsis-h"></p-button>

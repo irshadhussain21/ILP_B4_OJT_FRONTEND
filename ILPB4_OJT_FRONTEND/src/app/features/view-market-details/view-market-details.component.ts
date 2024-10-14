@@ -114,15 +114,18 @@ export class ViewMarketDetailsComponent implements OnInit {
     private translate: TranslateService 
   ) {
     this.translate.setDefaultLang('en');
+    this.translate.use('en');
   }
 
   ngOnInit() {
     this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);
     if (this.marketId) {
       this.loadMarketDetails();
+    
     } else {
       console.error('Market ID not found in the route');
     }
+    
   }
 
  /**

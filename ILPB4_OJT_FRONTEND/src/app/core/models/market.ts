@@ -8,7 +8,16 @@ export interface Market {
     marketSubGroups?: MarketSubgroup[];
 } 
 
-
+export interface MarketDetails {
+    id: number;
+    name: string;
+    code: string;
+    longMarketCode: string;
+    region: string;
+    subRegion: string;
+    marketSubGroups: MarketSubgroup[];
+}
+ 
 export interface MarketSubgroup {
     subGroupId?: number;     
     marketId?: number;

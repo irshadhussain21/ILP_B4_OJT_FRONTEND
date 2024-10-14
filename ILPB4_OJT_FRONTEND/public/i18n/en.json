@@ -1,11 +1,12 @@
-{
+{ 
   
   "PAGE": {
       "BUTTONS": {
           "CREATE_MARKET": "Submit",
           "UPDATE_MARKET": "Update Market",
           "ADD_SUBGROUP":"Add Subgroup",
-          "CANCEL": "Cancel"
+          "CANCEL": "Cancel",
+          "EDIT_BUTTON": "Edit" 
       },
       "LABELS": {
           "CREATE_MARKET": "Create Market",
@@ -14,6 +15,7 @@
           "SUBREGION": "Subregion",
           "SHORT_CODE_MARKET_NAME": "Short Code/Market Name",
           "LONG_MARKET_CODE": "Long Market Code",
+          "MARKET_NAME": "Market Name", 
           "SUBGROUPS": "Subgroup(s)"
       },
       "TOOLTIPS": {},
@@ -42,6 +44,9 @@
           "CONFIRM": {
               "CANCEL": "You have unsaved changes. Are you sure you want to proceed?"
           }
+      },
+      "NOTIFICATIONS": {
+        "NO_SUBGROUPS_AVAILABLE": "No subgroups available" 
       }
   }
 }
