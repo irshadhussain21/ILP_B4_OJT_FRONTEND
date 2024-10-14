@@ -6,7 +6,8 @@
           "UPDATE_MARKET": "Update Market",
           "ADD_SUBGROUP":"Add Subgroup",
           "CANCEL": "Cancel",
-          "EDIT_BUTTON": "Edit" 
+          "EDIT_BUTTON": "Edit" ,
+          "DELETE_BUTTON": "Delete"
       },
       "LABELS": {
           "CREATE_MARKET": "Create Market",

@@ -94,8 +94,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     TranslateModule,
   ],
   templateUrl: './view-market-details.component.html',
-  styleUrls: ['./view-market-details.component.css'],
-  providers: [ConfirmationService, MessageService],
+  styleUrls: ['./view-market-details.component.scss'],
+  providers: [ConfirmationService,MessageService] 
 })
 export class ViewMarketDetailsComponent implements OnInit {
   marketDetails: Market | null = null;
@@ -171,7 +171,7 @@ export class ViewMarketDetailsComponent implements OnInit {
       {
         items: [
           {
-            label: this.translate.instant('PAGE.BUTTONS.DELETE_MARKET'),
+            label: this.translate.instant('PAGE.BUTTONS.DELETE_BUTTON'),
             command: () => this.confirmDeleteMarket(),
             disabled:
               !this.market ||

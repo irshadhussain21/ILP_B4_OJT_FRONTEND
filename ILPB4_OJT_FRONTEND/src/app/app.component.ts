@@ -19,7 +19,7 @@ import { ViewMarketDetailsComponent } from "./features/view-market-details/view-
 
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
  

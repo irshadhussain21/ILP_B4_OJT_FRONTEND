@@ -26,18 +26,18 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { SubgroupComponent } from '../subgroup/subgroup.component';
 import { CreateMarketConfig } from '../../config/create-market-config';
 
-/** 
+/**
  * LLD
  *
- * The `CreateMarketComponent` is responsible for creating and editing a market. 
- * It allows users to input market details such as the market name, code, region, subregion, 
+ * The `CreateMarketComponent` is responsible for creating and editing a market.
+ * It allows users to input market details such as the market name, code, region, subregion,
  * and manage subgroups. The component supports both create and edit modes.
- * 
+ *
  * Execution Flow:
- *  - On initialization (`ngOnInit`), the component determines whether it is in edit or create mode based 
+ *  - On initialization (`ngOnInit`), the component determines whether it is in edit or create mode based
  *    on the presence of a market ID in the route parameters.
  *  - If in edit mode, the market details are fetched using the `MarketService`, and the form is populated.
- *  - Users can input market details and subgroup information, and the component handles validation and 
+ *  - Users can input market details and subgroup information, and the component handles validation and
  *    submission of the form.
  *
  * Main Actions:
@@ -57,12 +57,12 @@ import { CreateMarketConfig } from '../../config/create-market-config';
  *  - **Add Subgroup**: Button to display the subgroup form if the market code and name are valid.
  *  - **Submit (Create/Update Market)**: Button to submit the form data for either creating or updating a market.
  *  - **Cancel**: Button to reset the form and navigate back, with a confirmation prompt for unsaved changes.
- * 
+ *
  * API Endpoints:
  *  - `GET /api/Market/{marketId}/details`: Fetches details for a specific market by its ID.
  *  - `POST /api/Market`: Creates a new market.
  *  - `PUT /api/Market/{marketId}`: Updates an existing market.
- * 
+ *
  * Sample API Response:
  *  {
  *    "id": 1,
@@ -85,7 +85,7 @@ import { CreateMarketConfig } from '../../config/create-market-config';
   selector: 'app-market-form',
   standalone: true,
   templateUrl: './create-market.component.html',
-  styleUrls: ['./create-market.component.css'],
+  styleUrls: ['./create-market.component.scss'],
   imports: [
     ReactiveFormsModule,
     CommonModule,
@@ -154,7 +154,7 @@ export class CreateMarketComponent implements OnInit {
   /**
    * Initializes the form with required controls for market details.
    */
-  private initializeForm(): void {
+  initializeForm(): void {
     this.marketForm = this.fb.group({
       marketName: ['', Validators.required],
       marketCode: [
@@ -181,7 +181,7 @@ export class CreateMarketComponent implements OnInit {
   /**
    * Sets up field listeners to track changes in form fields like marketCode and region, and triggers validation or long code updates.
    */
-  private setupFieldListeners(): void {
+  setupFieldListeners(): void {
     this.marketForm
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
@@ -272,7 +272,7 @@ export class CreateMarketComponent implements OnInit {
   /**
    * Updates the long code field based on the selected region and market code.
    */
-  private updateLongCode(): void {
+  updateLongCode(): void {
     const region = this.regions.find(
       (r) => r.key === this.marketForm.get('region')?.value
     );
@@ -360,7 +360,7 @@ export class CreateMarketComponent implements OnInit {
    * Creates a new market by submitting the form data to the backend API.
    * @param marketData - The form data to create a new market.
    */
-  private createMarket(marketData: Market): void {
+  createMarket(marketData: Market): void {
     this.marketService.createMarket(marketData).subscribe({
       next: () => {
         this.messageService.add({
@@ -390,7 +390,7 @@ export class CreateMarketComponent implements OnInit {
    * Updates the existing market with new form data by sending a PUT request to the API.
    * @param marketData - The updated market data to be submitted.
    */
-  private updateMarket(marketData: Market): void {
+  updateMarket(marketData: Market): void {
     this.marketService.updateMarket(this.marketId!, marketData).subscribe({
       next: () => {
         this.messageService.add({
