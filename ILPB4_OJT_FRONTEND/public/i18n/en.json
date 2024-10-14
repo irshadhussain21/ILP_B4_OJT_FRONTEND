@@ -1,4 +1,4 @@
-{
+{ 
   
   "PAGE": {
       "BUTTONS": {
@@ -7,7 +7,9 @@
           "ADD_SUBGROUP":"Add Subgroup",
           "CANCEL": "Cancel",
           "MARKET_LIST_CREATE_MARKET": "Create Market",
-          "FILTER_CLEAR_ALL": "Clear All"
+          "FILTER_CLEAR_ALL": "Clear All",
+          "EDIT_BUTTON": "Edit" ,
+          "DELETE_BUTTON": "Delete"
       },
       "LABELS": {
           "CREATE_MARKET": "Create Market",
@@ -15,11 +17,11 @@
           "MARKETS": "Markets",
           "LONG_CODE": "Long Code",
           "MARKET_CODE": "Market Code",
-          "MARKET_NAME": "Market Name",
           "REGION": "Region",
           "SUBREGION": "Subregion",
           "SHORT_CODE_MARKET_NAME": "Short Code/Market Name",
           "LONG_MARKET_CODE": "Long Market Code",
+          "MARKET_NAME": "Market Name", 
           "SUBGROUPS": "Subgroup(s)"
       },
       "TOOLTIPS": {},
@@ -51,6 +53,9 @@
           "CONFIRM": {
               "CANCEL": "You have unsaved changes. Are you sure you want to proceed?"
           }
+      },
+      "NOTIFICATIONS": {
+        "NO_SUBGROUPS_AVAILABLE": "No subgroups available" 
       }
   }
 }

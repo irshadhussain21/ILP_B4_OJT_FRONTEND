@@ -3,15 +3,18 @@
     "PAGE": {
       "BUTTONS": {
         "SUBMIT": "Submit",
-        "UPDATE_MARKET": "Update Market"
+        "UPDATE_MARKET": "Update Market",
+        "EDIT_BUTTON": "Edit" 
       },
-      "LABELS": {
+      "LABELS": { 
         "CREATE_MARKET": "Create Market",
         "EDIT_MARKET": "Edit Market",
         "REGION": "Region",
         "SUBREGION": "Subregion",
         "SHORT_CODE_MARKET_NAME": "Short Code/Market Name",
-        "LONG_MARKET_CODE": "Long Market Code"
+        "LONG_MARKET_CODE": "Long Market Code",
+        "MARKET_NAME": "Market Name", 
+        "SUBGROUPS": "Subgroup(s)"    
       },
       "TOOLTIPS": {},
       "PLACEHOLDERS": {
@@ -21,6 +24,11 @@
         "ENTER_NAME": "Name",
         "ERROR_MARKET_CODE_EXISTS": "Entered market code already exists.",
         "ERROR_MARKET_NAME_EXISTS": "Entered market name already exists."
+      },
+
+      "NOTIFICATIONS": {
+        "NO_SUBGROUPS_AVAILABLE": "No subgroups available" 
       }
+
     }
 }
