@@ -1,6 +1,6 @@
 
-import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { TableModule } from 'primeng/table'; 
@@ -16,6 +16,7 @@ import { MarketSubgroup } from '../../core/models/market';
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { debounceTime } from 'rxjs/operators'; // Import debounceTime for performance optimization
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 
 /** LLD
  * SubGroupComponent:
@@ -84,7 +85,9 @@ import { debounceTime } from 'rxjs/operators'; // Import debounceTime for perfor
     ButtonModule, 
     InputGroupModule, 
     InputTextModule, 
-    DividerModule
+    DividerModule,
+    TranslateModule
+   
   ],
   providers: [ConfirmationService],
   templateUrl: './subgroup.component.html',
@@ -94,14 +97,15 @@ export class SubgroupComponent implements OnInit {
 
   // Accept the marketCode as an input from the parent component
   @Input() marketCode: string = '';
-  @Input() fetchSubGroups: MarketSubgroup[] = [];
+  @Input() marketId?: number;
+  @Input() isFormValid: boolean | undefined;
   @Output() subGroupsChanged = new EventEmitter<MarketSubgroup[]>();
-  @Output() noRowsLeftChanged = new EventEmitter<{ noRowsLeft: boolean, subGroups: MarketSubgroup[] }>();
+  @Output() hasNoSubgroups = new EventEmitter<{ noRowsLeft: boolean, subGroups: MarketSubgroup[] }>();
   @Output() hasErrorsChanged = new EventEmitter<boolean>();
 
+  showSubgroup: boolean = false;
   hasErrors: boolean = false;
-  isInitialLoad = true; // Initially, the Add Subgroup button is enabled.
-  submitting = false; // Add this flag to track the form submission status
+  submitting: boolean = false; // Add this flag to track the form submission status
   noRowsLeft: boolean = false; //A boolean flag that is set to true when there are no rows left in the form.
 
   form!: FormGroup;
@@ -111,7 +115,8 @@ export class SubgroupComponent implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private confirmationService: ConfirmationService,
-    private marketSubgroupService: MarketSubgroupService
+    private marketSubgroupService: MarketSubgroupService,
+    private translateService:TranslateService
   ) {}
 
   /**
@@ -120,53 +125,74 @@ export class SubgroupComponent implements OnInit {
    * from the backend service to populate the form.
    */
   ngOnInit(): void {
-    this.marketCode = this.marketCode.toUpperCase();
-    console.log('Market Code in SubGroupComponent:', this.marketCode);
+    this.initializeForm();
+    this.loadSubGroupsIfMarketIdExists();
+    this.subscribeToFormChanges();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.handleMarketCodeChange(changes);
+  }
+  
+  
+  handleMarketCodeChange(changes: SimpleChanges): void {
+    if (changes['marketCode'] && changes['marketCode'].currentValue) {
+      this.marketCode = changes['marketCode'].currentValue.toUpperCase();
+
+      this.rows.controls.forEach(row => {
+        row.get('marketCode')?.setValue(this.marketCode, { emitEvent: false });
+      });
+    }
+  }
+
+
+  
+
+  initializeForm() : void {
     this.form = this.fb.group({
       rows: this.fb.array([]) // FormArray to manage rows
     });
-      // Fetch subgroups based on the passed marketCode
-      if (this.marketCode.toLowerCase()) {
-        this.loadSubGroups(); 
-      } else {
-        this.addRow(); // If no marketCode, add an empty row by default
-      }
-
-      if (this.fetchSubGroups && this.fetchSubGroups.length > 0) {
-        this.form.setControl('rows', this.fb.array(this.fetchSubGroups.map(subGroup => this.createRow(subGroup))));
-      }
-
-      // Track changes to the form array and emit valid subgroups
-      this.form.valueChanges.pipe(
-        debounceTime(300) // Emit changes after 300ms of inactivity
-      ).subscribe(() => {
-        this.emitValidSubGroups();
-        this.checkForErrors();
-      });
   }
 
-  checkForErrors(): void {
-    this.hasErrors = this.rows.controls.some(row =>
-      row.get('subGroupCode')?.hasError('invalidFormat') ||
-      row.get('subGroupCode')?.hasError('required') ||
-      row.get('subGroupName')?.hasError('required') ||
-      row.get('subGroupCode')?.hasError('duplicateSubgroupCode') ||
-      row.get('subGroupName')?.hasError('duplicateSubgroupName')
-    );
+  loadSubGroupsIfMarketIdExists(): void {
+    if (this.marketId) {
+      this.loadSubGroups(); // Load subgroups if marketId is provided
+    } else {
+      this.addRow(); // Add an empty row by default if no marketId
+    }
+  }
+
+  subscribeToFormChanges(): void {
+    this.form.valueChanges.pipe(
+      debounceTime(300)
+    ).subscribe(() => {
+      this.emitValidSubGroups();
+    });
+
+    this.form.statusChanges.subscribe(status => {
+      const isInvalid = status === 'INVALID';
+      this.hasErrorsChanged.emit(isInvalid); // Emit true if the form is invalid, false otherwise
+    });
+  }
   
-    // Emit the updated value of hasErrors
-    this.hasErrorsChanged.emit(this.hasErrors);
+  showSubgroupFunc() {
+    this.showSubgroup = true;
+    if (this.rows.length === 0) {
+      this.addRow();  // Immediately add a new row if there are no existing rows
+    }
+    
   }
   
 
   emitValidSubGroups(): void {
-    // Filter out only valid rows
     const validSubGroups = this.rows.controls
-      .filter(row => row.valid) // Only emit if the row is valid
-      .map(row => row.value); // Extract the values of valid rows
+      .filter(row => row.valid) 
+      .map(row => row.value);
+
+    const hasInvalidRow = this.rows.controls.some(row => row.invalid);
+    this.hasErrorsChanged.emit(hasInvalidRow);
 
       console.log('Emitting valid subgroups:', validSubGroups);
-    // Emit the valid subgroups
     this.subGroupsChanged.emit(validSubGroups);
   }
 
@@ -176,10 +202,11 @@ export class SubgroupComponent implements OnInit {
    * Handles error logging if the request fails.
    */
   loadSubGroups(): void {
-    this.marketSubgroupService.getSubgroups(this.marketCode.toLowerCase()).subscribe({
+    this.marketSubgroupService.getSubgroups(this.marketId).subscribe({
       next: (subGroups: MarketSubgroup[]) => {
         if (subGroups.length > 0) {
           this.form.setControl('rows', this.fb.array(subGroups.map(subGroup => this.createRow(subGroup))));
+          this.showSubgroup = true;
         } else {
           this.addRow(); // If no subgroups are returned, add an empty row by default
         }
@@ -188,8 +215,6 @@ export class SubgroupComponent implements OnInit {
         console.error('Error fetching subgroupsfor market:', this.marketCode, error.message);
       }
     });
-
-    this.isInitialLoad = false;
   }
 
 /**
@@ -209,37 +234,70 @@ export class SubgroupComponent implements OnInit {
  * @param {SubGroup} subGroup - An optional subgroup object to pre-populate the row (for editing).
  * @returns {FormGroup} - A FormGroup representing the subgroup row.
  */
-  createRow(subGroup?: MarketSubgroup): FormGroup {
-    const row = this.fb.group({
-      subGroupId: [subGroup?.subGroupId || null],
-      marketId: [subGroup?.marketId],
-      marketCode: [this.marketCode],
-      subGroupCode: [subGroup?.subGroupCode || '', Validators.required],
-      subGroupName: [subGroup?.subGroupName || '', Validators.required]
-    });
- 
-    // Convert `subgroupCode` to uppercase on value change and trigger validation
-    row.get('subGroupCode')?.valueChanges.subscribe(value => {
-      if (value && value !== value.toUpperCase()) {
-        row.get('subGroupCode')?.setValue(value.toUpperCase(), { emitEvent: false });
-      }
-      
-      this.validateSubgroupCode(row);
-      row.get('subGroupCode')?.markAsTouched();
-    });
- 
-    // Convert `subgroupName` to uppercase on value change and trigger validation
-    row.get('subGroupName')?.valueChanges.subscribe(value => {
-      if (value && value !== value.toUpperCase()) {
-        row.get('subGroupName')?.setValue(value.toUpperCase(), { emitEvent: false });
-      }
+createRow(subGroup?: MarketSubgroup): FormGroup {
+  const row = this.fb.group({
+    subGroupId: [subGroup?.subGroupId || null],
+    marketId: [subGroup?.marketId],
+    marketCode: [this.marketCode],
+    subGroupCode: [
+      subGroup?.subGroupCode || '', 
+      [Validators.required, Validators.pattern('^[A-Za-z0-9]{1}$')]
+    ],
+    subGroupName: [
+      subGroup?.subGroupName || '', 
+      Validators.required
+    ]
+  }, { validators: [this.duplicateSubgroupCodeValidator(), this.duplicateSubgroupNameValidator()] });
 
-      this.validateSubgroupName(row);
-      row.get('subGroupName')?.markAsTouched();
-    });
- 
-    return row;
-  }
+  // Convert `subGroupCode` to uppercase on value change and trigger validation
+  row.get('subGroupCode')?.valueChanges.subscribe(value => {
+    if (value && value !== value.toUpperCase()) {
+      row.get('subGroupCode')?.setValue(value.toUpperCase(), { emitEvent: false });
+    }
+  });
+
+  // Convert `subGroupName` to uppercase on value change and trigger validation
+  row.get('subGroupName')?.valueChanges.subscribe(value => {
+    if (value && value !== value.toUpperCase()) {
+      row.get('subGroupName')?.setValue(value.toUpperCase(), { emitEvent: false });
+    }
+  });
+
+  return row;
+}
+
+
+
+duplicateSubgroupCodeValidator(): ValidatorFn {
+  return (formGroup: AbstractControl): { [key: string]: any } | null => {
+    const subGroupCode = formGroup.get('subGroupCode')?.value;
+    const marketCode = formGroup.get('marketCode')?.value;
+
+    const duplicate = this.rows.controls.some((otherRow) => 
+      (otherRow !== formGroup) &&
+      otherRow.get('subGroupCode')?.value === subGroupCode &&
+      otherRow.get('marketCode')?.value === marketCode
+    );
+
+    return duplicate ? { 'duplicateSubgroupCode': true } : null;
+  };
+}
+
+
+duplicateSubgroupNameValidator(): ValidatorFn {
+  return (formGroup: AbstractControl): { [key: string]: any } | null => {
+    const subGroupName = formGroup.get('subGroupName')?.value;
+    const marketCode = formGroup.get('marketCode')?.value;
+
+    const duplicate = this.rows.controls.some((otherRow) =>
+      (otherRow !== formGroup) &&
+      otherRow.get('subGroupName')?.value === subGroupName &&
+      otherRow.get('marketCode')?.value === marketCode
+    );
+
+    return duplicate ? { 'duplicateSubgroupName': true } : null;
+  };
+}
  
 /**
  * @method addRow
@@ -271,102 +329,16 @@ deleteRow(rowIndex: number): void {
     accept: () => {
       rowsArray.removeAt(rowIndex);
       if (rowsArray.length === 0) {
-        this.noRowsLeftChanged.emit({ noRowsLeft: true, subGroups: [] });
+        this.hasNoSubgroups.emit({ noRowsLeft: true, subGroups: [] });
+        this.showSubgroup = false;
       } else {
-        this.noRowsLeftChanged.emit({ noRowsLeft: false, subGroups: this.subGroups });
+        this.hasNoSubgroups.emit({ noRowsLeft: false, subGroups: this.subGroups });
       }
     },
     reject: () => {}
   });
 }
   
-/**
- * @method validateSubgroupCode
- * Validates the 'subgroupCode' field for each row, ensuring it contains a valid single alphanumeric 
- * character and is unique within the market. Sets validation errors if conditions are not met.
- * @param {AbstractControl} row - The form group representing a single row in the form.
- */
-validateSubgroupCode(row: AbstractControl): void {
-  const formGroup = row as FormGroup;
-  const marketCode = formGroup.get('marketCode')?.value;
-  const subgroupCode = formGroup.get('subGroupCode')?.value;
-
-  if (!subgroupCode || !marketCode) {
-    return;
-  }
-
-  formGroup.get('subGroupCode')?.setErrors(null);
-
-  const pattern = /^[A-Za-z0-9]{1}$/;
-  if (!pattern.test(subgroupCode)) {
-    formGroup.get('subGroupCode')?.setErrors({ invalidFormat: true });
-    return;
-  }
-
-  const duplicateSubgroupRows = this.rows.controls.filter(
-    (otherRow) => 
-      (otherRow as FormGroup).get('subGroupCode')?.value === subgroupCode &&
-      (otherRow as FormGroup).get('marketCode')?.value === marketCode
-  );
-
-  if (duplicateSubgroupRows.length > 1) {
-    formGroup.get('subGroupCode')?.setErrors({ duplicateSubgroupCode: true });
-  }
-
-}
-
-/**
- * @method validateSubgroupName
- * Validates the 'subgroupName' field for each row, ensuring it is unique within the market.
- * @param {AbstractControl} row - The form group representing a single row in the form.
- */
-validateSubgroupName(row: AbstractControl): void {
-  const formGroup = row as FormGroup;
-  const marketCode = formGroup.get('marketCode')?.value;
-  const subgroupName = formGroup.get('subGroupName')?.value;
-
-  if (!subgroupName || !marketCode) {
-    return;
-  }
-
-  formGroup.get('subGroupName')?.setErrors(null);
-
-  const duplicateSubgroupRows = this.rows.controls.filter(
-    (otherRow) => 
-      (otherRow as FormGroup).get('subGroupName')?.value === subgroupName &&
-      (otherRow as FormGroup).get('marketCode')?.value === marketCode
-  );
-
-  if (duplicateSubgroupRows.length > 1) {
-    formGroup.get('subGroupName')?.setErrors({ duplicateSubgroupName: true });
-  }
-}
-
-  
-  // private emitSubGroups(): void {
-  //   const subGroupValues = this.form.value.rows.map((subGroup: SubGroup) => ({
-  //     subGroupName: subGroup.subGroupName,
-  //     subGroupCode: subGroup.subGroupCode,
-  //     marketCode: subGroup.marketCode,
-  //   }));
-
-  //   this.subGroupsChanged.emit(subGroupValues);
-  // }
-/**
- * @method onCancel
- * Resets the form and reloads the existing subgroups, after confirming with the user.
- */
-  // onCancel(): void {
-  //   this.confirmationService.confirm({
-  //     message: 'You have unsaved changes. Are you sure you want to proceed?',
-  //     header: 'Confirmation',
-  //     icon: 'pi pi-exclamation-triangle',
-  //     accept: () => {
-  //       this.loadSubGroups();
-  //     }
-  //   });
-  // }
-
 /**
  * @method canAddSubgroup
  * Checks if a new subgroup can be added. A subgroup can be added if:
@@ -377,12 +349,12 @@ validateSubgroupName(row: AbstractControl): void {
  */
   canAddSubgroup(): boolean {
     if (!this.rows || this.rows.length === 0) {
-      return true; // Initially, allow adding the first row
+      return true;
     }
   
    const hasInvalidRow = this.rows.controls.some(row => row.invalid);
-
-   return !hasInvalidRow && !this.isInitialLoad;
+   this.hasErrorsChanged.emit(hasInvalidRow);
+   return !hasInvalidRow;
   }
   
 }
