@@ -15,6 +15,7 @@ import { Market } from '../../core/models/market';
 import { MenuItem, ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 /**
  * LLD
@@ -90,6 +91,7 @@ import { ToastModule } from 'primeng/toast';
     CommonModule,
     ConfirmDialogModule,
     ToastModule,
+    TranslateModule,
   ],
   templateUrl: './view-market-details.component.html',
   styleUrls: ['./view-market-details.component.css'],
@@ -108,8 +110,11 @@ export class ViewMarketDetailsComponent implements OnInit {
     private marketService: MarketService,
     private router: Router,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
-  ) {}
+    private messageService: MessageService,
+    private translate: TranslateService 
+  ) {
+    this.translate.setDefaultLang('en');
+  }
 
   ngOnInit() {
     this.marketId = +(this.route.snapshot.paramMap.get('marketId') ?? 0);
@@ -163,7 +168,7 @@ export class ViewMarketDetailsComponent implements OnInit {
       {
         items: [
           {
-            label: 'Delete Market',
+            label: this.translate.instant('PAGE.BUTTONS.DELETE_MARKET'),
             command: () => this.confirmDeleteMarket(),
             disabled:
               !this.market ||
@@ -180,10 +185,10 @@ export class ViewMarketDetailsComponent implements OnInit {
    */
   private confirmDeleteMarket() {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to delete this market?',
-      header: 'Confirm Delete',
-      acceptLabel: 'Confirm',
-      rejectLabel: 'Cancel',
+      message: this.translate.instant('PAGE.CONFIRM_DELETE_MESSAGE'), 
+      header: this.translate.instant('PAGE.CONFIRM_DELETE_HEADER'),   
+      acceptLabel: this.translate.instant('PAGE.BUTTONS.CONFIRM'),    
+      rejectLabel: this.translate.instant('PAGE.BUTTONS.CANCEL'),    
       rejectButtonStyleClass: 'p-button-transparent',
       accept: () => this.deleteMarket(),
       reject: () => console.log('Delete action canceled'),
@@ -201,8 +206,8 @@ export class ViewMarketDetailsComponent implements OnInit {
         next: () => {
           this.messageService.add({
             severity: 'success',
-            summary: 'Success',
-            detail: `${this.market?.name} market deleted successfully`,
+            summary: this.translate.instant('PAGE.SUCCESS'), 
+            detail: this.translate.instant('PAGE.MARKET_DELETED_SUCCESS', { marketName: this.market?.name }), 
           });
           this.router.navigate(['/markets']);
           this.router.navigate(['/markets']);
