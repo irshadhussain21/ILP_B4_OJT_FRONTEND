@@ -13,7 +13,7 @@ import { HeaderComponent } from '../../shared/header/header.component';
 
 
 import { MarketService } from '../../services/market.service';
-import { Market, MarketDetails } from '../../core/models/market';
+import { Market } from '../../core/models/market';
 import { MenuItem, ConfirmationService,MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
@@ -73,7 +73,7 @@ import { ToastModule } from 'primeng/toast';
 export class ViewMarketDetailsComponent implements OnInit {
  
 
-  marketDetails: MarketDetails | null = null;
+  marketDetails: Market | null = null;
   marketId: number | undefined;
   market!: Market;
   items: MenuItem[] | undefined;
