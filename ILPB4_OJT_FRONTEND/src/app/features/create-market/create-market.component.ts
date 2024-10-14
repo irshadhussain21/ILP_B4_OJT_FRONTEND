@@ -128,7 +128,8 @@ export class CreateMarketComponent implements OnInit {
     private route: ActivatedRoute,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    
   ) {}
 
   /**
@@ -243,6 +244,11 @@ export class CreateMarketComponent implements OnInit {
       });
   }
 
+  getRegionNames(regionId:number){
+    const regionID=regionId as RegionEnum;
+    const regionName=RegionNames[regionID];
+    return regionName;
+  }
   /**
    * Handles the selection of a subregion and updates the subregion form control.
    * @param event - The event triggered by subregion selection.
