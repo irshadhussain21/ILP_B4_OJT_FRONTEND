@@ -118,15 +118,21 @@
     text-align: left;
     padding: 10px;
     font-weight: bold;
-    border-bottom: 2px solid #dee2e6;
+    border-bottom: 2px solid #73b0ed; /* Existing border */
+    border-right: 1px solid #cd4040; /* Add right border */
 }
 
-
+.p-table thead th:last-child {
+    border-right: none; 
+}
 
 /* Hover effect for table rows */
 .p-table tbody tr:hover {
     background-color: #f0f0f0;
     
+}
+.p-table thead th:first-child {
+    border-left: 1px solid #cd4040; /* Add left border for the first header */
 }
 
 /* Alignments */
@@ -134,7 +140,7 @@
     text-align: left;
     vertical-align: middle;
 }
-.p-table td, .p-table th {
+.p-table td {
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
