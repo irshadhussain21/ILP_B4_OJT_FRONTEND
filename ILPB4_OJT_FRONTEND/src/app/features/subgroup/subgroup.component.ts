@@ -121,36 +121,52 @@ export class SubgroupComponent implements OnInit {
    * from the backend service to populate the form.
    */
   ngOnInit(): void {
-    this.form = this.fb.group({
-      rows: this.fb.array([]) // FormArray to manage rows
-    });
-      // Fetch subgroups based on the passed marketCode
-      if (this.marketId) {
-        this.loadSubGroups(); 
-      } else {
-        this.addRow(); // If no marketCode, add an empty row by default
-      }
-
-      // Track changes to the form array and emit valid subgroups
-      this.form.valueChanges.pipe(
-        debounceTime(300) // Emit changes after 300ms of inactivity
-      ).subscribe(() => {
-        this.emitValidSubGroups();
-        this.checkForErrors();
-      });
+    this.initializeForm();
+    this.loadSubGroupsIfMarketIdExists();
+    this.subscribeToFormChanges();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.handleMarketCodeChange(changes);
+  }
+  
+  
+  handleMarketCodeChange(changes: SimpleChanges): void {
     if (changes['marketCode'] && changes['marketCode'].currentValue) {
       this.marketCode = changes['marketCode'].currentValue.toUpperCase();
-      console.log('Market Code in SubGroupComponent:', this.marketCode);
+      this.updateMarketCodeInRows();
+    }
+  }
+  
 
-      this.rows.controls.forEach(row => {
-        row.get('marketCode')?.setValue(this.marketCode, { emitEvent: false });
-      });
+  initializeForm() : void {
+    this.form = this.fb.group({
+      rows: this.fb.array([]) // FormArray to manage rows
+    });
+  }
+
+  loadSubGroupsIfMarketIdExists(): void {
+    if (this.marketId) {
+      this.loadSubGroups(); // Load subgroups if marketId is provided
+    } else {
+      this.addRow(); // Add an empty row by default if no marketId
     }
   }
 
+  subscribeToFormChanges(): void {
+    this.form.valueChanges.pipe(
+      debounceTime(300) // Emit changes after 300ms of inactivity
+    ).subscribe(() => {
+      this.emitValidSubGroups();
+      this.checkForErrors();
+    });
+  }
+
+  updateMarketCodeInRows(): void {
+    this.rows.controls.forEach(row => {
+      row.get('marketCode')?.setValue(this.marketCode, { emitEvent: false });
+    });
+  }
 
   checkForErrors(): void {
     this.hasErrors = this.rows.controls.some(row =>
