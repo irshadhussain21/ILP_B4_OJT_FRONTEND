@@ -67,7 +67,7 @@ import { ToastModule } from 'primeng/toast';
     CommonModule,ConfirmDialogModule,ToastModule
   ],
   templateUrl: './view-market-details.component.html',
-  styleUrls: ['./view-market-details.component.css'],
+  styleUrls: ['./view-market-details.component.scss'],
   providers: [ConfirmationService,MessageService] 
 })
 export class ViewMarketDetailsComponent implements OnInit {

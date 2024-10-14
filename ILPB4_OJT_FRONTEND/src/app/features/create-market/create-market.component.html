@@ -1,8 +1,8 @@
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
-
+<app-header [title]="title"></app-header>
 <div class="market-form-container">
-  <app-header [title]="title"></app-header>
+  
 
   <div class="scrollable-content">
     <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
