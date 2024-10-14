@@ -80,9 +80,9 @@
                     <td>  <ng-container *ngIf="market.marketSubGroups && market.marketSubGroups.length > 0">
                         <span *ngFor="let subgroup of market.marketSubGroups" 
                         class="subgroup-badge" 
-                        pTooltip="{{market.code | uppercase}}{{ subgroup.subGroupCode }} - {{ subgroup.subGroupName }}" 
+                        pTooltip="{{ getFormattedSubGroupCode(market.code, subgroup.subGroupCode) }} - {{ subgroup.subGroupName }}" 
                         tooltipPosition="top">
-                        {{ market.code | uppercase }}{{ subgroup.subGroupCode }}    
+                        {{ getFormattedSubGroupCode(market.code, subgroup.subGroupCode) }}  
                   </span>
                       </ng-container></td>
                     <td>{{ market.region }}</td>
