@@ -99,14 +99,10 @@ export class SubgroupComponent implements OnInit {
   @Input() marketCode: string = '';
   @Input() marketId?: number;
   @Input() isFormValid: boolean | undefined;
-  @Output() subGroupsChanged = new EventEmitter<MarketSubgroup[]>();
-  @Output() hasNoSubgroups = new EventEmitter<{ noRowsLeft: boolean, subGroups: MarketSubgroup[] }>();
+  @Output() subGroupsChanged = new EventEmitter<{ subGroups: MarketSubgroup[], noRowsLeft: boolean }>();
   @Output() hasErrorsChanged = new EventEmitter<boolean>();
 
   showSubgroup: boolean = false;
-  hasErrors: boolean = false;
-  submitting: boolean = false; // Add this flag to track the form submission status
-  noRowsLeft: boolean = false; //A boolean flag that is set to true when there are no rows left in the form.
 
   form!: FormGroup;
 
@@ -116,7 +112,6 @@ export class SubgroupComponent implements OnInit {
     private fb: FormBuilder, 
     private confirmationService: ConfirmationService,
     private marketSubgroupService: MarketSubgroupService,
-    private translateService:TranslateService
   ) {}
 
   /**
@@ -145,20 +140,17 @@ export class SubgroupComponent implements OnInit {
     }
   }
 
-
-  
-
   initializeForm() : void {
     this.form = this.fb.group({
-      rows: this.fb.array([]) // FormArray to manage rows
+      rows: this.fb.array([]) 
     });
   }
 
   loadSubGroupsIfMarketIdExists(): void {
     if (this.marketId) {
-      this.loadSubGroups(); // Load subgroups if marketId is provided
+      this.loadSubGroups(); 
     } else {
-      this.addRow(); // Add an empty row by default if no marketId
+      this.addRow(); 
     }
   }
 
@@ -180,20 +172,19 @@ export class SubgroupComponent implements OnInit {
     if (this.rows.length === 0) {
       this.addRow();  // Immediately add a new row if there are no existing rows
     }
-    
   }
   
 
   emitValidSubGroups(): void {
     const validSubGroups = this.rows.controls
-      .filter(row => row.valid) 
+      .filter(row => row.valid)
       .map(row => row.value);
 
     const hasInvalidRow = this.rows.controls.some(row => row.invalid);
-    this.hasErrorsChanged.emit(hasInvalidRow);
+    const noRowsLeft = this.rows.length === 0;
 
-      console.log('Emitting valid subgroups:', validSubGroups);
-    this.subGroupsChanged.emit(validSubGroups);
+    this.hasErrorsChanged.emit(hasInvalidRow);
+    this.subGroupsChanged.emit({ subGroups: validSubGroups, noRowsLeft });
   }
 
   /**
@@ -208,7 +199,7 @@ export class SubgroupComponent implements OnInit {
           this.form.setControl('rows', this.fb.array(subGroups.map(subGroup => this.createRow(subGroup))));
           this.showSubgroup = true;
         } else {
-          this.addRow(); // If no subgroups are returned, add an empty row by default
+          this.addRow();
         }
       },
       error: (error: HttpErrorResponse) => {
@@ -249,14 +240,12 @@ createRow(subGroup?: MarketSubgroup): FormGroup {
     ]
   }, { validators: [this.duplicateSubgroupCodeValidator(), this.duplicateSubgroupNameValidator()] });
 
-  // Convert `subGroupCode` to uppercase on value change and trigger validation
   row.get('subGroupCode')?.valueChanges.subscribe(value => {
     if (value && value !== value.toUpperCase()) {
       row.get('subGroupCode')?.setValue(value.toUpperCase(), { emitEvent: false });
     }
   });
 
-  // Convert `subGroupName` to uppercase on value change and trigger validation
   row.get('subGroupName')?.valueChanges.subscribe(value => {
     if (value && value !== value.toUpperCase()) {
       row.get('subGroupName')?.setValue(value.toUpperCase(), { emitEvent: false });
@@ -272,7 +261,6 @@ duplicateSubgroupCodeValidator(): ValidatorFn {
   return (formGroup: AbstractControl): { [key: string]: any } | null => {
     const subGroupCode = formGroup.get('subGroupCode')?.value;
     const marketCode = formGroup.get('marketCode')?.value;
-
     const duplicate = this.rows.controls.some((otherRow) => 
       (otherRow !== formGroup) &&
       otherRow.get('subGroupCode')?.value === subGroupCode &&
@@ -328,12 +316,12 @@ deleteRow(rowIndex: number): void {
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
       rowsArray.removeAt(rowIndex);
-      if (rowsArray.length === 0) {
-        this.hasNoSubgroups.emit({ noRowsLeft: true, subGroups: [] });
-        this.showSubgroup = false;
-      } else {
-        this.hasNoSubgroups.emit({ noRowsLeft: false, subGroups: this.subGroups });
-      }
+      const validSubGroups = this.rows.controls
+        .filter(row => row.valid)
+        .map(row => row.value);
+      const noRowsLeft = rowsArray.length === 0;
+      this.subGroupsChanged.emit({ noRowsLeft, subGroups: validSubGroups });
+      this.showSubgroup = !noRowsLeft;
     },
     reject: () => {}
   });
@@ -356,5 +344,4 @@ deleteRow(rowIndex: number): void {
    this.hasErrorsChanged.emit(hasInvalidRow);
    return !hasInvalidRow;
   }
-  
 }
