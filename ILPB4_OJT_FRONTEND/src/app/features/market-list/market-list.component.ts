@@ -74,7 +74,9 @@ import { HeaderComponent } from "../../shared/header/header.component";
   styleUrls: ['./market-list.component.css']
 })
 export class MarketlistComponent implements OnInit {
- // Title for the market list component
+/**
+ * Title for the market list component
+ */
 @Input() title: string = '';
 handleSelectionChange() {
   console.log('Selected Cities:', this.selectedRegions);
@@ -88,8 +90,9 @@ clearAll() {
 removeRegion(region: any) {
   this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
 }
-
-  // Array to hold the fetched markets
+  /**
+   * Array to hold the fetched markets
+   */
   markets!: Market[];
   filteredMarkets!: Market[];
   selectedMarket!: Market;  
@@ -217,6 +220,10 @@ removeRegion(region: any) {
   getSubgroupCode(market: Market): string {
     return market.marketSubGroups ? market.marketSubGroups.map(subgroup => subgroup.subGroupCode).join(' ') : '';
   }
+  getFormattedSubGroupCode(marketCode: string, subGroupCode: string): string {
+    return `${marketCode.toUpperCase()}${subGroupCode}`;
+  }
+  
 
     // Helper method to check if the current subgroup is the last one
   isLast(subGroup: MarketSubgroup, subGroups: MarketSubgroup[]): boolean {
