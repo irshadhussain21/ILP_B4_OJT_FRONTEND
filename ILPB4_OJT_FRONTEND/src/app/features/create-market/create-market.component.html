@@ -129,38 +129,15 @@
       <!-- Subgroups -->
       <div class="form-section">
         <label class="form-label">{{ "PAGE.LABELS.SUBGROUPS" | translate }}</label>
-  
-        <ng-container *ngIf="!showSubgroupComponent && subGroups.length === 0; else subgroupTemplate">
-          <div class="empty-subgroup-template">
-            <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
-            <p *ngIf="marketForm.invalid">
-              {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_INVALID" | translate }}
-            </p>
-            <p *ngIf="marketForm.valid">
-              {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_VALID" | translate }}
-            </p>
-            
-            <button
-              type="button"
-              pButton 
-              icon="pi pi-plus"
-              label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP' | translate }}"
-              [outlined]="true"
-              (click)="showSubgroup()"
-              [disabled]="marketForm.invalid"
-            ></button>
-          </div>
-        </ng-container>
-  
-        <ng-template #subgroupTemplate>
+
           <app-sub-group
             [marketCode]="marketForm.get('marketCode')?.value"
-            [fetchSubGroups]="subGroups"
+            [marketId]="marketId"
+            [isFormValid]="isFormValid"
             (subGroupsChanged)="onSubGroupsChanged($event)"
-            (noRowsLeftChanged)="onNoRowsLeftChanged($event)"
-            (hasErrorsChanged)="onHasErrorsChanged($event)"
+            (hasNoSubgroups)="onNoRowsLeftChanged($event)"
+            (hasErrorsChanged)="onSubgroupErrorsFound($event)"
           ></app-sub-group>
-        </ng-template>
       </div>
   
       <!-- Submit and Cancel Buttons -->
