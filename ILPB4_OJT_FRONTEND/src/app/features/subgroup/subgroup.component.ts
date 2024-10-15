@@ -247,6 +247,9 @@ export class SubgroupComponent implements OnInit {
   /**
    * Creates a form group (row) for a new or existing subgroup.
    * Sets up validation for the subgroup code and name, ensuring they are in uppercase.
+   * 
+   * @param subGroup - Optional `MarketSubgroup` object used to initialize the row.
+   * @returns FormGroup - A form group representing a subgroup row.
    */
   createRow(subGroup?: MarketSubgroup): FormGroup {
     const row = this.fb.group(
@@ -289,6 +292,8 @@ export class SubgroupComponent implements OnInit {
 
   /**
    * Validator for duplicate subgroup codes in the form.
+   *
+   * @returns ValidatorFn - A validator function that checks for duplicate subgroup codes.
    */
   duplicateSubgroupCodeValidator(): ValidatorFn {
     return (formGroup: AbstractControl): { [key: string]: any } | null => {
@@ -307,6 +312,8 @@ export class SubgroupComponent implements OnInit {
 
   /**
    * Validator for duplicate subgroup names in the form.
+   *
+   * @returns ValidatorFn - A validator function that checks for duplicate subgroup names.
    */
   duplicateSubgroupNameValidator(): ValidatorFn {
     return (formGroup: AbstractControl): { [key: string]: any } | null => {
@@ -334,6 +341,8 @@ export class SubgroupComponent implements OnInit {
   /**
    * Deletes a subgroup row after user confirmation.
    * Emits updated subgroup data to the parent component and toggles form visibility based on row count.
+   * 
+   * @param rowIndex - Index of the row to be deleted.
    */
   deleteRow(rowIndex: number): void {
     const rowsArray = this.form.get('rows') as FormArray | null;
