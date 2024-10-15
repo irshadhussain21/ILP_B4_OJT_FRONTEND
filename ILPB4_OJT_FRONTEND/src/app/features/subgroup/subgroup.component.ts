@@ -29,7 +29,7 @@ import { MarketSubgroupService } from '../../services/subgroup.service';
 import { MarketSubgroup } from '../../core/models/market';
 
 import { HttpErrorResponse } from '@angular/common/http';
-import { debounceTime } from 'rxjs/operators'; // Import debounceTime for performance optimization
+import { debounceTime } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';
 
 /**
