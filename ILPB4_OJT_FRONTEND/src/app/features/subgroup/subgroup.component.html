@@ -5,10 +5,10 @@
   <ng-container *ngIf="!showSubgroup && subGroups.length === 0; else subgroupTemplate">
     <div class="empty-subgroup-template">
       <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
-      <p *ngIf="!isMarketFormValid">
+      <p *ngIf="!isFormValid">
         {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_INVALID" | translate }}
       </p>
-      <p *ngIf="isMarketFormValid">
+      <p *ngIf="isFormValid">
         {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_VALID" | translate }}
       </p>
 
@@ -19,7 +19,7 @@
         label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP'|translate }}"
         [outlined]="true"
         (click)="showSubgroupFunc()"
-        [disabled]="!isMarketFormValid"
+        [disabled]="!isFormValid"
       ></button>
     </div>
   </ng-container>
@@ -76,12 +76,13 @@
               *ngIf="row.get('subGroupName')?.hasError('required') && row.get('subGroupName')?.touched">
               <span class="error-icon">❗</span>Subgroup Name is required.
             </small>
-
+            <!-- Check for the 'duplicateSubgroupCode' error at the FormGroup (row) level -->
             <small class="p-error"
               *ngIf="row.hasError('duplicateSubgroupCode') && row.get('subGroupCode')?.touched">
               <span class="error-icon">❗</span>Subgroup Code already exists for this market.
             </small>
 
+            <!-- Check for the 'duplicateSubgroupName' error at the FormGroup (row) level -->
             <small class="p-error"
               *ngIf="row.hasError('duplicateSubgroupName') && row.get('subGroupName')?.touched">
               <span class="error-icon">❗</span>Subgroup Name already exists for this market.
@@ -92,7 +93,7 @@
     </p-table>
 
     <button type="button" pButton icon="pi pi-plus" label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP'|translate }}" [outlined]="true" (click)="addRow()"
-      [disabled]="!canAddSubgroup() || !isMarketFormValid"></button>
+      [disabled]="!canAddSubgroup() || !isFormValid"></button>
 
     </form>
   </ng-template>
