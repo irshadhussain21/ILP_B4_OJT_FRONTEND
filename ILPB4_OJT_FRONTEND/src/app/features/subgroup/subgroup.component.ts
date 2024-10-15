@@ -135,6 +135,8 @@ export class SubgroupComponent implements OnInit {
   /**
    * Handles changes to the market code.
    * Updates the market code in each form row without triggering change events.
+   * 
+   * @param changes - Object containing the current and previous market code values.
    */
   handleMarketCodeChange(changes: SimpleChanges): void {
     if (changes['marketCode'] && changes['marketCode'].currentValue) {
@@ -235,6 +237,8 @@ export class SubgroupComponent implements OnInit {
 
   /**
    * Getter for the form array of subgroup rows.
+   * 
+   * @returns FormArray - Array of form groups representing subgroup rows.
    */
   get rows(): FormArray {
     return this.form.get('rows') as FormArray;
