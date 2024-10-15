@@ -98,7 +98,7 @@ export class SubgroupComponent implements OnInit {
   @Input() marketCode: string = '';
   @Input() marketId?: number;
   @Input() isMarketFormValid: boolean | undefined;
-  @Output() subGroupsChanged = new EventEmitter<{ subGroups: MarketSubgroup[], hasNoSubGroupRows: boolean }>();
+  @Output() subGroupsChanged = new EventEmitter<{ subGroups: MarketSubgroup[]}>();
   @Output() isSubGroupFormInvalid = new EventEmitter<boolean>();
 
   showSubgroup: boolean = false;
@@ -180,10 +180,9 @@ export class SubgroupComponent implements OnInit {
       .map(row => row.value);
 
     const hasInvalidRow = this.rows.controls.some(row => row.invalid);
-    const hasNoSubGroupRows = this.rows.length === 0;
 
     this.isSubGroupFormInvalid.emit(hasInvalidRow);
-    this.subGroupsChanged.emit({ subGroups: validSubGroups, hasNoSubGroupRows });
+    this.subGroupsChanged.emit({ subGroups: validSubGroups});
   }
 
   /**
@@ -319,7 +318,7 @@ deleteRow(rowIndex: number): void {
         .filter(row => row.valid)
         .map(row => row.value);
       const hasNoSubGroupRows = rowsArray.length === 0;
-      this.subGroupsChanged.emit({ hasNoSubGroupRows, subGroups: validSubGroups });
+      this.subGroupsChanged.emit({subGroups: validSubGroups });
       this.showSubgroup = !hasNoSubGroupRows;
     },
     reject: () => {}

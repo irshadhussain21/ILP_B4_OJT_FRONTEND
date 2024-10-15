@@ -468,9 +468,9 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
-  onSubGroupsChanged(event: { hasNoSubGroupRows: boolean, subGroups: MarketSubgroup[] }): void {
+  onSubGroupsChanged(event: {subGroups: MarketSubgroup[] }): void {
     this.subGroups = [...event.subGroups];
-    if (event.hasNoSubGroupRows || this.subGroups.length === 0) {
+    if (this.subGroups.length === 0) {
       this.marketForm.setErrors(null);
     }
   }
