@@ -80,23 +80,6 @@ export class MarketlistComponent implements OnInit {
    * Title for the market list component
    */
   @Input() title: string = '';
-  
-  handleSelectionChange() {
-    console.log('Selected Cities:', this.selectedRegions);
-  }
-  
-  onRegionChange() {
-    throw new Error('Method not implemented.');
-  }
-  
-  clearAll() {
-    this.selectedRegions = [];  
-  }
-  
-  removeRegion(region: any) {
-    this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
-  }
-  
   /**
    * Array to hold the fetched markets
    */
@@ -175,16 +158,12 @@ export class MarketlistComponent implements OnInit {
    
   constructor(private marketService: MarketService, private regionService: RegionService) {
     this.regions = [
-      { label: 'EURO - Europe', value: 'EURO' },
-      { label: 'LAAPA - Latin America, Asia Pacific and Africa', value: 'LAAPA' },
-      { label: 'NOAM - North America', value: 'NOAM' }
+      { label: 'EURO - Europe', value: '1' },
+      { label: 'LAAPA - Latin America, Asia Pacific and Africa', value: '2' },
+      { label: 'NOAM - North America', value: '3' }
     ];
   }
-  
-  onSort(event: any) {
-    this.sortField = event.field;
-    this.sortOrder = event.order;
-  }
+ 
 
   ngOnInit() {
     this.loadRegionsAndSubregions();
@@ -258,6 +237,27 @@ export class MarketlistComponent implements OnInit {
       );
     }
   }
+  filterMarketsByRegion() {
+    if (this.selectedRegions.length > 0) {
+      const region = this.selectedRegions.map(region => region.value).join(',');
+       
+      this.marketService.getFilteredMarkets(region).subscribe(
+        (data: Market[]) => {
+          this.filteredMarkets = data;
+          console.log('Filtered Markets:', this.filteredMarkets);
+          this.totalMarkets = data.length;  
+          this.first = 0;  
+        },
+        (error) => {
+          console.error('Error fetching filtered markets:', error);
+        }
+      );
+    } else {
+      this.filteredMarkets = this.markets;
+      console.log('nothing')
+    }
+  }
+  
   
   /**
    * Filters the list of markets based on the search text entered by the user.
@@ -267,6 +267,8 @@ export class MarketlistComponent implements OnInit {
       this.marketService.searchMarkets(this.searchText).subscribe(
         (data: Market[]) => {
           this.filteredMarkets = data; 
+          this.totalMarkets = data.length;
+          this.first = 0;
         },
         (error) => {
           console.error('Error searching markets:', error); 
@@ -285,6 +287,26 @@ export class MarketlistComponent implements OnInit {
     this.filterMarkets();  
   }
 
+  onSort(event: any) {
+    this.sortField = event.field;
+    this.sortOrder = event.order;
+  }
+
+
+  clearAll() {
+    this.selectedRegions = [];  
+    this.filteredMarkets = this.markets;
+    this.totalMarkets = this.markets.length;
+    this.first = 0;
+  }
+  removeRegion(region: any) {
+    this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
+    this.filterMarketsByRegion();
+  }
+  
+  onPageChange(event: any) {
+    this.first = event.first; 
+  }
   /**
    * Retrieve the sub group code for displaying it in the market list.
    * @param market - market details to get subgroup code
@@ -310,12 +332,13 @@ export class MarketlistComponent implements OnInit {
     return subGroups.indexOf(subGroup) === subGroups.length - 1;
   }
 
-  onPageChange(event: any) {
-    this.first = event.first; 
-  }
+
 
   onRowsPerPageChange(event: any) {
     this.rows = event.value; 
     this.first = 0; 
   }
+  // handleSelectionChange() {
+  //   this.filterMarketsByRegion();
+  // }
 }

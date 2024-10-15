@@ -25,7 +25,8 @@
             appendTo="body"
             class="region-multiselect"
             [ngClass]="{'selected-options': selectedRegions.length > 0}"
-            (onChange)="handleSelectionChange()">
+            (onChange)="filterMarketsByRegion()"
+            >
         </p-multiSelect>
     </div>
 </div>

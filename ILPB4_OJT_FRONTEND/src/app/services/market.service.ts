@@ -120,5 +120,13 @@ export class MarketService {
       params: { searchText } 
   });
   }
+
+ 
+  getFilteredMarkets(regions: string): Observable<Market[]> {
+ 
+    return this.http.get<Market[]>(`${this.apiUrl}/filter?Regions=${encodeURIComponent(regions)}`);
+  }
+
+
 }
 
