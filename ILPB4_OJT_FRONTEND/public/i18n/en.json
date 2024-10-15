@@ -17,7 +17,8 @@
           "SHORT_CODE_MARKET_NAME": "Short Code/Market Name",
           "LONG_MARKET_CODE": "Long Market Code",
           "MARKET_NAME": "Market Name", 
-          "SUBGROUPS": "Subgroup(s)"
+          "SUBGROUPS": "Subgroup(s)",
+          "SUBMIT_FOOTER":"Fill all the mandatory fields before submiting"
       },
       "TOOLTIPS": {},
       "PLACEHOLDERS": {
