@@ -213,7 +213,6 @@ export class ViewMarketDetailsComponent implements OnInit {
             detail: this.translate.instant('PAGE.MARKET_DELETED_SUCCESS', { marketName: this.market?.name }), 
           });
           this.router.navigate(['/markets']);
-          this.router.navigate(['/markets']);
         },
         error: (error) => {
           console.error('Error deleting market:', error);

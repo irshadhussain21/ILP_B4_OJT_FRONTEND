@@ -71,10 +71,10 @@
             </ng-template>
             <ng-template pTemplate="body" let-market>
                 <tr>
-                    <td [pTooltip]="market.longMarketCode" tooltipPosition="top">{{ market.longMarketCode | uppercase }}</td>
+                    <td>{{ market.longMarketCode | uppercase }}</td>
                     <td>{{ market.code }}</td>
-                    <td [pTooltip]="market.name" tooltipPosition="top" class="truncate capitalize-first">
-                        <a [routerLink]="['/markets', market.id]" class="market-link">{{ market.name }}</a>
+                    <td class="truncate capitalize-first">
+                        <a [routerLink]="['/markets', market.id]" class="market-link" [pTooltip]="market.name" tooltipPosition="top">{{ market.name }}</a>
                     </td>
                     <td>
                         <ng-container *ngIf="market.marketSubGroups && market.marketSubGroups.length > 0">
@@ -91,5 +91,23 @@
                 </tr>
             </ng-template>
         </p-table>
+    </div>
+    <div class="table-footer">
+        <div class="rows-per-page">
+            <p-dropdown 
+                [options]="rowsPerPageOptions" 
+                [(ngModel)]="selectedRowsPerPage" 
+                (onChange)="onRowsPerPageChange($event)">
+            </p-dropdown>
+            <label for="rowsPerPageDropdown"> Items per page</label>
+        </div>
+        <div class="pagination-right">
+            <p-paginator 
+                [rows]="selectedRowsPerPage" 
+                [first]="first"
+                [totalRecords]="totalMarkets" 
+                (onPageChange)="onPageChange($event)">
+            </p-paginator>
+        </div>
     </div>
 </div>

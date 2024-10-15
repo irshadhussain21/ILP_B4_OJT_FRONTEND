@@ -20,6 +20,7 @@
   
   .custom-header {
     th {
+      background-color:var( --light-blue-5);
       border-right: 0.5px solid rgb(34, 130, 241);
       border-bottom: 0.5px solid rgb(34, 130, 241);
       padding: 10px;
@@ -125,11 +126,12 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding: 10px;
+      padding: 5px;
       border-bottom: 1px solid #ddd;
       text-align: left;
       vertical-align: middle;
     }
+    
   
     thead {
       th {
@@ -255,4 +257,101 @@
       border-color: #004085;
     }
   }
+
+  .table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #e0e0e0;
+
+    .rows-per-page {
+        display: flex;
+        align-items: center;
+        
+        p-dropdown {
+            margin-right: 10px;
+            width: 120px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #333;
+        }
+    }
+
+    .pagination-right {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        
+        p-paginator {
+            margin-left: 15px;
+
+            .ui-paginator {
+                background-color: transparent;
+                border: none;
+
+                .ui-paginator-pages .ui-paginator-page {
+                    padding: 5px 10px;
+                    font-size: 14px;
+                    color: #007bff;
+                    cursor: pointer;
+                    border-radius: 3px;
+                    margin: 0 3px;
+
+                    &:hover {
+                        background-color: #e0e0e0;
+                    }
+
+                    &.ui-state-active {
+                        background-color: #007bff;
+                        color: #fff;
+                    }
+                }
+
+                .ui-paginator-first,
+                .ui-paginator-prev,
+                .ui-paginator-next,
+                .ui-paginator-last {
+                    font-size: 18px;
+                    padding: 5px;
+                    color: #007bff;
+                    cursor: pointer;
+                    margin: 0 5px;
+
+                    &:hover {
+                        color: #0056b3;
+                    }
+                }
+            }
+        }
+    }
+
+    // Responsive layout adjustments
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .pagination-right {
+            width: 100%;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .rows-per-page {
+            margin-bottom: 10px;
+
+            label {
+                font-size: 13px;
+            }
+
+            p-dropdown {
+                width: 100px;
+            }
+        }
+    }
+}
+
   
