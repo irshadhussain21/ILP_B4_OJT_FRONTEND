@@ -133,8 +133,13 @@ export class SubgroupComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     this.handleMarketCodeChange(changes);
   }
-  
-  
+
+  /**
+   * Handles changes to the market code.
+   * Updates the market code in each form row without triggering change events.
+   * 
+   * @param changes - Object containing the current and previous market code values.
+   */
   handleMarketCodeChange(changes: SimpleChanges): void {
     if (changes['marketCode'] && changes['marketCode'].currentValue) {
       this.marketCode = changes['marketCode'].currentValue.toUpperCase();
@@ -217,11 +222,11 @@ export class SubgroupComponent implements OnInit {
     });
   }
 
-/**
- * @getter rows
- * Provides easy access to the form's FormArray for managing subgroup rows.
- * @returns {FormArray} - The FormArray containing the current subgroup rows.
- */
+  /**
+   * Getter for the form array of subgroup rows.
+   * 
+   * @returns FormArray - Array of form groups representing subgroup rows.
+   */
   get rows(): FormArray {
     return this.form.get('rows') as FormArray;
   }
