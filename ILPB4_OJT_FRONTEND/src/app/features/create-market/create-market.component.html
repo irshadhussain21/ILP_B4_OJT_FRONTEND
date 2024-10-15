@@ -1,153 +1,185 @@
-  <app-header [title]="title"></app-header>
-  <p-toast></p-toast>
-  <p-confirmDialog></p-confirmDialog>
-  <app-header [title]="title"></app-header>
-  <div class="market-form-container">
-    
-
-    <div class="scrollable-content">
-      <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
-        <!-- Region Selection -->
-        <div class="form-section"> 
-          <label for="region" class="form-label">
-            {{ "PAGE.LABELS.REGION" | translate }}
-            <span class="asterik">*</span>
-          </label>
-          <p class="form-sub-label">{{ "PAGE.PLACEHOLDERS.SELECT_REGION" | translate }}</p>
-          <div class="region-options">
-            <div
-              class="region-option"
-              *ngFor="let region of regions"
-              [ngClass]="{ selected: selectedRegion === region.key }"
-              (click)="onRegionSelect(region.key)"
+<app-header [title]="title"></app-header>
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+<app-header [title]="title"></app-header>
+<div class="market-form-container">
+  <div class="scrollable-content">
+    <form [formGroup]="marketForm" (ngSubmit)="onSubmit()">
+      <!-- Region Selection -->
+      <div class="form-section">
+        <label for="region" class="form-label">
+          {{ "PAGE.LABELS.REGION" | translate }}
+          <span class="asterik">*</span>
+        </label>
+        <p class="form-sub-label">
+          {{ "PAGE.PLACEHOLDERS.SELECT_REGION" | translate }}
+        </p>
+        <div class="region-options">
+          <div
+            class="region-option"
+            *ngFor="let region of regions"
+            [ngClass]="{ selected: selectedRegion === region.key }"
+            (click)="onRegionSelect(region.key)"
+          >
+            <p-radioButton
+              [name]="'region'"
+              [label]="region.value"
+              [inputId]="region.key.toString()"
+              [value]="region.key"
+              formControlName="region"
+            ></p-radioButton>
+            <label class="check-box-labels" [for]="region.key.toString()"
+              >- {{ getRegionName(region.key) }}</label
             >
-              <p-radioButton
-                [name]="'region'"
-                [label]="region.value"
-                [inputId]="region.key.toString()"
-                [value]="region.key"
-                formControlName="region"
-              ></p-radioButton>
-              <label class="check-box-labels" [for]="region.key.toString()">- {{ getRegionName(region.key) }}</label>
-            </div>
           </div>
         </div>
+      </div>
 
-      
-        <div *ngIf="subregions.length > 0" class="form-section">
-          <label for="subregion" class="form-label">
-            {{ "PAGE.LABELS.SUBREGION" | translate }}
-            <span class="asterik">*</span>
-          </label>
-          <p class="form-sub-label">{{ "PAGE.PLACEHOLDERS.SELECT_SUBREGION" | translate }}</p>
-          <div class="subregion-options">
-            <div
-              class="subregion-option"
-              *ngFor="let subregion of subregions"
-              [ngClass]="{ selected: selectedSubregion === subregion.key.toString() }"
-              (click)="onSubregionChange($event, subregion.key)"
-            >
-              <p-radioButton
-                [name]="'subregion'"
-                [label]="subregion.value"
-                [inputId]="subregion.key.toString()"
-                [value]="subregion.key"
-                formControlName="subregion"
-              ></p-radioButton>
-            </div>
+      <div *ngIf="subregions.length > 0" class="form-section">
+        <label for="subregion" class="form-label">
+          {{ "PAGE.LABELS.SUBREGION" | translate }}
+          <span class="asterik">*</span>
+        </label>
+        <p class="form-sub-label">
+          {{ "PAGE.PLACEHOLDERS.SELECT_SUBREGION" | translate }}
+        </p>
+        <div class="subregion-options">
+          <div
+            class="subregion-option"
+            *ngFor="let subregion of subregions"
+            [ngClass]="{
+              selected: selectedSubregion === subregion.key.toString()
+            }"
+            (click)="onSubregionChange($event, subregion.key)"
+          >
+            <p-radioButton
+              [name]="'subregion'"
+              [label]="subregion.value"
+              [inputId]="subregion.key.toString()"
+              [value]="subregion.key"
+              formControlName="subregion"
+            ></p-radioButton>
           </div>
         </div>
+      </div>
 
-        <!-- Market Code and Name -->
-        <div class="form-section">
-          <label class="form-label">
-            {{ "PAGE.LABELS.SHORT_CODE_MARKET_NAME" | translate }}
-            <span class="asterik">*</span>
-          </label>
-          <p class="form-sub-label">
-            {{ "PAGE.PLACEHOLDERS.ENTER_CODE" | translate }} and
-            {{ "PAGE.PLACEHOLDERS.ENTER_NAME" | translate }}
+      <!-- Market Code and Name -->
+      <div class="form-section">
+        <label class="form-label">
+          {{ "PAGE.LABELS.SHORT_CODE_MARKET_NAME" | translate }}
+          <span class="asterik">*</span>
+        </label>
+        <p class="form-sub-label">
+          {{ "PAGE.PLACEHOLDERS.ENTER_CODE" | translate }} and
+          {{ "PAGE.PLACEHOLDERS.ENTER_NAME" | translate }}
+        </p>
+        <div class="shortcode-marketname-container">
+          <input
+            formControlName="marketCode"
+            type="text"
+            placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_CODE' | translate }}"
+            class="shortcode-input"
+            maxlength="2"
+            autocapitalize="on"
+            (input)="hasEditedCode = true"
+            (keydown)="onMarketCodeInput($event)"
+          />
+          <span class="divider"></span>
+          <input
+            formControlName="marketName"
+            type="text"
+            placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_NAME' | translate }}"
+            class="marketname-input"
+            (input)="hasEditedName = true"
+          />
+        </div>
+        <div class="error-msg-container">
+          <p
+            *ngIf="
+              marketForm.get('marketCode')?.touched &&
+              marketForm.get('marketCode')?.hasError('required')
+            "
+            class="error-message"
+          >
+            <span class="error-icon">❗</span>
+            {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_REQUIRED" | translate }}
           </p>
-          <div class="shortcode-marketname-container">
-            <input
-              formControlName="marketCode"
-              type="text"
-              placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_CODE' | translate }}"
-              class="shortcode-input"
-              maxlength="2"
-              autocapitalize="on"
-              (input)="hasEditedCode = true"
-              (keydown)="onMarketCodeInput($event)"
-            />
-            <span class="divider"></span>
-            <input
-              formControlName="marketName"
-              type="text"
-              placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_NAME' | translate }}"
-              class="marketname-input"
-              (input)="hasEditedName = true"
-            />
-          </div>
-          <div class="error-msg-container">
-              <p *ngIf="marketForm.get('marketCode')?.touched && marketForm.get('marketCode')?.hasError('required')" class="error-message">
-                  <span class="error-icon">❗</span>
-                  {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_REQUIRED" | translate }}
-                </p>
-        
-                <p *ngIf="marketForm.get('marketName')?.touched && marketForm.get('marketName')?.hasError('required')" class="error-message">
-                  <span class="error-icon">❗</span>
-                  {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_REQUIRED" | translate }}
-                </p>
-        
-                <p *ngIf="hasCodeExistsError && hasEditedCode" class="error-message">
-                  <span class="error-icon">❗</span>
-                  {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS" | translate }}
-                </p>
-        
-                <p *ngIf="hasNameExistsError && hasEditedName" class="error-message">
-                  <span class="error-icon">❗</span>
-                  {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS" | translate }}
-                </p>
-          </div>
+
+          <p
+            *ngIf="
+              marketForm.get('marketName')?.touched &&
+              marketForm.get('marketName')?.hasError('required')
+            "
+            class="error-message"
+          >
+            <span class="error-icon">❗</span>
+            {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_REQUIRED" | translate }}
+          </p>
+
+          <p *ngIf="hasCodeExistsError && hasEditedCode" class="error-message">
+            <span class="error-icon">❗</span>
+            {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS" | translate }}
+          </p>
+
+          <p *ngIf="hasNameExistsError && hasEditedName" class="error-message">
+            <span class="error-icon">❗</span>
+            {{ "PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS" | translate }}
+          </p>
         </div>
+      </div>
 
-        <!-- Long Code -->
-        <div class="form-section">
-          <label class="form-label">
-            {{ "PAGE.LABELS.LONG_MARKET_CODE" | translate }} <span class="asterik">*</span>
-          </label>
-          <p class="form-sub-label">{{ "PAGE.PLACEHOLDERS.LONG_CODE_FORMAT_INFO" | translate }}</p>
+      <!-- Long Code -->
+      <div class="form-section">
+        <label class="form-label">
+          {{ "PAGE.LABELS.LONG_MARKET_CODE" | translate }}
+          <span class="asterik">*</span>
+        </label>
+        <p class="form-sub-label">
+          {{ "PAGE.PLACEHOLDERS.LONG_CODE_FORMAT_INFO" | translate }}
+        </p>
 
-          <p-inputMask
-            formControlName="longCode"
-            mask="a-aa.aa.aa"
-            placeholder="_-__.__.__"
-            class="longcode-input"
-          ></p-inputMask>
-        </div>
+        <p-inputMask
+          formControlName="longCode"
+          mask="a-aa.aa.aa"
+          placeholder="_-__.__.__"
+          class="longcode-input"
+        ></p-inputMask>
+      </div>
 
-        <!-- Subgroups -->
-        <div class="form-section">
-          <label class="form-label">{{ "PAGE.LABELS.SUBGROUPS" | translate }}</label>
+      <!-- Subgroups -->
+      <div class="form-section">
+        <label class="form-label">{{
+          "PAGE.LABELS.SUBGROUPS" | translate
+        }}</label>
 
-            <app-sub-group
-              [marketCode]="marketForm.get('marketCode')?.value"
-              [marketId]="marketId"
-              [isFormValid]="isFormValid"
-              (subGroupsChanged)="onSubGroupsChanged($event)"
-              (hasNoSubgroups)="onNoRowsLeftChanged($event)"
-              (hasErrorsChanged)="onSubgroupErrorsFound($event)"
-            ></app-sub-group>
-        </div>
-    
-        <!-- Submit and Cancel Buttons -->
-        <button type="submit" class="submit-button" [disabled]="marketForm.invalid">
-          {{ getSubmitButtonText() | translate }}
-        </button>
-    
-        <button type="button" class="cancel-button" (click)="onCancel()">
-          {{ "PAGE.BUTTONS.CANCEL" | translate }}
-        </button>
-      </form>
-    </div>
+        <app-sub-group
+          [marketCode]="marketForm.get('marketCode')?.value"
+          [marketId]="marketId"
+          [isFormValid]="isFormValid"
+          (subGroupsChanged)="onSubGroupsChanged($event)"
+          (hasNoSubgroups)="onNoRowsLeftChanged($event)"
+          (hasErrorsChanged)="onSubgroupErrorsFound($event)"
+        ></app-sub-group>
+      </div>
+    </form>
   </div>
+</div>
+<div class="btn-footer">
+  <p>Fill all the Mandatory Fields</p>
+  <div class="btn-actions">
+    <button type="button" class="cancel-button" (click)="onCancel()">
+      {{ "PAGE.BUTTONS.CANCEL" | translate }}
+    </button>
+    <button
+      type="submit"
+      class="submit-button"
+      [disabled]="marketForm.invalid"
+      (click)="onSubmit()"
+    >
+      {{ getSubmitButtonText() | translate }}
+    </button>
+
+    
+  </div>
+  
+</div>
