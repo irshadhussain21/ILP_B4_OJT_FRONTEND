@@ -76,13 +76,12 @@
               *ngIf="row.get('subGroupName')?.hasError('required') && row.get('subGroupName')?.touched">
               <span class="error-icon">❗</span>Subgroup Name is required.
             </small>
-            <!-- Check for the 'duplicateSubgroupCode' error at the FormGroup (row) level -->
+
             <small class="p-error"
               *ngIf="row.hasError('duplicateSubgroupCode') && row.get('subGroupCode')?.touched">
               <span class="error-icon">❗</span>Subgroup Code already exists for this market.
             </small>
 
-            <!-- Check for the 'duplicateSubgroupName' error at the FormGroup (row) level -->
             <small class="p-error"
               *ngIf="row.hasError('duplicateSubgroupName') && row.get('subGroupName')?.touched">
               <span class="error-icon">❗</span>Subgroup Name already exists for this market.
