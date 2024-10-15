@@ -16,6 +16,7 @@ import { RegionService } from '../../services/region.service';
 import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { HeaderComponent } from "../../shared/header/header.component";
+import { RegionEnum, RegionFullForms } from '../../core/enums/region.enum';
 
 /**
  * LLD
@@ -157,11 +158,24 @@ export class MarketlistComponent implements OnInit {
 
    
   constructor(private marketService: MarketService, private regionService: RegionService) {
-    this.regions = [
-      { label: 'EURO - Europe', value: '1' },
-      { label: 'LAAPA - Latin America, Asia Pacific and Africa', value: '2' },
-      { label: 'NOAM - North America', value: '3' }
-    ];
+    // this.regions = [
+    //   { label: 'EURO - Europe', value: '1' },
+    //   { label: 'LAAPA - Latin America, Asia Pacific and Africa', value: '2' },
+    //   { label: 'NOAM - North America', value: '3' }
+    // ];
+    // this.regions = Object.keys(RegionEnum)
+    //   .filter(key => !isNaN(Number(RegionEnum[key as keyof typeof RegionEnum]))) // Assert key type
+    //   .map(key => ({
+    //     label: key,
+    //     value: RegionEnum[key as keyof typeof RegionEnum], // Assert key type
+    //   }));
+    this.regions = Object.keys(RegionEnum)
+    .filter(key => !isNaN(Number(RegionEnum[key as keyof typeof RegionEnum])))
+    .map(key => ({
+      label: RegionFullForms[RegionEnum[key as keyof typeof RegionEnum]], // Get full form
+      value: RegionEnum[key as keyof typeof RegionEnum], // Original enum value
+    }));
+  
   }
  
 
