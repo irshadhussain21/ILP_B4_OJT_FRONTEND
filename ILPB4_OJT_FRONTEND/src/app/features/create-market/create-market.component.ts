@@ -104,7 +104,7 @@ import { RegionEnum } from '../../core/enums/region.enum';
 
 export class CreateMarketComponent implements OnInit {
 
-  isFormValid: boolean = false;
+  isMarketFormValid: boolean = false;
   marketForm!: FormGroup;
   title: string = CreateMarketConfig.TITLE_CREATE;
   isEditMode: boolean = false;
@@ -184,7 +184,7 @@ export class CreateMarketComponent implements OnInit {
     });
 
     this.marketForm.statusChanges.subscribe(status => {
-      this.isFormValid = status === 'VALID';
+      this.isMarketFormValid = status === 'VALID';
     });
   }
 
@@ -468,9 +468,9 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
-  onSubGroupsChanged(event: { noRowsLeft: boolean, subGroups: MarketSubgroup[] }): void {
+  onSubGroupsChanged(event: { hasNoSubGroupRows: boolean, subGroups: MarketSubgroup[] }): void {
     this.subGroups = [...event.subGroups];
-    if (event.noRowsLeft || this.subGroups.length === 0) {
+    if (event.hasNoSubGroupRows || this.subGroups.length === 0) {
       this.marketForm.setErrors(null);
     }
   }

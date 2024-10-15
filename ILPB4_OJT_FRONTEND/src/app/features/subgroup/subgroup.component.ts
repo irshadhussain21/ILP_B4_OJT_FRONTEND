@@ -95,12 +95,11 @@ import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 })
 export class SubgroupComponent implements OnInit {
 
-  // Accept the marketCode as an input from the parent component
   @Input() marketCode: string = '';
   @Input() marketId?: number;
-  @Input() isFormValid: boolean | undefined;
-  @Output() subGroupsChanged = new EventEmitter<{ subGroups: MarketSubgroup[], noRowsLeft: boolean }>();
-  @Output() hasErrorsChanged = new EventEmitter<boolean>();
+  @Input() isMarketFormValid: boolean | undefined;
+  @Output() subGroupsChanged = new EventEmitter<{ subGroups: MarketSubgroup[], hasNoSubGroupRows: boolean }>();
+  @Output() isSubGroupFormInvalid = new EventEmitter<boolean>();
 
   showSubgroup: boolean = false;
 
@@ -163,14 +162,14 @@ export class SubgroupComponent implements OnInit {
 
     this.form.statusChanges.subscribe(status => {
       const isInvalid = status === 'INVALID';
-      this.hasErrorsChanged.emit(isInvalid); // Emit true if the form is invalid, false otherwise
+      this.isSubGroupFormInvalid.emit(isInvalid); 
     });
   }
   
   showSubgroupFunc() {
     this.showSubgroup = true;
     if (this.rows.length === 0) {
-      this.addRow();  // Immediately add a new row if there are no existing rows
+      this.addRow();
     }
   }
   
@@ -181,10 +180,10 @@ export class SubgroupComponent implements OnInit {
       .map(row => row.value);
 
     const hasInvalidRow = this.rows.controls.some(row => row.invalid);
-    const noRowsLeft = this.rows.length === 0;
+    const hasNoSubGroupRows = this.rows.length === 0;
 
-    this.hasErrorsChanged.emit(hasInvalidRow);
-    this.subGroupsChanged.emit({ subGroups: validSubGroups, noRowsLeft });
+    this.isSubGroupFormInvalid.emit(hasInvalidRow);
+    this.subGroupsChanged.emit({ subGroups: validSubGroups, hasNoSubGroupRows });
   }
 
   /**
@@ -319,9 +318,9 @@ deleteRow(rowIndex: number): void {
       const validSubGroups = this.rows.controls
         .filter(row => row.valid)
         .map(row => row.value);
-      const noRowsLeft = rowsArray.length === 0;
-      this.subGroupsChanged.emit({ noRowsLeft, subGroups: validSubGroups });
-      this.showSubgroup = !noRowsLeft;
+      const hasNoSubGroupRows = rowsArray.length === 0;
+      this.subGroupsChanged.emit({ hasNoSubGroupRows, subGroups: validSubGroups });
+      this.showSubgroup = !hasNoSubGroupRows;
     },
     reject: () => {}
   });
@@ -341,7 +340,7 @@ deleteRow(rowIndex: number): void {
     }
   
    const hasInvalidRow = this.rows.controls.some(row => row.invalid);
-   this.hasErrorsChanged.emit(hasInvalidRow);
+   this.isSubGroupFormInvalid.emit(hasInvalidRow);
    return !hasInvalidRow;
   }
 }

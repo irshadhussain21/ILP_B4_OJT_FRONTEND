@@ -133,9 +133,9 @@
             <app-sub-group
               [marketCode]="marketForm.get('marketCode')?.value"
               [marketId]="marketId"
-              [isFormValid]="isFormValid"
+              [isMarketFormValid]="isMarketFormValid"
               (subGroupsChanged)="onSubGroupsChanged($event)"
-              (hasErrorsChanged)="onSubgroupErrorsFound($event)"
+              (isSubGroupFormInvalid)="onSubgroupErrorsFound($event)"
             ></app-sub-group>
         </div>
     
