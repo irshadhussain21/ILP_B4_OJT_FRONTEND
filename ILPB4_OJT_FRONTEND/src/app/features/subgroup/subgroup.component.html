@@ -5,10 +5,10 @@
   <ng-container *ngIf="!showSubgroup && subGroups.length === 0; else subgroupTemplate">
     <div class="empty-subgroup-template">
       <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
-      <p *ngIf="!isFormValid">
+      <p *ngIf="!isMarketFormValid">
         {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_INVALID" | translate }}
       </p>
-      <p *ngIf="isFormValid">
+      <p *ngIf="isMarketFormValid">
         {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_VALID" | translate }}
       </p>
 
@@ -19,7 +19,7 @@
         label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP'|translate }}"
         [outlined]="true"
         (click)="showSubgroupFunc()"
-        [disabled]="!isFormValid"
+        [disabled]="!isMarketFormValid"
       ></button>
     </div>
   </ng-container>
@@ -93,7 +93,7 @@
     </p-table>
 
     <button type="button" pButton icon="pi pi-plus" label="{{ 'PAGE.BUTTONS.ADD_SUBGROUP'|translate }}" [outlined]="true" (click)="addRow()"
-      [disabled]="!canAddSubgroup() || !isFormValid"></button>
+      [disabled]="!canAddSubgroup() || !isMarketFormValid"></button>
 
     </form>
   </ng-template>
