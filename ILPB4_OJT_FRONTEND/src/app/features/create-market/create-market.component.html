@@ -153,13 +153,12 @@
         }}</label>
 
         <app-sub-group
-          [marketCode]="marketForm.get('marketCode')?.value"
-          [marketId]="marketId"
-          [isFormValid]="isFormValid"
-          (subGroupsChanged)="onSubGroupsChanged($event)"
-          (hasNoSubgroups)="onNoRowsLeftChanged($event)"
-          (hasErrorsChanged)="onSubgroupErrorsFound($event)"
-        ></app-sub-group>
+        [marketCode]="marketForm.get('marketCode')?.value"
+        [marketId]="marketId"
+        [isMarketFormValid]="isMarketFormValid"
+        (subGroupsChanged)="onSubGroupsChanged($event)"
+        (isSubGroupFormInvalid)="onSubgroupErrorsFound($event)"
+      ></app-sub-group>
       </div>
     </form>
   </div>
