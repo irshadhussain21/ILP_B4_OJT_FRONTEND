@@ -147,7 +147,7 @@ export class ViewMarketDetailsComponent implements OnInit {
    *The loadMarketDetails method fetches market data via the MarketService, assigns the retrieved data to the marketDetails properties.
    */
   private loadMarketDetails() {
-    this.marketService.getMarketById(this.marketId!).subscribe({
+    this.marketService.getMarketDetailsById(this.marketId!).subscribe({
       next: (data: Market) => {
         this.marketDetails = data;
         this.marketName = this.marketDetails?.name ?? '';
