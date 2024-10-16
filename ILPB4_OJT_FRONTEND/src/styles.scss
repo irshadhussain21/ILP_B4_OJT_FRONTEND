@@ -13,6 +13,8 @@
     --grey-4: rgb(219, 226, 234);
     --red-alert: rgb(255, 72, 94);
     --light-blue-1: rgb(229, 250, 255);
+    --light-blue-5: rgb(217, 233, 247);
+    --light-blue-7: rgb(0, 121, 181);
     /* Typography */
     --font-primary: 'DM Sans', sans-serif;
     --font-secondary: system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", 
@@ -61,7 +63,7 @@
 body {
     padding-top: 60px; /* Prevent content from hiding under the navbar */
     font-family:var(--font-primary), var(--font-secondary); /* Apply secondary font family to the body */
-    // overflow: hidden;
+    
 }
 @mixin centerer{
     display: flex;

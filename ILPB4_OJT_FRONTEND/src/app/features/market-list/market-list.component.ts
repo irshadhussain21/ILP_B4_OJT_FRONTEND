@@ -10,6 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DropdownModule } from 'primeng/dropdown';
 import { PaginatorModule } from 'primeng/paginator';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
 /** Local imports */
 import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
@@ -71,7 +72,8 @@ import { RegionEnum, RegionFullForms } from '../../core/enums/region.enum';
     TooltipModule,
     TagModule, RouterLink, FormsModule,DropdownModule,PaginatorModule,
     MultiSelectModule,
-    HeaderComponent
+    HeaderComponent,
+    TranslateModule
   ],
   templateUrl: './market-list.component.html',
   styleUrls: ['./market-list.component.scss']
@@ -182,6 +184,7 @@ export class MarketlistComponent implements OnInit {
   ngOnInit() {
     this.loadRegionsAndSubregions();
     this.loadMarkets();
+
   }
   
   /**
@@ -214,16 +217,18 @@ export class MarketlistComponent implements OnInit {
     );
   }
   
-  /**
-   * Function to load markets and market details
+   /**
+   * Function to load markets with pagination
    */
-  loadMarkets() {
-    this.marketService.getAllMarkets().subscribe(
-      (markets: Market[]) => {
-        console.log('Fetched markets:', markets);
-        this.markets = markets;
-        this.filteredMarkets = markets;
-  
+   loadMarkets(pageNumber: number = 0, pageSize: number = 10): void {
+    this.marketService.getAllMarkets(pageNumber + 1, pageSize).subscribe(
+      (response: any) => {
+        console.log('Fetched markets:', response);
+        this.markets = response.markets || response; 
+        this.filteredMarkets = this.markets;
+        this.totalMarkets = response.totalRecords || this.markets.length;
+
+        // Optionally load market details
         this.markets.forEach(market => {
           this.loadMarketDetails(market);
         });
@@ -234,10 +239,11 @@ export class MarketlistComponent implements OnInit {
     );
   }
   
-  /**
+  
+   /**
    * Function to load market details by market ID
    */
-  loadMarketDetails(market: Market) {
+   loadMarketDetails(market: Market) {
     if (market.id) {
       this.marketService.getMarketDetailsById(market.id).subscribe(
         (details: Market) => {
@@ -290,11 +296,12 @@ export class MarketlistComponent implements OnInit {
       );
     } else {
       this.filteredMarkets = this.markets; 
+      this.totalMarkets = this.markets.length;
     }
   }
 
-  /**
-   * Clear the search text
+   /**
+   * Clears the search filter and resets the filtered list to the original markets list
    */
   clearFilter() {
     this.searchText = ''; 
@@ -318,9 +325,7 @@ export class MarketlistComponent implements OnInit {
     this.filterMarketsByRegion();
   }
   
-  onPageChange(event: any) {
-    this.first = event.first; 
-  }
+ 
   /**
    * Retrieve the sub group code for displaying it in the market list.
    * @param market - market details to get subgroup code
@@ -346,11 +351,22 @@ export class MarketlistComponent implements OnInit {
     return subGroups.indexOf(subGroup) === subGroups.length - 1;
   }
 
+  /**
+   * Function to handle page change in paginator
+   */
+  onPageChange(event: any): void {
+    this.first = event.first;
+    const pageNumber = event.page; 
+    this.loadMarkets(pageNumber, this.selectedRowsPerPage);
+  }
 
-
-  onRowsPerPageChange(event: any) {
-    this.rows = event.value; 
+  /**
+   * Function to handle rows per page change
+   */
+  onRowsPerPageChange(event: any): void {
+    this.selectedRowsPerPage = event.value;
     this.first = 0; 
+    this.loadMarkets(0, this.selectedRowsPerPage);
   }
   // handleSelectionChange() {
   //   this.filterMarketsByRegion();

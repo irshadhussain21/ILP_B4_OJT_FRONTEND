@@ -27,15 +27,6 @@ export class MarketService {
     return this.http.post<number>(`${this.apiUrl}`, market);
   }
 
-  /**
-   * Retrieves market details by ID.
-   *
-   * @param marketId The ID of the market to retrieve.
-   * @returns Observable<any> An observable that emits the details of the market.
-   */
-  getMarketById(marketId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${marketId}/details`);
-  }
 
   /**
    * Retrieves market details by ID.
@@ -47,13 +38,15 @@ export class MarketService {
     return this.http.get(`${this.apiUrl}/${marketId}`);
   }
 
-  /**
-   * Retrieves all market entries.
-   *
-   * @returns Observable<Market[]> An observable that emits an array of all Market objects.
-   */
-  getAllMarkets(): Observable<Market[]> {
-    return this.http.get<Market[]>(`${this.apiUrl}`);
+/**
+ * Retrieves a paginated list of market entries.
+ *
+ * @param {number} pageNumber - The page number to retrieve.
+ * @param {number} pageSize - The number of items per page.
+ * @returns {Observable<Market[]>} An observable that emits an array of Market objects for the requested page.
+ */
+  getAllMarkets(pageNumber: number, pageSize: number): Observable<Market[]> {
+    return this.http.get<Market[]>(`${this.apiUrl}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
   }
 
   /**
@@ -127,6 +120,6 @@ export class MarketService {
     return this.http.get<Market[]>(`${this.apiUrl}/filter?Regions=${encodeURIComponent(regions)}`);
   }
 
-
+ 
 }
 
