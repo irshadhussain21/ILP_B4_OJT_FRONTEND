@@ -121,5 +121,7 @@ export class MarketService {
   }
 
  
+getMarketById(marketId: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/${marketId}/details`);
 }
-
+}
