@@ -4,7 +4,7 @@
 
   <ng-container *ngIf="!showSubgroup && subGroups.length === 0; else subgroupTemplate">
     <div class="empty-subgroup-template">
-      <img src="./assets/images/sub-group-draw.svg" alt="Icon" class="error-icon" />
+      <img src="./assets/images/sub-group-draw.svg" alt="{{ 'PAGE.LABELS.SUBGROUP_ICON_ALT' | translate }}" class="error-icon" />
       <p *ngIf="!isMarketFormValid">
         {{ "PAGE.PLACEHOLDERS.ADD_SUBGROUP_INFO_INVALID" | translate }}
       </p>
@@ -33,8 +33,8 @@
 
       <ng-template pTemplate="header">
         <tr>
-          <th>Code</th>
-          <th>Name</th>
+          <th>{{ 'PAGE.LABELS.SUBGROUP_CODE' | translate }}</th>
+          <th>{{ 'PAGE.LABELS.SUBGROUP_NAME' | translate }}</th>
         </tr>
       </ng-template>
 
@@ -48,14 +48,14 @@
                 class="market-input" id="subgroup-marketcode-input" readonly />
               <p-divider layout="vertical"></p-divider>
 
-              <input type="text" placeholder="Code" pInputText formControlName="subGroupCode" maxlength="1"
+              <input type="text" placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_CODE' | translate }}" pInputText formControlName="subGroupCode" maxlength="1"
                 class="subgroup-input" id="subgroupcode-input" (blur)="row.get('subGroupCode')?.markAsTouched()" />
             </p-inputGroup>
           </td>
 
           <td>
             <div class="form-inline">
-              <input type="text" placeholder="Subgroup Name" pInputText formControlName="subGroupName"
+              <input type="text" placeholder="{{ 'PAGE.PLACEHOLDERS.SUBGROUP_NAME' | translate }}" pInputText formControlName="subGroupName"
                 class="name-input" id="subgroup-name-input" (blur)="row.get('subGroupName')?.markAsTouched()" />
 
               <i style="cursor: pointer;" class="fa fa-trash-can delete-icon p-ml-2" (click)="deleteRow(rowIndex)"></i>
@@ -67,26 +67,26 @@
           <td colspan="2">
             <small class="p-error"
               *ngIf="row.get('subGroupCode')?.hasError('pattern') && row.get('subGroupCode')?.touched">
-              <span class="error-icon">❗</span>Invalid code format. Only a single alphanumeric character is allowed.
+              <span class="error-icon">❗</span>{{ "PAGE.PLACEHOLDERS.INVALID_CODE_FORMAT" | translate }}
             </small>
             <small class="p-error"
               *ngIf="row.get('subGroupCode')?.hasError('required') && row.get('subGroupCode')?.touched">
-              <span class="error-icon">❗</span>Subgroup Code is required.
+              <span class="error-icon">❗</span>{{ "PAGE.ERRORS.SUBGROUP_CODE_REQUIRED" | translate }}
             </small>
             <small class="p-error"
               *ngIf="row.get('subGroupName')?.hasError('required') && row.get('subGroupName')?.touched">
-              <span class="error-icon">❗</span>Subgroup Name is required.
+              <span class="error-icon">❗</span>{{ "PAGE.ERRORS.SUBGROUP_NAME_REQUIRED" | translate }}
             </small>
             <!-- Check for the 'duplicateSubgroupCode' error at the FormGroup (row) level -->
             <small class="p-error"
               *ngIf="row.hasError('duplicateSubgroupCode') && row.get('subGroupCode')?.touched">
-              <span class="error-icon">❗</span>Subgroup Code already exists for this market.
+              <span class="error-icon">❗</span>{{ "PAGE.ERRORS.SUBGROUP_CODE_EXISTS" | translate }}
             </small>
 
             <!-- Check for the 'duplicateSubgroupName' error at the FormGroup (row) level -->
             <small class="p-error"
               *ngIf="row.hasError('duplicateSubgroupName') && row.get('subGroupName')?.touched">
-              <span class="error-icon">❗</span>Subgroup Name already exists for this market.
+              <span class="error-icon">❗</span>{{ "PAGE.ERRORS.SUBGROUP_NAME_EXISTS" | translate }}
             </small>
           </td>
         </tr>
