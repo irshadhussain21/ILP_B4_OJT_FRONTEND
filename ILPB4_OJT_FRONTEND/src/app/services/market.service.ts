@@ -27,15 +27,6 @@ export class MarketService {
     return this.http.post<number>(`${this.apiUrl}`, market);
   }
 
-  /**
-   * Retrieves market details by ID.
-   *
-   * @param marketId The ID of the market to retrieve.
-   * @returns Observable<any> An observable that emits the details of the market.
-   */
-  getMarketById(marketId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${marketId}/details`);
-  }
 
   /**
    * Retrieves market details by ID.
@@ -122,5 +113,15 @@ export class MarketService {
       params: { searchText } 
   });
   }
-}
 
+ 
+  getFilteredMarkets(regions: string): Observable<Market[]> {
+ 
+    return this.http.get<Market[]>(`${this.apiUrl}/filter?Regions=${encodeURIComponent(regions)}`);
+  }
+
+ 
+getMarketById(marketId: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/${marketId}/details`);
+}
+}

@@ -1,6 +1,6 @@
 <app-header [title]="marketDetails?.code + ' - ' + marketDetails?.name">
   <button class="edit-button" (click)="navigateToEdit()" >
-    <img src="./assets/edit-icon.svg" alt="Edit Icon" width="16" height="16" />
+    <img src="assets/edit-icon.svg" alt="Edit Icon" width="16" height="16" />
     <span>{{ 'PAGE.BUTTONS.EDIT_BUTTON' | translate }}</span>
     <span class="notification-dot"></span>
   </button> 
@@ -20,13 +20,13 @@
     <!-- Region Panel -->
     <div class="panel">
       <div class="panel-header">{{ 'PAGE.LABELS.REGION' | translate }}</div>
-      <div class="panel-content">{{ marketDetails?.region }}</div>
+      <div class="panel-content">{{ marketDetails?.region}}</div>
     </div>
 
     <!-- Subregion Panel -->
     <div class="panel">
       <div class="panel-header">{{ 'PAGE.LABELS.SUBREGION' | translate }}</div>
-      <div class="panel-content">{{ marketDetails?.subRegion }}</div>
+      <div class="panel-content">{{marketDetails?.subRegion}}</div>
     </div>
 
     <!-- Market Name Panel -->
