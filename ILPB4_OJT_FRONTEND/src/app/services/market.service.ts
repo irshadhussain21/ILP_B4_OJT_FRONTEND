@@ -56,7 +56,7 @@ export class MarketService {
    * @returns Observable<boolean> An observable that emits true if the market code exists, otherwise false.
    */
   checkMarketCodeExists(marketCode: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/check-code`, {
+    return this.http.get<boolean>(`${this.apiUrl}/code/${marketCode}/exists`, {
       params: { marketCode },
     });
   }
@@ -68,7 +68,7 @@ export class MarketService {
    * @returns Observable<boolean> An observable that emits true if the market name exists, otherwise false.
    */
   checkMarketNameExists(marketName: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/check-name`, {
+    return this.http.get<boolean>(`${this.apiUrl}/name/${marketName}/exists`, {
       params: { marketName },
     });
   }
