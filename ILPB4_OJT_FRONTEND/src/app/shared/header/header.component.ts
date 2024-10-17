@@ -45,7 +45,7 @@ export class HeaderComponent {
     const idToUse = marketId || editId;
 
     if (idToUse) {
-      this.marketService.getMarketById(idToUse).subscribe((market) => {
+      this.marketService.getMarketDetailsById(idToUse).subscribe((market) => {
         const currentUrl = marketId
           ? `/markets/${marketId}`
           : `/markets/edit/${editId}`;

@@ -10,24 +10,24 @@
             <input type="text" pInputText placeholder="{{ 'PAGE.PLACEHOLDERS.SEARCH_MARKETS' | translate }}" [(ngModel)]="searchText" (input)="filterMarkets()" />
             <i class="pi pi-times" *ngIf="searchText" (click)="clearFilter()" style="cursor: pointer;"></i>
         </span>
-
-        <!-- MultiSelect Dropdown for Regions -->
-        <div class="filter-container" style="margin-bottom: 20px;">
-            <p-multiSelect 
-                [options]="regions" 
-                [(ngModel)]="selectedRegions" 
-                optionLabel="label" 
-                placeholder="{{ 'PAGE.PLACEHOLDERS.REGION' | translate }}" 
-                [filter]="true" 
-                filterPlaceHolder="{{ 'PAGE.PLACEHOLDERS.SEARCH' | translate }}"
-                [showToggleAll]="false"
-                appendTo="body"
-                class="region-multiselect"
-                [ngClass]="{'selected-options': selectedRegions.length > 0}"
-                (onChange)="handleSelectionChange()">
-            </p-multiSelect>
-        </div>
+    
+    <!-- MultiSelect Dropdown for Regions -->
+    <div class="filter-container" style="margin-bottom: 20px;">
+        <p-multiSelect 
+            [options]="regions" 
+            [(ngModel)]="selectedRegions" 
+            optionLabel="label" 
+            placeholder="{{ 'PAGE.PLACEHOLDERS.REGION' | translate }}" 
+            [filter]="true" 
+            filterPlaceHolder="{{ 'PAGE.PLACEHOLDERS.SEARCH' | translate }}"
+            [showToggleAll]="false"
+            appendTo="body"
+            class="region-multiselect"
+            [ngClass]="{'selected-options': selectedRegions.length > 0}"
+            (onChange)="filterMarketsByRegion()">
+        </p-multiSelect>
     </div>
+</div>
 
     <!-- Container for Chips and Clear All Button -->
     <div class="selected-chips-container">

@@ -17,6 +17,7 @@ import { RegionService } from '../../services/region.service';
 import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { HeaderComponent } from "../../shared/header/header.component";
+import { RegionEnum, RegionFullForms } from '../../core/enums/region.enum';
 
 /**
  * LLD
@@ -82,23 +83,6 @@ export class MarketlistComponent implements OnInit {
    * Title for the market list component
    */
   @Input() title: string = '';
-  
-  handleSelectionChange() {
-    console.log('Selected Cities:', this.selectedRegions);
-  }
-  
-  onRegionChange() {
-    throw new Error('Method not implemented.');
-  }
-  
-  clearAll() {
-    this.selectedRegions = [];  
-  }
-  
-  removeRegion(region: any) {
-    this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
-  }
-  
   /**
    * Array to hold the fetched markets
    */
@@ -175,23 +159,25 @@ export class MarketlistComponent implements OnInit {
   subRegionsMap: { [key: string]: string } = {}; 
 
    
-  constructor(private marketService: MarketService, private regionService: RegionService,private translateService: TranslateService) {
-    this.regions = [
-      { label: 'EURO - Europe', value: 'EURO' },
-      { label: 'LAAPA - Latin America, Asia Pacific and Africa', value: 'LAAPA' },
-      { label: 'NOAM - North America', value: 'NOAM' }
-    ];
+  constructor(private marketService: MarketService, private regionService: RegionService) {
+    this.regions = this.getRegions();
   }
-  
-  onSort(event: any) {
-    this.sortField = event.field;
-    this.sortOrder = event.order;
-  }
+ 
 
   ngOnInit() {
     this.loadRegionsAndSubregions();
     this.loadMarkets();
 
+  }
+  /**The getRegions() function generates a list of regions by mapping the numeric values from the RegionEnum to their 
+   * corresponding labels from the RegionFullForms map. */
+  getRegions() {
+    return Object.keys(RegionEnum)
+      .filter(key => !isNaN(Number(RegionEnum[key as keyof typeof RegionEnum])))
+      .map(key => ({
+        label: RegionFullForms[RegionEnum[key as keyof typeof RegionEnum]],
+        value: RegionEnum[key as keyof typeof RegionEnum], 
+      }));
   }
   
   /**
@@ -264,7 +250,27 @@ export class MarketlistComponent implements OnInit {
       );
     }
   }
-
+  filterMarketsByRegion() {
+    if (this.selectedRegions.length > 0) {
+      const region = this.selectedRegions.map(region => region.value).join(',');
+       
+      this.marketService.getFilteredMarkets(region).subscribe(
+        (data: Market[]) => {
+          this.filteredMarkets = data;
+          console.log('Filtered Markets:', this.filteredMarkets);
+          this.totalMarkets = data.length;  
+          this.first = 0;  
+        },
+        (error) => {
+          console.error('Error fetching filtered markets:', error);
+        }
+      );
+    } else {
+      this.filteredMarkets = this.markets;
+      console.log('nothing')
+    }
+  }
+  
   
   /**
    * Filters the list of markets based on the search text entered by the user.
@@ -275,6 +281,7 @@ export class MarketlistComponent implements OnInit {
         (data: Market[]) => {
           this.filteredMarkets = data; 
           this.totalMarkets = data.length;
+          this.first = 0;
         },
         (error) => {
           console.error('Error searching markets:', error); 
@@ -294,6 +301,24 @@ export class MarketlistComponent implements OnInit {
     this.filterMarkets();  
   }
 
+  onSort(event: any) {
+    this.sortField = event.field;
+    this.sortOrder = event.order;
+  }
+
+
+  clearAll() {
+    this.selectedRegions = [];  
+    this.filteredMarkets = this.markets;
+    this.totalMarkets = this.markets.length;
+    this.first = 0;
+  }
+  removeRegion(region: any) {
+    this.selectedRegions = this.selectedRegions.filter(selected => selected.value !== region.value);
+    this.filterMarketsByRegion();
+  }
+  
+ 
   /**
    * Retrieve the sub group code for displaying it in the market list.
    * @param market - market details to get subgroup code
@@ -336,4 +361,7 @@ export class MarketlistComponent implements OnInit {
     this.first = 0; 
     this.loadMarkets(0, this.selectedRowsPerPage);
   }
+  // handleSelectionChange() {
+  //   this.filterMarketsByRegion();
+  // }
 }
