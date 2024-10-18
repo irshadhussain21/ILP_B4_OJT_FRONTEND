@@ -46,12 +46,22 @@ export class MarketService {
  * @param {string | null} searchText - The optional search text to filter the markets by name, code, or long code.
  * @returns {Observable<any>} An observable that emits the paginated response containing markets and metadata.
  */
-getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = null): Observable<any> {
+getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = null,region: string | null = null): Observable<any> {
+  console.log('hi',region)
+
   let params = `?pageNumber=${pageNumber}&pageSize=${pageSize}`;
   
   if (searchText) {
     params += `&searchText=${encodeURIComponent(searchText)}`;
+    console.log('search text',searchText)
   }
+
+  if (region) {
+    params += `&region=${encodeURIComponent(region)}`;
+    console.log('region',region)
+  }
+ 
+
 
   return this.http.get<any>(`${this.apiUrl}${params}`);
 }

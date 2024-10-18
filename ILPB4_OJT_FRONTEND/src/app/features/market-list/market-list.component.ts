@@ -214,12 +214,14 @@ export class MarketlistComponent implements OnInit {
    /**
    * Function to load markets with pagination and search text.
    */
-  loadMarkets(pageNumber: number = 0, pageSize: number = 10, searchText: string = ''): void {
-    this.marketService.getAllMarkets(pageNumber + 1, pageSize, searchText).subscribe(
+  loadMarkets(pageNumber: number = 0, pageSize: number = 10, searchText: string = '', region: string | null = null): void {
+    this.marketService.getAllMarkets(pageNumber + 1, pageSize, searchText,region).subscribe(
       (response: any) => {
+        console.log(response)
         this.markets = response.markets || response; 
         this.filteredMarkets = this.markets;
         this.totalMarkets = response.totalRecords || this.markets.length;
+        console.log(this.filteredMarkets)
       },
       (error) => {
         console.error('Error fetching markets:', error);
@@ -245,27 +247,34 @@ export class MarketlistComponent implements OnInit {
       );
     }
   }
-  filterMarketsByRegion() {
-    if (this.selectedRegions.length > 0) {
-      const region = this.selectedRegions.map(region => region.value).join(',');
+  // filterMarketsByRegion() {
+  //   if (this.selectedRegions.length > 0) {
+  //     const region = this.selectedRegions.map(region => region.value).join(',');
        
-      this.marketService.getFilteredMarkets(region).subscribe(
-        (data: Market[]) => {
-          this.filteredMarkets = data;
-          console.log('Filtered Markets:', this.filteredMarkets);
-          this.totalMarkets = data.length;  
-          this.first = 0;  
-        },
-        (error) => {
-          console.error('Error fetching filtered markets:', error);
-        }
-      );
-    } else {
-      this.filteredMarkets = this.markets;
-      console.log('nothing')
-    }
-  }
+  //     this.marketService.getFilteredMarkets(region).subscribe(
+  //       (data: Market[]) => {
+  //         this.filteredMarkets = data;
+  //         console.log('Filtered Markets:', this.filteredMarkets);
+  //         this.totalMarkets = data.length;  
+  //         this.first = 0;  
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching filtered markets:', error);
+  //       }
+  //     );
+  //   } else {
+  //     this.filteredMarkets = this.markets;
+  //     console.log('nothing')
+  //   }
+  // }
   
+  filterMarketsByRegion() {
+    const region = this.selectedRegions
+      .map(region => region.lab.split(' - ')[0]) 
+      .join(','); 
+    console.log(region)
+    this.loadMarkets(0, this.selectedRowsPerPage, this.searchText, region);
+  }
   
   /**
    * Filters the list of markets based on the search text entered by the user and paginates the results.
