@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { MarketlistComponent } from "./features/market-list/market-list.component";
+
 import { NavbarComponent } from './shared/navbar/navbar.component';
-import { ViewMarketDetailsComponent } from "./features/view-market-details/view-market-details.component";
+
 
 
 
@@ -12,11 +12,7 @@ import { ViewMarketDetailsComponent } from "./features/view-market-details/view-
   standalone: true,
   imports: [
     RouterOutlet,
-    MarketlistComponent, 
-    NavbarComponent, 
-    ViewMarketDetailsComponent,
-   
-
+    NavbarComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
