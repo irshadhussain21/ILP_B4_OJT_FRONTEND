@@ -9,7 +9,7 @@
           "MARKET_LIST_CREATE_MARKET": "Create Market",
           "FILTER_CLEAR_ALL": "Clear All",
           "EDIT_BUTTON": "Edit" ,
-          "DELETE_BUTTON": "Delete"
+          "DELETE_BUTTON": "Delete Market"
       },
       "LABELS": {
           "CREATE_MARKET": "Create Market",
