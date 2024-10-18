@@ -1,29 +1,37 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { provideRouter, RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './shared/navbar/navbar.component';
+import { By } from '@angular/platform-browser';
 
 describe('AppComponent', () => {
+  let fixture: ComponentFixture<AppComponent>;
+  let component: AppComponent;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
+      imports: [AppComponent],  // Standalone component, so include it directly
+      providers: [
+        provideRouter([]),  // Empty router for testing, or add your actual routes if needed
+      ]
     }).compileComponents();
+
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();  // Trigger change detection
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+  it('should create the component', () => {
+    expect(component).toBeTruthy();
   });
 
-  it(`should have the 'ILPB4_OJT_FRONTEND' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('ILPB4_OJT_FRONTEND');
+  it('should contain the Navbar component', () => {
+    const navbar = fixture.debugElement.query(By.directive(NavbarComponent));
+    expect(navbar).toBeTruthy();  // Check if the NavbarComponent is present
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, ILPB4_OJT_FRONTEND');
+  it('should have router outlet', () => {
+    const routerOutlet = fixture.debugElement.query(By.directive(RouterOutlet));
+    expect(routerOutlet).toBeTruthy();  // Check if RouterOutlet is present
   });
 });
