@@ -1,56 +1,77 @@
-
 /* Import global styles */
 @import "primeng/resources/themes/lara-light-blue/theme.css";
 @import "primeng/resources/primeng.css";
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
 :root {
-    /* Color Scheme */
-    --primary-navy-color: rgb(0, 45, 85);     /* Primary color for your app */
-    --secondary-color: #e9ecef;   /* Secondary color for backgrounds, etc. */
-    --accent-color: #4caf50;      /* Accent color for buttons, highlights, etc. */
-    --grey-1: rgb(102, 109, 112);
-    --grey-4: rgb(219, 226, 234);
-    --red-alert: rgb(255, 72, 94);
-    --light-blue-1: rgb(229, 250, 255);
-    --light-blue-5: rgb(217, 233, 247);
-    --light-blue-7: rgb(0, 121, 181);
-    /* Typography */
-    --font-primary: 'DM Sans', sans-serif;
-    --font-secondary: system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", 
-                      "Noto Sans", "Liberation Sans", "Arial", sans-serif, "Apple Color Emoji", 
-                      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; 
-    --font-size-base: 16px;       /* Base font size */
-    --font-size-large: 1.25rem;   /* Large font size */
-    --font-size-small: 0.875rem;  /* Small font size */
-    
-    --text-heading-md: 24px;
-    --text-lg: 1.1rem;
+  /* Color Scheme */
+  --primary-navy-color: rgb(0, 45, 85);     /* Primary color */
+  --secondary-color: #e9ecef;   /* Secondary color */
+  --accent-color: #4caf50;      /* Accent color */
+  --grey-1: rgb(102, 109, 112);
+  --grey-4: rgb(219, 226, 234);
+  --red-alert: rgb(255, 72, 94);
+  --light-blue-1: rgb(229, 250, 255);
+  --light-blue-5: rgb(217, 233, 247);
 
+  /* Typography */
+  --font-primary: 'DM Sans', sans-serif;
+  --font-secondary: system-ui, -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", 
+                    "Noto Sans", "Liberation Sans", "Arial", sans-serif, "Apple Color Emoji", 
+                    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-size-base: 16px;       
+  --font-size-large: 1.25rem;
+  --font-size-small: 0.875rem;
+  
+  --text-heading-md: 24px;
+  --text-lg: 1.1rem;
+  --text-sm: 0.7rem;
+  --text-sm-plus: 0.9rem;
 
-    --text-sm: 0.7rem;
-    --text-sm-plus: 0.9rem;
-    /* Spacing */
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 32px;
-    --spacing-xl: 64px;
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 64px;
 
-    /* Borders */
-    --border-radius-small: 4px;
-    --border-radius-medium: 8px;
-    --border-radius-large: 16px;
+  /* Borders */
+  --border-radius-small: 4px;
+  --border-radius-medium: 8px;
+  --border-radius-large: 16px;
 
-    /* Box Shadows */
-    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Box Shadows */
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-    /* Responsive Breakpoints */
-    --breakpoint-xs: 480px;
-    --breakpoint-sm: 768px;
-    --breakpoint-md: 992px;
-    --breakpoint-lg: 1200px;
-    --breakpoint-xl: 1400px;
+  /* Responsive Breakpoints */
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 768px;
+  --breakpoint-md: 992px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1400px;
+}
+
+/* Reusable Mixins */
+@mixin centerer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin padding($top, $right, $bottom, $left) {
+  padding: $top $right $bottom $left;
+}
+
+@mixin margin($top, $right, $bottom, $left) {
+  margin: $top $right $bottom $left;
+}
+
+@mixin border-radius($radius) {
+  border-radius: $radius;
+}
+
+@mixin box-shadow($shadow) {
+  box-shadow: $shadow;
 }
 
 /* Global resets and base styles */
@@ -59,14 +80,15 @@
     margin: 0;
     font-family: var(--font-primary); /* Apply primary font family */
 }
-
 body {
-    padding-top: 60px; /* Prevent content from hiding under the navbar */
-    font-family:var(--font-primary), var(--font-secondary); /* Apply secondary font family to the body */
-    
+  padding-top: 60px;
+  font-family: var(--font-primary), var(--font-secondary);
+  // overflow: hidden; 
 }
-@mixin centerer{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+p {
+  font-family: var(--font-primary);
+}
+::-webkit-scrollbar {
+  display: none;
 }

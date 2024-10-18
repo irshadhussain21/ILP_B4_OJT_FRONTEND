@@ -39,15 +39,23 @@ export class MarketService {
   }
 
 /**
- * Retrieves a paginated list of market entries.
+ * Retrieves a paginated list of market entries, with an optional search text filter.
  *
  * @param {number} pageNumber - The page number to retrieve.
  * @param {number} pageSize - The number of items per page.
- * @returns {Observable<Market[]>} An observable that emits an array of Market objects for the requested page.
+ * @param {string | null} searchText - The optional search text to filter the markets by name, code, or long code.
+ * @returns {Observable<any>} An observable that emits the paginated response containing markets and metadata.
  */
-  getAllMarkets(pageNumber: number, pageSize: number): Observable<Market[]> {
-    return this.http.get<Market[]>(`${this.apiUrl}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = null): Observable<any> {
+  let params = `?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+  
+  if (searchText) {
+    params += `&searchText=${encodeURIComponent(searchText)}`;
   }
+
+  return this.http.get<any>(`${this.apiUrl}${params}`);
+}
+
 
   /**
    * Checks if a market code already exists.
@@ -56,7 +64,7 @@ export class MarketService {
    * @returns Observable<boolean> An observable that emits true if the market code exists, otherwise false.
    */
   checkMarketCodeExists(marketCode: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/check-code`, {
+    return this.http.get<boolean>(`${this.apiUrl}/code/${marketCode}/exists`, {
       params: { marketCode },
     });
   }
@@ -68,7 +76,7 @@ export class MarketService {
    * @returns Observable<boolean> An observable that emits true if the market name exists, otherwise false.
    */
   checkMarketNameExists(marketName: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/check-name`, {
+    return this.http.get<boolean>(`${this.apiUrl}/name/${marketName}/exists`, {
       params: { marketName },
     });
   }
@@ -98,22 +106,6 @@ export class MarketService {
   deleteMarket(marketId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${marketId}`);
   }
-
-  /**
-  * Searches for markets based on the provided search text.
-  *
-  * This method constructs a GET request to the API, passing the search text as a query parameter.
-  * It returns an observable that emits an array of Market objects matching the search criteria.
-  *
-  * @param searchText The text used to search for markets. It can match the market's name, code, or long market code.
-  * @returns Observable<Market[]> An observable that emits an array of markets that match the search criteria.
-  */
-  searchMarkets(searchText: string): Observable<Market[]> {
-  return this.http.get<Market[]>(`${this.apiUrl}/search`, {
-      params: { searchText } 
-  });
-  }
-
  
   getFilteredMarkets(regions: string): Observable<Market[]> {
  

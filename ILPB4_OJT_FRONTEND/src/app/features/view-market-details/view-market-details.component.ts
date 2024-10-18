@@ -174,9 +174,9 @@ export class ViewMarketDetailsComponent implements OnInit {
             label: this.translate.instant('PAGE.BUTTONS.DELETE_BUTTON'),
             command: () => this.confirmDeleteMarket(),
             disabled:
-              !this.market ||
-              !this.market.marketSubGroups ||
-              this.market.marketSubGroups.length > 0,
+              !this.marketDetails ||
+              (this.marketDetails.marketSubGroups &&
+              this.marketDetails.marketSubGroups.length > 0),
           },
         ],
       },

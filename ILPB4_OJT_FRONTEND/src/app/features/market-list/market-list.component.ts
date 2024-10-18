@@ -18,6 +18,7 @@ import { Market, MarketSubgroup } from '../../core/models/market';
 import { Region } from '../../core/models/region';
 import { HeaderComponent } from "../../shared/header/header.component";
 import { RegionEnum, RegionFullForms } from '../../core/enums/region.enum';
+import { PaginationConstants } from '../../config/market';
 
 /**
  * LLD
@@ -106,7 +107,7 @@ export class MarketlistComponent implements OnInit {
   /**
    * Number of rows to display per page
    */
-  rows: number = 10; 
+  rows: number = PaginationConstants.defaultRows; 
   
   /**
    * Index of the first row for pagination
@@ -121,7 +122,7 @@ export class MarketlistComponent implements OnInit {
   /**
    * Options for the number of rows per page in pagination
    */
-  rowsPerPageOptions = [10, 25, 50, 75, 100];
+  rowsPerPageOptions = PaginationConstants.rowsPerPageOptions;
   
   /**
    * Selected number of rows per page
@@ -211,20 +212,14 @@ export class MarketlistComponent implements OnInit {
   }
   
    /**
-   * Function to load markets with pagination
+   * Function to load markets with pagination and search text.
    */
-   loadMarkets(pageNumber: number = 0, pageSize: number = 10): void {
-    this.marketService.getAllMarkets(pageNumber + 1, pageSize).subscribe(
+  loadMarkets(pageNumber: number = 0, pageSize: number = 10, searchText: string = ''): void {
+    this.marketService.getAllMarkets(pageNumber + 1, pageSize, searchText).subscribe(
       (response: any) => {
-        console.log('Fetched markets:', response);
         this.markets = response.markets || response; 
         this.filteredMarkets = this.markets;
         this.totalMarkets = response.totalRecords || this.markets.length;
-
-        // Optionally load market details
-        this.markets.forEach(market => {
-          this.loadMarketDetails(market);
-        });
       },
       (error) => {
         console.error('Error fetching markets:', error);
@@ -273,25 +268,13 @@ export class MarketlistComponent implements OnInit {
   
   
   /**
-   * Filters the list of markets based on the search text entered by the user.
+   * Filters the list of markets based on the search text entered by the user and paginates the results.
    */
   filterMarkets() {
-    if (this.searchText) {
-      this.marketService.searchMarkets(this.searchText).subscribe(
-        (data: Market[]) => {
-          this.filteredMarkets = data; 
-          this.totalMarkets = data.length;
-          this.first = 0;
-        },
-        (error) => {
-          console.error('Error searching markets:', error); 
-        }
-      );
-    } else {
-      this.filteredMarkets = this.markets; 
-      this.totalMarkets = this.markets.length;
-    }
+    this.first = 0; // Reset pagination to the first page on new search
+    this.loadMarkets(0, this.selectedRowsPerPage, this.searchText);
   }
+
 
    /**
    * Clears the search filter and resets the filtered list to the original markets list
@@ -350,7 +333,7 @@ export class MarketlistComponent implements OnInit {
   onPageChange(event: any): void {
     this.first = event.first;
     const pageNumber = event.page; 
-    this.loadMarkets(pageNumber, this.selectedRowsPerPage);
+    this.loadMarkets(pageNumber, this.selectedRowsPerPage, this.searchText); 
   }
 
   /**
@@ -358,10 +341,7 @@ export class MarketlistComponent implements OnInit {
    */
   onRowsPerPageChange(event: any): void {
     this.selectedRowsPerPage = event.value;
-    this.first = 0; 
-    this.loadMarkets(0, this.selectedRowsPerPage);
+    this.first = 0;
+    this.loadMarkets(0, this.selectedRowsPerPage, this.searchText);
   }
-  // handleSelectionChange() {
-  //   this.filterMarketsByRegion();
-  // }
 }
