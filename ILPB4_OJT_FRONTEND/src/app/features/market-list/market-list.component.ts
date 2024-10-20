@@ -214,14 +214,14 @@ export class MarketlistComponent implements OnInit {
    /**
    * Function to load markets with pagination and search text.
    */
-  loadMarkets(pageNumber: number = 0, pageSize: number = 10, searchText: string = '', region: string | null = null): void {
-    this.marketService.getAllMarkets(pageNumber + 1, pageSize, searchText,region).subscribe(
+  async loadMarkets(pageNumber: number = 0, pageSize: number = 10, searchText: string = '', region: string | null = null): Promise<void> {
+    (await this.marketService.getAllMarkets(pageNumber + 1, pageSize, searchText, region)).subscribe(
       (response: any) => {
         console.log(response)
         this.markets = response.markets || response; 
         this.filteredMarkets = this.markets;
         this.totalMarkets = response.totalRecords || this.markets.length;
-        console.log(this.filteredMarkets)
+        console.log( 'filtered markets',this.filteredMarkets)
       },
       (error) => {
         console.error('Error fetching markets:', error);
@@ -270,7 +270,7 @@ export class MarketlistComponent implements OnInit {
   
   filterMarketsByRegion() {
     const region = this.selectedRegions
-      .map(region => region.lab.split(' - ')[0]) 
+      .map(region => region.value)
       .join(','); 
     console.log(region)
     this.loadMarkets(0, this.selectedRowsPerPage, this.searchText, region);

@@ -47,7 +47,8 @@ export class MarketService {
  * @returns {Observable<any>} An observable that emits the paginated response containing markets and metadata.
  */
 getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = null,region: string | null = null): Observable<any> {
-  console.log('hi',region)
+  console.log('hi',typeof(region))
+
 
   let params = `?pageNumber=${pageNumber}&pageSize=${pageSize}`;
   
@@ -58,12 +59,13 @@ getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = 
 
   if (region) {
     params += `&region=${encodeURIComponent(region)}`;
+    console.log(params)
     console.log('region',region)
   }
  
 
-
-  return this.http.get<any>(`${this.apiUrl}${params}`);
+ 
+  return this.http.get<Market[]>(`https://localhost:7058/api/Market?${params}`);
 }
 
 
