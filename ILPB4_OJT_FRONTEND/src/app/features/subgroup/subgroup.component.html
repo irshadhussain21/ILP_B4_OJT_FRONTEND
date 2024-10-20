@@ -2,7 +2,7 @@
 
 <div class="form-container">
 
-  <ng-container *ngIf="!showSubgroup && subGroups.length === 0; else subgroupTemplate">
+  <ng-container *ngIf="!showSubgroup; else subgroupTemplate">
     <div class="empty-subgroup-template">
       <img src="./assets/images/sub-group-draw.svg" alt="{{ 'PAGE.LABELS.SUBGROUP_ICON_ALT' | translate }}" class="error-icon" />
       <p *ngIf="!isMarketFormValid">
@@ -40,7 +40,7 @@
 
 
       <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
-        <tr [formGroupName]="rowIndex">
+        <tr [formGroupName]="rowIndex" *ngIf="!row.get('isDeleted')?.value">
 
           <td>
             <p-inputGroup class="input-wrapper">
@@ -63,7 +63,7 @@
           </td>
         </tr>
 
-        <tr>
+        <tr *ngIf="!row.get('isDeleted')?.value">
           <td colspan="2">
             <small class="p-error"
               *ngIf="row.get('subGroupCode')?.hasError('pattern') && row.get('subGroupCode')?.touched">

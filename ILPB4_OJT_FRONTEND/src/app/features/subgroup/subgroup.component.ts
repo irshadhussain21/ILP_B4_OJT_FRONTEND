@@ -189,7 +189,7 @@ export class SubgroupComponent implements OnInit {
    */
   showSubgroupFunc() {
     this.showSubgroup = true;
-    if (this.rows.length === 0) {
+    if (this.rows.controls.every(row => row.get('isDeleted')?.value === true)) {
       this.addRow();
     }
   }
@@ -199,8 +199,9 @@ export class SubgroupComponent implements OnInit {
    */
   emitValidSubGroups(): void {
     const validSubGroups = this.rows.controls
-      .filter((row) => row.valid)
-      .map((row) => row.value);
+    .filter((row) => row.valid)
+    .map((row) => row.value);
+    console.log(validSubGroups)
 
     const hasInvalidRow = this.rows.controls.some((row) => row.invalid);
 
@@ -262,6 +263,8 @@ export class SubgroupComponent implements OnInit {
           [Validators.required, Validators.pattern('^[A-Za-z0-9]{1}$')],
         ],
         subGroupName: [subGroup?.subGroupName || '', Validators.required],
+        isDeleted: [subGroup?.isDeleted || false],
+        isEdited: [subGroup?.isEdited || false],
       },
       {
         validators: [
@@ -277,6 +280,9 @@ export class SubgroupComponent implements OnInit {
           .get('subGroupCode')
           ?.setValue(value.toUpperCase(), { emitEvent: false });
       }
+    if (row.get('subGroupId')?.value !== null) {
+      row.get('isEdited')?.setValue(true, { emitEvent: false });
+    }
     });
 
     row.get('subGroupName')?.valueChanges.subscribe((value) => {
@@ -285,8 +291,10 @@ export class SubgroupComponent implements OnInit {
           .get('subGroupName')
           ?.setValue(value.toUpperCase(), { emitEvent: false });
       }
+      if (row.get('subGroupId')?.value !== null) {
+        row.get('isEdited')?.setValue(true, { emitEvent: false });
+      }
     });
-
     return row;
   }
 
@@ -299,12 +307,16 @@ export class SubgroupComponent implements OnInit {
     return (formGroup: AbstractControl): { [key: string]: any } | null => {
       const subGroupCode = formGroup.get('subGroupCode')?.value;
       const marketCode = formGroup.get('marketCode')?.value;
-      const duplicate = this.rows.controls.some(
-        (otherRow) =>
+      const duplicate = this.rows.controls.some((otherRow) => {
+        if (otherRow.get('isDeleted')?.value) {
+          return false;
+        }
+        return (
           otherRow !== formGroup &&
           otherRow.get('subGroupCode')?.value === subGroupCode &&
           otherRow.get('marketCode')?.value === marketCode
-      );
+        );
+      });
 
       return duplicate ? { duplicateSubgroupCode: true } : null;
     };
@@ -320,12 +332,17 @@ export class SubgroupComponent implements OnInit {
       const subGroupName = formGroup.get('subGroupName')?.value;
       const marketCode = formGroup.get('marketCode')?.value;
 
-      const duplicate = this.rows.controls.some(
-        (otherRow) =>
+      const duplicate = this.rows.controls.some((otherRow) => {
+        // Ignore rows that are deleted
+        if (otherRow.get('isDeleted')?.value) {
+          return false;
+        }
+        return (
           otherRow !== formGroup &&
           otherRow.get('subGroupName')?.value === subGroupName &&
           otherRow.get('marketCode')?.value === marketCode
-      );
+        );
+      });
 
       return duplicate ? { duplicateSubgroupName: true } : null;
     };
@@ -356,13 +373,10 @@ export class SubgroupComponent implements OnInit {
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        rowsArray.removeAt(rowIndex);
-        const validSubGroups = this.rows.controls
-          .filter((row) => row.valid)
-          .map((row) => row.value);
-        const hasNoSubGroupRows = rowsArray.length === 0;
-        this.subGroupsChanged.emit({ subGroups: validSubGroups });
-        this.showSubgroup = !hasNoSubGroupRows;
+        const row = this.rows.at(rowIndex);
+        row.get('isDeleted')?.setValue(true);
+        this.emitValidSubGroups();
+        this.showSubgroup = this.rows.controls.some(row => row.get('isDeleted')?.value === false);
       },
       reject: () => {},
     });
@@ -372,8 +386,8 @@ export class SubgroupComponent implements OnInit {
    * Checks if a new subgroup row can be added by validating existing rows.
    */
   canAddSubgroup(): boolean {
-    const hasInvalidRow = this.rows.controls.some((row) => row.invalid);
+    const hasInvalidRow = this.rows.controls.some((row) =>!row.get('isDeleted')?.value && row.invalid);
     this.isSubGroupFormInvalid.emit(hasInvalidRow);
     return !hasInvalidRow;
-  }
+  }  
 }

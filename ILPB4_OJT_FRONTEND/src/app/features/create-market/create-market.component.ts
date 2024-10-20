@@ -100,10 +100,7 @@ import { RegionEnum } from '../../core/enums/region.enum';
   ],
   providers: [MessageService, ConfirmationService],
 })
-
-
 export class CreateMarketComponent implements OnInit {
-
   isMarketFormValid: boolean = false;
   marketForm!: FormGroup;
   title: string = CreateMarketConfig.TITLE_CREATE;
@@ -119,7 +116,6 @@ export class CreateMarketComponent implements OnInit {
   hasEditedCode: boolean = false;
   hasEditedName: boolean = false;
 
-
   constructor(
     private fb: FormBuilder,
     private marketService: MarketService,
@@ -128,8 +124,7 @@ export class CreateMarketComponent implements OnInit {
     private route: ActivatedRoute,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private translateService: TranslateService,
-    
+    private translateService: TranslateService
   ) {}
 
   /**
@@ -183,14 +178,12 @@ export class CreateMarketComponent implements OnInit {
       subregion: [''],
     });
 
-    this.marketForm.statusChanges.subscribe(status => {
+    this.marketForm.statusChanges.subscribe((status) => {
       this.isMarketFormValid = status === 'VALID';
     });
   }
 
   private setupFieldListeners(): void {
-
-
     this.marketForm
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
@@ -244,9 +237,9 @@ export class CreateMarketComponent implements OnInit {
       });
   }
 
-  getRegionNames(regionId:number){
-    const regionID=regionId as RegionEnum;
-    const regionName=RegionNames[regionID];
+  getRegionNames(regionId: number) {
+    const regionID = regionId as RegionEnum;
+    const regionName = RegionNames[regionID];
     return regionName;
   }
   /**
@@ -283,12 +276,10 @@ export class CreateMarketComponent implements OnInit {
     }
   }
 
-
-  getRegionName(regionId:number){
+  getRegionName(regionId: number) {
     const regionEnum = regionId as RegionEnum;
     const regionName = RegionNames[regionEnum];
     return regionName;
-    
   }
   /**
    * Updates the long code field based on the selected region and market code.
@@ -331,7 +322,6 @@ export class CreateMarketComponent implements OnInit {
       });
       this.subGroups = data.marketSubGroups || [];
 
-      
       this.onRegionSelect(Number(data.region));
     });
   }
@@ -351,18 +341,18 @@ export class CreateMarketComponent implements OnInit {
   onSubmit(): void {
     if (this.marketForm.valid) {
       const marketData: Market = {
-        id: this.marketId,
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
         marketSubGroups: this.subGroups.length > 0 ? this.subGroups.map((subGroup) => ({
-          subGroupId: subGroup.subGroupId || 0,
+          subGroupId: subGroup.subGroupId || null,
           subGroupName: subGroup.subGroupName,
           subGroupCode: subGroup.subGroupCode,
-          marketId: subGroup.marketId || this.marketId,
           marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
+          isEdited: subGroup.isEdited || false,
+          isDeleted: subGroup.isDeleted || false,
         })) : [],
       };
 
@@ -468,25 +458,20 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
-  onSubGroupsChanged(event: {subGroups: MarketSubgroup[] }): void {
+  onSubGroupsChanged(event: { subGroups: MarketSubgroup[] }): void {
     this.subGroups = [...event.subGroups];
-    if (this.subGroups.length === 0) {
-      this.marketForm.setErrors(null);
-    }
-  }
 
-  /**
-   * Handles the event when there are no subgroups left, hiding the subgroup component.
-   * @param event - Event indicating no rows left in the subgroups.
-   */
-  onNoRowsLeftChanged(event: {
-    noRowsLeft: boolean;
-    subGroups: MarketSubgroup[];
-  }): void {
-    this.subGroups = [...event.subGroups];
-    if (event.noRowsLeft) {
+    // Check if all subgroups have isDeleted set to true
+    const allSubgroupsDeleted = this.subGroups.every(
+      (subGroup) => subGroup.isDeleted
+    );
+
+    if (allSubgroupsDeleted) {
+      // If all subgroups are marked as deleted, set errors to null
       this.marketForm.setErrors(null);
     }
+
+    console.log(this.subGroups);
   }
 
   onSubgroupErrorsFound(hasErrors: boolean): void {
@@ -496,7 +481,9 @@ export class CreateMarketComponent implements OnInit {
       if (this.marketForm.errors?.['subgroupErrors']) {
         const errors = { ...this.marketForm.errors };
         delete errors['subgroupErrors'];
-        this.marketForm.setErrors(Object.keys(errors).length > 0 ? errors : null);
+        this.marketForm.setErrors(
+          Object.keys(errors).length > 0 ? errors : null
+        );
       }
     }
   }
