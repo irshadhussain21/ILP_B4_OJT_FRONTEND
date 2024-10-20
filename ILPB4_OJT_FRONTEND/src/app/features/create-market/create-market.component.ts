@@ -76,7 +76,9 @@ import { RegionEnum } from '../../core/enums/region.enum';
  *      {
  *        "subGroupId": 1,
  *        "subGroupName": "Q-Island",
- *        "subGroupCode": "Q"
+ *        "subGroupCode": "Q",
+ *        "isDeleted": true,
+ *        "isEdited": false
  *      }
  *    ]
  *  }
@@ -458,22 +460,28 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
+  /**
+   * Updates the market's subgroup list when changes are emitted from the SubGroupComponent.
+   * Clears form errors if all subgroups are marked as deleted.
+   * 
+   * @param event - An object containing the updated list of subgroups.
+   * @param event.subGroups - The array of MarketSubgroup objects reflecting the current state of subgroups.
+   */
   onSubGroupsChanged(event: { subGroups: MarketSubgroup[] }): void {
     this.subGroups = [...event.subGroups];
-
-    // Check if all subgroups have isDeleted set to true
     const allSubgroupsDeleted = this.subGroups.every(
       (subGroup) => subGroup.isDeleted
     );
 
     if (allSubgroupsDeleted) {
-      // If all subgroups are marked as deleted, set errors to null
       this.marketForm.setErrors(null);
     }
-
-    console.log(this.subGroups);
   }
 
+  /**
+   * Updates the market form's validation state based on subgroup errors.
+   * @param hasErrors - Indicates whether subgroup errors are present.
+   */
   onSubgroupErrorsFound(hasErrors: boolean): void {
     if (hasErrors) {
       this.marketForm.setErrors({ subgroupErrors: true });

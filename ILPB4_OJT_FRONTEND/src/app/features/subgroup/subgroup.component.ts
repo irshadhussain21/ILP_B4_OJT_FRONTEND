@@ -67,7 +67,9 @@ import { TranslateModule } from '@ngx-translate/core';
  *      "subGroupId": 1,
  *      "subGroupName": "Place 1",
  *      "subGroupCode": "P",
- *      "marketId": 1
+ *      "marketId": 1,
+ *      "isDeleted": false,
+ *      "isEdited": false
  *    }
  *  ]
  */
@@ -185,7 +187,8 @@ export class SubgroupComponent implements OnInit {
   }
 
   /**
-   * Shows the subgroup form section and adds a row if no rows are present.
+   * Ensures that the subgroup section is visible.
+   * Adds a new row if all existing rows are marked as deleted.
    */
   showSubgroupFunc() {
     this.showSubgroup = true;
@@ -201,10 +204,8 @@ export class SubgroupComponent implements OnInit {
     const validSubGroups = this.rows.controls
     .filter((row) => row.valid)
     .map((row) => row.value);
-    console.log(validSubGroups)
-
+    
     const hasInvalidRow = this.rows.controls.some((row) => row.invalid);
-
     this.isSubGroupFormInvalid.emit(hasInvalidRow);
     this.subGroupsChanged.emit({ subGroups: validSubGroups });
   }
@@ -225,14 +226,7 @@ export class SubgroupComponent implements OnInit {
         } else {
           this.addRow();
         }
-      },
-      error: (error: HttpErrorResponse) => {
-        console.error(
-          'Error fetching subgroupsfor market:',
-          this.marketCode,
-          error.message
-        );
-      },
+      }
     });
   }
 
@@ -333,7 +327,6 @@ export class SubgroupComponent implements OnInit {
       const marketCode = formGroup.get('marketCode')?.value;
 
       const duplicate = this.rows.controls.some((otherRow) => {
-        // Ignore rows that are deleted
         if (otherRow.get('isDeleted')?.value) {
           return false;
         }
@@ -356,15 +349,14 @@ export class SubgroupComponent implements OnInit {
   }
 
   /**
-   * Deletes a subgroup row after user confirmation.
-   * Emits updated subgroup data to the parent component and toggles form visibility based on row count.
+   * Marks the selected row as deleted after confirmation.
+   * Updates the subgroup visibility based on undeleted rows.
    * 
-   * @param rowIndex - Index of the row to be deleted.
+   * @param rowIndex - Index of the row to delete.
    */
   deleteRow(rowIndex: number): void {
     const rowsArray = this.form.get('rows') as FormArray | null;
     if (!rowsArray) {
-      console.error('Form array "rows" does not exist');
       return;
     }
 
@@ -383,7 +375,10 @@ export class SubgroupComponent implements OnInit {
   }
 
   /**
-   * Checks if a new subgroup row can be added by validating existing rows.
+   * Checks if any undeleted row is invalid, emitting the result.
+   * Determines whether a new subgroup can be added.
+   * 
+   * @returns boolean - True if a new subgroup can be added.
    */
   canAddSubgroup(): boolean {
     const hasInvalidRow = this.rows.controls.some((row) =>!row.get('isDeleted')?.value && row.invalid);
