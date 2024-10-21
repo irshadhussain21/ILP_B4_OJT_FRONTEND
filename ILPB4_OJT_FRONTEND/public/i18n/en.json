@@ -17,13 +17,16 @@
           "MARKETS": "Markets",
           "LONG_CODE": "Long Code",
           "MARKET_CODE": "Market Code",
+          "SUBGROUP_CODE":"Code",
           "REGION": "Region",
           "SUBREGION": "Subregion",
           "SHORT_CODE_MARKET_NAME": "Short Code/Market Name",
           "LONG_MARKET_CODE": "Long Market Code",
           "MARKET_NAME": "Market Name", 
+          "SUBGROUP_NAME":"Name",
           "SUBGROUPS": "Subgroup(s)",
-          "SUBMIT_FOOTER":"Fill all the mandatory fields."
+          "SUBMIT_FOOTER":"Fill all the mandatory fields.",
+          "SUBGROUP_ICON_ALT":"Icon"
       },
       "TOOLTIPS": {},
       "PLACEHOLDERS": {
@@ -31,10 +34,12 @@
           "SELECT_SUBREGION": "Select a Subregion",
           "ENTER_CODE": "Code",
           "ENTER_NAME": "Name",
+          "SUBGROUP_NAME": "Subgroup Name",
           "ERROR_MARKET_CODE_EXISTS": "Entered market code already exists.",
           "ERROR_MARKET_NAME_EXISTS": "Entered market name already exists.",
           "ERROR_MARKET_NAME_REQUIRED": "Market Name is required",
           "ERROR_MARKET_CODE_REQUIRED": "Market Code is required",
+          "INVALID_CODE_FORMAT" : "Invalid Code Format. Only a single alphanumeric charater is allowed",
           "LONG_CODE_FORMAT_INFO": "The format will be automatically set based on selections",
           "ADD_SUBGROUP_INFO_VALID": "Start adding Subgroup(s) for the Market",
           "ADD_SUBGROUP_INFO_INVALID": "Enter the Market Code/Name before adding Subgroup(s)",
@@ -42,6 +47,7 @@
           "REGION": "Region",
           "SEARCH": "Search"
       },
+      
       "TOAST_MESSAGE": {
           "SUCCESS_MARKET": {
               "CREATED": "Market is successfully created",
