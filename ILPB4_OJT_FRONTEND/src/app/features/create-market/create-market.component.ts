@@ -185,7 +185,17 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
-  private setupFieldListeners(): void {
+  /**
+   * Sets up listeners on specific form fields in the market form.
+   *
+   * The listeners include:
+   * - 'region': Updates the long code whenever the region changes.
+   * - 'marketCode': Adds a debounce for user input, checks if the code already exists,
+   *   sets validation errors accordingly, and updates the long code.
+   * - 'marketName': Adds a debounce for user input, checks if the name already exists,
+   *   and sets validation errors based on the existence check.
+   */
+  setupFieldListeners(): void {
     this.marketForm
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
@@ -348,14 +358,18 @@ export class CreateMarketComponent implements OnInit {
         longMarketCode: this.marketForm.value.longCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
-        marketSubGroups: this.subGroups.length > 0 ? this.subGroups.map((subGroup) => ({
-          subGroupId: subGroup.subGroupId || null,
-          subGroupName: subGroup.subGroupName,
-          subGroupCode: subGroup.subGroupCode,
-          marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
-          isEdited: subGroup.isEdited || false,
-          isDeleted: subGroup.isDeleted || false,
-        })) : [],
+        marketSubGroups:
+          this.subGroups.length > 0
+            ? this.subGroups.map((subGroup) => ({
+                subGroupId: subGroup.subGroupId || null,
+                subGroupName: subGroup.subGroupName,
+                subGroupCode: subGroup.subGroupCode,
+                marketCode:
+                  subGroup.marketCode || this.marketForm.value.marketCode,
+                isEdited: subGroup.isEdited || false,
+                isDeleted: subGroup.isDeleted || false,
+              }))
+            : [],
       };
 
       if (this.isEditMode) {
@@ -463,7 +477,7 @@ export class CreateMarketComponent implements OnInit {
   /**
    * Updates the market's subgroup list when changes are emitted from the SubGroupComponent.
    * Clears form errors if all subgroups are marked as deleted.
-   * 
+   *
    * @param event - An object containing the updated list of subgroups.
    * @param event.subGroups - The array of MarketSubgroup objects reflecting the current state of subgroups.
    */
