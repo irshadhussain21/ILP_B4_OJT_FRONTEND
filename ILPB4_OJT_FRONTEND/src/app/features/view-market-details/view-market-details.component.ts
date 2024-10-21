@@ -186,7 +186,7 @@ export class ViewMarketDetailsComponent implements OnInit {
    *The confirmDeleteMarket method opens a confirmation dialog using PrimeNG's ConfirmationService to prompt the user
    *for market deletion, calling the deleteMarket method if confirmed, while taking no action if rejected.
    */
-  private confirmDeleteMarket() {
+  public confirmDeleteMarket() {
     this.confirmationService.confirm({
       message: this.translate.instant('PAGE.CONFIRM_DELETE_MESSAGE'), 
       header: this.translate.instant('PAGE.CONFIRM_DELETE_HEADER'),   

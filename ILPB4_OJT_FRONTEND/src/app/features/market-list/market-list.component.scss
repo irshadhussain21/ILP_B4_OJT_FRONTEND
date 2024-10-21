@@ -8,6 +8,17 @@
   .p-component{
     font-size: var(--font-size-base);
   }
+  .p-multiselect-label {
+    visibility: hidden; 
+    width: 100%; 
+    overflow: hidden; 
+    white-space: nowrap; 
+    max-width: 80px;
+  }
+  .p-multiselect-label::before {
+    content: "region"; 
+    visibility: visible;
+}
 }
 .market-header {
   display: flex;
