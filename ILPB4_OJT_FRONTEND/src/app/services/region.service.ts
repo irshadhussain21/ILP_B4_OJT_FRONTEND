@@ -19,7 +19,7 @@ export class RegionService {
    * @returns {Observable<Region[]>} An observable containing a list of all regions
    */
   getAllRegions(): Observable<Region[]> {
-    return this.http.get<Region[]>(`${this.apiUrl}/all-regions`);
+    return this.http.get<Region[]>(`${this.apiUrl}/regions`);
   }
 
   /**
