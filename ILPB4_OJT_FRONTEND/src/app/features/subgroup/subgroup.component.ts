@@ -31,6 +31,7 @@ import { MarketSubgroup } from '../../core/models/market';
 import { HttpErrorResponse } from '@angular/common/http';
 import { debounceTime } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';
+import { CreateMarketConfig } from '../../config/market';
 
 /**
  * LLD (Low-Level Design)
@@ -254,7 +255,7 @@ export class SubgroupComponent implements OnInit {
         marketCode: [this.marketCode],
         subGroupCode: [
           subGroup?.subGroupCode || '',
-          [Validators.required, Validators.pattern('^[A-Za-z0-9]{1}$')],
+          [Validators.required, Validators.pattern(CreateMarketConfig.SUBGROUP_CODE_VALIDATION_REGEX)],
         ],
         subGroupName: [subGroup?.subGroupName || '', Validators.required],
         isDeleted: [subGroup?.isDeleted || false],
