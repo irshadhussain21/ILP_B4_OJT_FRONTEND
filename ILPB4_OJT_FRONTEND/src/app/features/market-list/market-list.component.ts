@@ -158,7 +158,6 @@ export class MarketlistComponent implements OnInit {
    * Map of subregions with their corresponding names
    */
   subRegionsMap: { [key: string]: string } = {}; 
-
    
   constructor(private marketService: MarketService, private regionService: RegionService) {
     this.regions = this.getRegions();
@@ -215,7 +214,7 @@ export class MarketlistComponent implements OnInit {
    * Function to load markets with pagination and search text.
    */
   loadMarkets(pageNumber: number = 0, pageSize: number = 10, searchText: string = ''): void {
-    this.marketService.getAllMarkets(pageNumber + 1, pageSize, searchText).subscribe(
+    this.marketService.getAllMarkets(pageNumber+1, pageSize, searchText).subscribe(
       (response: any) => {
         this.markets = response.markets || response; 
         this.filteredMarkets = this.markets;
@@ -252,7 +251,6 @@ export class MarketlistComponent implements OnInit {
       this.marketService.getFilteredMarkets(region).subscribe(
         (data: Market[]) => {
           this.filteredMarkets = data;
-          console.log('Filtered Markets:', this.filteredMarkets);
           this.totalMarkets = data.length;  
           this.first = 0;  
         },
@@ -262,7 +260,7 @@ export class MarketlistComponent implements OnInit {
       );
     } else {
       this.filteredMarkets = this.markets;
-      console.log('nothing')
+      this.totalMarkets = this.markets.length;
     }
   }
   
@@ -272,7 +270,7 @@ export class MarketlistComponent implements OnInit {
    */
   filterMarkets() {
     this.first = 0; // Reset pagination to the first page on new search
-    this.loadMarkets(0, this.selectedRowsPerPage, this.searchText);
+    this.loadMarkets(1, this.selectedRowsPerPage, this.searchText);
   }
 
 
@@ -332,7 +330,7 @@ export class MarketlistComponent implements OnInit {
    */
   onPageChange(event: any): void {
     this.first = event.first;
-    const pageNumber = event.page + 1; 
+    const pageNumber =  Math.floor(event.first / this.selectedRowsPerPage) + 1;
     this.loadMarkets(pageNumber, this.selectedRowsPerPage, this.searchText); 
   }
 
@@ -342,6 +340,6 @@ export class MarketlistComponent implements OnInit {
   onRowsPerPageChange(event: any): void {
     this.selectedRowsPerPage = event.value;
     this.first = 0;
-    this.loadMarkets(0, this.selectedRowsPerPage, this.searchText);
+    this.loadMarkets(1, this.selectedRowsPerPage, this.searchText);
   }
 }
