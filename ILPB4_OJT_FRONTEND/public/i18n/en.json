@@ -39,6 +39,8 @@
           "ERROR_MARKET_NAME_EXISTS": "Entered market name already exists.",
           "ERROR_MARKET_NAME_REQUIRED": "Market Name is required",
           "ERROR_MARKET_CODE_REQUIRED": "Market Code is required",
+          "SUBGROUP_NAME_REQUIRED":"Subgroup Name is required",
+          "SUBGROUP_CODE_REQUIRED": "Subgroup Code is required",
           "INVALID_CODE_FORMAT" : "Invalid Code Format. Only a single alphanumeric charater is allowed",
           "LONG_CODE_FORMAT_INFO": "The format will be automatically set based on selections",
           "ADD_SUBGROUP_INFO_VALID": "Start adding Subgroup(s) for the Market",
