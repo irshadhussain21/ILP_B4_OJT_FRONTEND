@@ -352,10 +352,14 @@ export class CreateMarketComponent implements OnInit {
    */
   onSubmit(): void {
     if (this.marketForm.valid) {
+
+      let longCode = this.marketForm.value.longCode;
+      const formattedLongCode = this.applyLongCodeFormat(longCode);
+      console.log(formattedLongCode)
       const marketData: Market = {
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
-        longMarketCode: this.marketForm.value.longCode,
+        longMarketCode: formattedLongCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
         marketSubGroups:
@@ -517,5 +521,11 @@ export class CreateMarketComponent implements OnInit {
     this.regionService.getAllRegions().subscribe((regions) => {
       this.regions = regions;
     });
+  }
+  // Helper method to format longCode
+  applyLongCodeFormat(longCode: string): string {
+   
+    const formattedCode = longCode.replace(/(\w)(\w{2})(\w{2})(\w{2})/, '$1-$2.$3.$4');
+    return formattedCode;
   }
 }

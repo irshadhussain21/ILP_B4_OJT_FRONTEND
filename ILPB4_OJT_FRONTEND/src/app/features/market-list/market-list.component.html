@@ -27,6 +27,7 @@
             (onChange)="filterMarketsByRegion()">
         </p-multiSelect>
     </div>
+
 </div>
 
     <!-- Container for Chips and Clear All Button -->
@@ -38,6 +39,7 @@
         </span>
         <span *ngIf="selectedRegions.length > 0" class="clear-all" (click)="clearAll()">{{ 'PAGE.BUTTONS.FILTER_CLEAR_ALL' | translate }}</span>
     </div>
+
 
     <div class="p-table-container">
         <p-table [value]="filteredMarkets" scrollable="true" [scrollHeight]="'400px'" [tableStyle]="{'min-width': '60rem'}" sortMode="single" (onSort)="onSort($event)">
