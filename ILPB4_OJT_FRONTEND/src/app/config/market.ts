@@ -5,7 +5,7 @@ export const CreateMarketConfig = {
     TITLE_EDIT: 'Edit Market',
     MAX_MARKET_CODE_LENGTH: 2,
     MIN_MARKET_CODE_LENGTH: 2,
-    MAX_LONG_CODE_LENGTH: 50,
+    MAX_LONG_CODE_LENGTH: 20,
     MIN_LONG_CODE_LENGTH: 7,
     MARKET_CODE_VALIDATION_REGEX: /^[a-zA-Z]+$/,
     MESSAGES:{
