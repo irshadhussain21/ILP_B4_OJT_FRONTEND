@@ -92,7 +92,7 @@ export class MarketlistComponent implements OnInit {
   /**
    * Array to hold the filtered markets
    */
-  filteredMarkets!: Market[];
+  filteredMarkets: Market[] = [];
   
   /**
    * Variable to hold the selected market
@@ -132,7 +132,7 @@ export class MarketlistComponent implements OnInit {
   /**
    * List of regions for filtering markets
    */
-  regions: any[];
+  regions: any[] = []
   
   /**
    * Selected regions for filtering markets
@@ -214,12 +214,15 @@ export class MarketlistComponent implements OnInit {
    /**
    * Function to load markets with pagination and search text.
    */
-  loadMarkets(pageNumber: number = 0, pageSize: number = 10, searchText: string = ''): void {
-    this.marketService.getAllMarkets(pageNumber + 1, pageSize, searchText).subscribe(
+  async loadMarkets(pageNumber: number = 0, pageSize: number = 10, searchText: string = '', region: string | null = null): Promise<void> {
+    (await this.marketService.getAllMarkets(pageNumber + 1, pageSize, searchText, region)).subscribe(
       (response: any) => {
+        
         this.markets = response.markets || response; 
         this.filteredMarkets = this.markets;
+       
         this.totalMarkets = response.totalRecords || this.markets.length;
+      
       },
       (error) => {
         console.error('Error fetching markets:', error);
@@ -247,12 +250,14 @@ export class MarketlistComponent implements OnInit {
   }
   filterMarketsByRegion() {
     if (this.selectedRegions.length > 0) {
+    
+     
       const region = this.selectedRegions.map(region => region.value).join(',');
-       
-      this.marketService.getFilteredMarkets(region).subscribe(
-        (data: Market[]) => {
-          this.filteredMarkets = data;
-          console.log('Filtered Markets:', this.filteredMarkets);
+    
+      this.marketService.getAllMarkets(1,10,null,region).subscribe(
+        (data:any) => {
+          this.filteredMarkets = data.markets;
+         
           this.totalMarkets = data.length;  
           this.first = 0;  
         },
@@ -265,8 +270,7 @@ export class MarketlistComponent implements OnInit {
       console.log('nothing')
     }
   }
-  
-  
+
   /**
    * Filters the list of markets based on the search text entered by the user and paginates the results.
    */
