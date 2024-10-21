@@ -332,7 +332,7 @@ export class MarketlistComponent implements OnInit {
    */
   onPageChange(event: any): void {
     this.first = event.first;
-    const pageNumber = event.page; 
+    const pageNumber = event.page + 1; 
     this.loadMarkets(pageNumber, this.selectedRowsPerPage, this.searchText); 
   }
 
