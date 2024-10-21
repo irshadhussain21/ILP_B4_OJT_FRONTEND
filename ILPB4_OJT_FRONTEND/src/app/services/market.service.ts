@@ -46,7 +46,7 @@ export class MarketService {
  * @param {string | null} searchText - The optional search text to filter the markets by name, code, or long code.
  * @returns {Observable<any>} An observable that emits the paginated response containing markets and metadata.
  */
-getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = null,region: string | null = null): Observable<any> {
+  getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = null,region: string | null = null): Observable<any> {
   console.log('hi',typeof(region))
 
 
@@ -58,12 +58,10 @@ getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = 
   }
 
   if (region) {
-    params += `&region=${encodeURIComponent(region)}`;
+    params += `&regions=${encodeURIComponent(region)}`;
     console.log(params)
     console.log('region',region)
   }
- 
-
  
   return this.http.get<Market[]>(`https://localhost:7058/api/Market?${params}`);
 }
@@ -118,12 +116,6 @@ getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = 
   deleteMarket(marketId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${marketId}`);
   }
- 
-  getFilteredMarkets(regions: string): Observable<Market[]> {
- 
-    return this.http.get<Market[]>(`${this.apiUrl}/filter?Regions=${encodeURIComponent(regions)}`);
-  }
-
  
 getMarketById(marketId: number): Observable<any> {
   return this.http.get(`${this.apiUrl}/${marketId}/details`);
