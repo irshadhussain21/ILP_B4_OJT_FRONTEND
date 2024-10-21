@@ -9,9 +9,11 @@ export interface Market {
 } 
  
 export interface MarketSubgroup {
-    subGroupId?: number;     
+    subGroupId?: number | null;     
     marketId?: number;
     marketCode: string;      
     subGroupCode: string;    
-    subGroupName: string;    
+    subGroupName: string;
+    isEdited: boolean;
+    isDeleted: boolean;    
   }
