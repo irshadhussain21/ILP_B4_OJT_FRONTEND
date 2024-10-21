@@ -61,4 +61,10 @@ describe('CreateMarketComponent', () => {
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
+  it('should initialize the form', () => {
+    component.ngOnInit();
+    expect(component.marketForm).toBeDefined();
+    expect(component.marketForm.controls['marketName'].value).toBe('');
+    expect(component.marketForm.controls['marketCode'].value).toBe('');
+  });
 });
