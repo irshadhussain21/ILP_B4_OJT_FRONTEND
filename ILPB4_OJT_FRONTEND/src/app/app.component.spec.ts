@@ -3,6 +3,7 @@ import { AppComponent } from './app.component';
 import { provideRouter, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { By } from '@angular/platform-browser';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -12,7 +13,9 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],  // Standalone component, so include it directly
       providers: [
-        provideRouter([]),  // Empty router for testing, or add your actual routes if needed
+        provideRouter([
+          
+        ]),  // Empty router for testing, or add your actual routes if needed
       ]
     }).compileComponents();
 

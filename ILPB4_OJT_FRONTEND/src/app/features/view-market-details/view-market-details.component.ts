@@ -203,7 +203,7 @@ export class ViewMarketDetailsComponent implements OnInit {
    *marketId. On success, a success message is displayed using PrimeNG's MessageServiceand the user is 
    *redirected to the markets list. If an error occurs, it logs the error to the console.
    */
-  private deleteMarket() {
+  public deleteMarket() {
     if (this.marketId) {
       this.marketService.deleteMarket(this.marketId).subscribe({
         next: () => {
