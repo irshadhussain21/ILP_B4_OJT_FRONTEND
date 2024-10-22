@@ -25,8 +25,6 @@ class FakeLoader implements TranslateLoader {
     return of({});
   }
 }
-
-
 describe('ViewMarketDetailsComponent', () => {
   let component: ViewMarketDetailsComponent;
   let fixture: ComponentFixture<ViewMarketDetailsComponent>;
