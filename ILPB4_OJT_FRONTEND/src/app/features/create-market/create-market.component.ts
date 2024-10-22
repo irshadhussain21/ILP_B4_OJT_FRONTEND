@@ -358,7 +358,7 @@ export class CreateMarketComponent implements OnInit {
       const marketData: Market = {
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
-        longMarketCode: formattedLongCode,
+        longMarketCode: formattedLongCode.toUpperCase(),
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
         marketSubGroups:
@@ -523,7 +523,7 @@ export class CreateMarketComponent implements OnInit {
   // Helper method to format longCode
   applyLongCodeFormat(longCode: string): string {
    
-    const formattedCode = longCode.replace(/(\w)(\w{2})(\w{2})(\w{2})/, '$1-$2.$3.$4');
+     const formattedCode = longCode.replace(/([A-Z])([A-Z]{2})([A-Z]{2})([A-Z]{2})/, '$1-$2.$3.$4');
     return formattedCode;
   }
 }
