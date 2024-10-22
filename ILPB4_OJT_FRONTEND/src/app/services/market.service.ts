@@ -24,6 +24,7 @@ export class MarketService {
    * @returns Observable<number> An observable that emits the ID of the newly created market.
    */
   createMarket(market: Market): Observable<number> {
+   
     return this.http.post<number>(`${this.apiUrl}`, market);
   }
 
@@ -50,7 +51,7 @@ export class MarketService {
   console.log('hi',typeof(region))
 
 
-  let params = `?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+  let params = `pageNumber=${pageNumber}&pageSize=${pageSize}`;
   
   if (searchText) {
     params += `&searchText=${encodeURIComponent(searchText)}`;
@@ -62,7 +63,8 @@ export class MarketService {
     console.log(params)
     console.log('region',region)
   }
- 
+  const url = `https://localhost:7058/api/Market${params}`;
+  console.log('Constructed URL:', url); // Log the full URL here
   return this.http.get<Market[]>(`https://localhost:7058/api/Market?${params}`);
 }
 

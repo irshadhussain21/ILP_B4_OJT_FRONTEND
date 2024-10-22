@@ -119,14 +119,14 @@ export class CreateMarketComponent implements OnInit {
   hasEditedName: boolean = false;
 
   constructor(
-    private fb: FormBuilder,
-    private marketService: MarketService,
+    public fb: FormBuilder,
+    public marketService: MarketService,
     private regionService: RegionService,
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private translateService: TranslateService
+    public messageService: MessageService,
+    public confirmationService: ConfirmationService,
+    public translateService: TranslateService
   ) {}
 
   /**
@@ -164,26 +164,27 @@ export class CreateMarketComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.maxLength(CreateMarketConfig.MIN_MARKET_CODE_LENGTH),
-          Validators.minLength(CreateMarketConfig.MAX_MARKET_CODE_LENGTH),
+          Validators.minLength(2),  
+          Validators.maxLength(2)   
         ],
       ],
       longCode: [
         '',
         [
           Validators.required,
-          Validators.minLength(CreateMarketConfig.MIN_LONG_CODE_LENGTH),
-          Validators.maxLength(CreateMarketConfig.MAX_LONG_CODE_LENGTH),
+          Validators.minLength(8),  // Example min length, adjust based on long code format
+          Validators.maxLength(12)  // Example max length, adjust based on long code format
         ],
       ],
       region: ['', Validators.required],
       subregion: [''],
     });
-
+  
     this.marketForm.statusChanges.subscribe((status) => {
       this.isMarketFormValid = status === 'VALID';
     });
   }
+  
 
   /**
    * Sets up listeners on specific form fields in the market form.
