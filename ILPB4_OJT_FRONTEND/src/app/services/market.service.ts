@@ -24,6 +24,7 @@ export class MarketService {
    * @returns Observable<number> An observable that emits the ID of the newly created market.
    */
   createMarket(market: Market): Observable<number> {
+   
     return this.http.post<number>(`${this.apiUrl}`, market);
   }
 

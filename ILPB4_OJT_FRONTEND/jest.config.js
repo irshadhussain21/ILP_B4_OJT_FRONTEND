@@ -8,6 +8,9 @@ module.exports = {
         stringifyContentPathRegex: '\\.html$',
       },
     },
+    moduleNameMapper: {
+        '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+      },
     moduleFileExtensions: ['ts', 'html', 'js', 'json'],
     testMatch: ['**/+(*.)+(spec).+(ts)'],
     reporters: [
@@ -22,5 +25,7 @@ module.exports = {
         },
       ],
     ],
+    "verbose": true,
+    "silent": false
   };
   
