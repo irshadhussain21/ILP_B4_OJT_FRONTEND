@@ -356,11 +356,10 @@ export class CreateMarketComponent implements OnInit {
 
       let longCode = this.marketForm.value.longCode;
       const formattedLongCode = this.applyLongCodeFormat(longCode);
-      console.log(formattedLongCode)
       const marketData: Market = {
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
-        longMarketCode: formattedLongCode,
+        longMarketCode: formattedLongCode.toUpperCase(),
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
         marketSubGroups:
@@ -369,8 +368,7 @@ export class CreateMarketComponent implements OnInit {
                 subGroupId: subGroup.subGroupId || null,
                 subGroupName: subGroup.subGroupName,
                 subGroupCode: subGroup.subGroupCode,
-                marketCode:
-                  subGroup.marketCode || this.marketForm.value.marketCode,
+                marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
                 isEdited: subGroup.isEdited || false,
                 isDeleted: subGroup.isDeleted || false,
               }))
@@ -468,7 +466,7 @@ export class CreateMarketComponent implements OnInit {
   onCancel(): void {
     this.confirmationService.confirm({
       message: this.translateService.instant(
-        CreateMarketConfig.MESSAGES.CONFIRM
+        CreateMarketConfig.MESSAGES.CONFIRM_MESSAGES.CONFIRM_CANCEL
       ),
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
@@ -526,7 +524,7 @@ export class CreateMarketComponent implements OnInit {
   // Helper method to format longCode
   applyLongCodeFormat(longCode: string): string {
    
-    const formattedCode = longCode.replace(/(\w)(\w{2})(\w{2})(\w{2})/, '$1-$2.$3.$4');
+     const formattedCode = longCode.replace(/([A-Z])([A-Z]{2})([A-Z]{2})([A-Z]{2})/, '$1-$2.$3.$4');
     return formattedCode;
   }
 }
