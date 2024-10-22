@@ -80,6 +80,7 @@ import { PaginationConstants } from '../../config/market';
   styleUrls: ['./market-list.component.scss']
 })
 export class MarketlistComponent implements OnInit {
+
   /**
    * Title for the market list component
    */
@@ -158,7 +159,6 @@ export class MarketlistComponent implements OnInit {
    * Map of subregions with their corresponding names
    */
   subRegionsMap: { [key: string]: string } = {}; 
-
    
   constructor(private marketService: MarketService, private regionService: RegionService) {
     this.regions = this.getRegions();
@@ -166,8 +166,7 @@ export class MarketlistComponent implements OnInit {
  
 
   ngOnInit() {
-    this.loadRegionsAndSubregions();
-    this.loadMarkets();
+    this.loadMarkets(1,this.rows);
 
   }
   /**The getRegions() function generates a list of regions by mapping the numeric values from the RegionEnum to their 
@@ -179,49 +178,17 @@ export class MarketlistComponent implements OnInit {
         label: RegionFullForms[RegionEnum[key as keyof typeof RegionEnum]],
         value: RegionEnum[key as keyof typeof RegionEnum], 
       }));
-  }
-  
-  /**
-   * Function to load regions and subregions
-   */
-  loadRegionsAndSubregions() {
-    this.regionService.getAllRegions().subscribe(
-      (regions: Region[]) => {
-        regions.forEach(region => {
-          this.regionsMap[region.key.toString()] = region.value;
-  
-          /**
-           * Fetch subregions for each region
-           */
-          this.regionService.getSubRegionsByRegion(region.key).subscribe(
-            (subregions: Region[]) => {
-              subregions.forEach(subregion => {
-                this.subRegionsMap[subregion.key.toString()] = subregion.value;
-              });
-            },
-            (error) => {
-              console.error(`Error fetching subregions for region ${region.key}:`, error);
-            }
-          );
-        });
-      },
-      (error) => {
-        console.error('Error fetching regions:', error);
-      }
-    );
-  }
-  
+  } 
    /**
    * Function to load markets with pagination and search text.
    */
-  async loadMarkets(pageNumber: number = 0, pageSize: number = 10, searchText: string = '', region: string | null = null): Promise<void> {
-    (await this.marketService.getAllMarkets(pageNumber + 1, pageSize, searchText, region)).subscribe(
+  loadMarkets(pageNumber: number , pageSize: number , searchText: string = ''): void {
+    this.marketService.getAllMarkets(pageNumber, pageSize, searchText).subscribe(
       (response: any) => {
-        
-        this.markets = response.markets || response; 
+        this.markets = response.markets || []; 
         this.filteredMarkets = this.markets;
-       
-        this.totalMarkets = response.totalRecords || this.markets.length;
+        this.totalMarkets = response.totalCount ;
+        console.log(this.totalMarkets);
       
       },
       (error) => {
@@ -229,32 +196,14 @@ export class MarketlistComponent implements OnInit {
       }
     );
   }
-  
-  
-   /**
-   * Function to load market details by market ID
-   */
-   loadMarketDetails(market: Market) {
-    if (market.id) {
-      this.marketService.getMarketDetailsById(market.id).subscribe(
-        (details: Market) => {
-          market.marketSubGroups = details.marketSubGroups;
-          market.region = this.regionsMap[market.region] || market.region;
-          market.subRegion = this.subRegionsMap[market.subRegion] || market.subRegion;
-        },
-        (error) => {
-          console.error(`Error fetching market details for market ID ${market.id}:`, error);
-        }
-      );
-    }
-  }
+ 
+ 
   filterMarketsByRegion() {
     if (this.selectedRegions.length > 0) {
     
-     
       const region = this.selectedRegions.map(region => region.value).join(',');
     
-      this.marketService.getAllMarkets(1,10,null,region).subscribe(
+      this.marketService.getAllMarkets(0,10,null,region).subscribe(
         (data:any) => {
           this.filteredMarkets = data.markets;
          
@@ -267,7 +216,7 @@ export class MarketlistComponent implements OnInit {
       );
     } else {
       this.filteredMarkets = this.markets;
-      console.log('nothing')
+      this.totalMarkets = this.markets.length;
     }
   }
 
@@ -275,8 +224,8 @@ export class MarketlistComponent implements OnInit {
    * Filters the list of markets based on the search text entered by the user and paginates the results.
    */
   filterMarkets() {
-    this.first = 0; // Reset pagination to the first page on new search
-    this.loadMarkets(0, this.selectedRowsPerPage, this.searchText);
+    this.first = 0;
+    this.loadMarkets(1, this.selectedRowsPerPage, this.searchText);
   }
 
 
@@ -335,9 +284,11 @@ export class MarketlistComponent implements OnInit {
    * Function to handle page change in paginator
    */
   onPageChange(event: any): void {
+    const pageNumber = Math.floor(event.first / this.selectedRowsPerPage) + 1;
     this.first = event.first;
-    const pageNumber = event.page; 
-    this.loadMarkets(pageNumber, this.selectedRowsPerPage, this.searchText); 
+    this.loadMarkets(pageNumber, this.selectedRowsPerPage, this.searchText);
+    console.log('Current Page Number:', pageNumber);
+    
   }
 
   /**
@@ -346,6 +297,6 @@ export class MarketlistComponent implements OnInit {
   onRowsPerPageChange(event: any): void {
     this.selectedRowsPerPage = event.value;
     this.first = 0;
-    this.loadMarkets(0, this.selectedRowsPerPage, this.searchText);
+    this.loadMarkets( 1, this.selectedRowsPerPage, this.searchText);
   }
 }
