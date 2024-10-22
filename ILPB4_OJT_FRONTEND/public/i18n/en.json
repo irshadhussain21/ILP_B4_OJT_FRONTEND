@@ -62,7 +62,8 @@
               "UPDATE": "An error occurred while updating the market"
           },
           "CONFIRM": {
-              "CANCEL": "You have unsaved changes. Are you sure you want to proceed?"
+              "CANCEL": "You have unsaved changes. Are you sure you want to proceed?",
+              "DELETE": "Are you sure you want to delete this subgroup?"
           }
       },
       "NOTIFICATIONS": {

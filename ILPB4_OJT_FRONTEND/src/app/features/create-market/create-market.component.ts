@@ -355,7 +355,6 @@ export class CreateMarketComponent implements OnInit {
 
       let longCode = this.marketForm.value.longCode;
       const formattedLongCode = this.applyLongCodeFormat(longCode);
-      console.log(formattedLongCode)
       const marketData: Market = {
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
@@ -368,8 +367,7 @@ export class CreateMarketComponent implements OnInit {
                 subGroupId: subGroup.subGroupId || null,
                 subGroupName: subGroup.subGroupName,
                 subGroupCode: subGroup.subGroupCode,
-                marketCode:
-                  subGroup.marketCode || this.marketForm.value.marketCode,
+                marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
                 isEdited: subGroup.isEdited || false,
                 isDeleted: subGroup.isDeleted || false,
               }))
@@ -467,7 +465,7 @@ export class CreateMarketComponent implements OnInit {
   onCancel(): void {
     this.confirmationService.confirm({
       message: this.translateService.instant(
-        CreateMarketConfig.MESSAGES.CONFIRM
+        CreateMarketConfig.MESSAGES.CONFIRM_MESSAGES.CONFIRM_CANCEL
       ),
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
