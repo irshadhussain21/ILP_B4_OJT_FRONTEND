@@ -39,6 +39,6 @@ export const CreateMarketConfig = {
   };
   
   export const PaginationConstants={
-    rowsPerPageOptions: [10, 25, 50, 75, 100],
-    defaultRows: 10,
+    rowsPerPageOptions: [5,10, 25, 50, 75, 100],
+    defaultRows: 5,
   }
