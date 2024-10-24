@@ -201,8 +201,8 @@ export class MarketlistComponent implements OnInit {
     if (this.selectedRegions.length > 0) {
     
       const region = this.selectedRegions.map(region => region.value).join(',');
-    
-      this.marketService.getAllMarkets(0,10,null,region).subscribe(
+      
+      this.marketService.getAllMarkets(1,10,null,region).subscribe(
         (data:any) => {
           this.filteredMarkets = data.markets;
          
@@ -296,6 +296,7 @@ export class MarketlistComponent implements OnInit {
   onRowsPerPageChange(event: any): void {
     this.selectedRowsPerPage = event.value;
     this.first = 0;
-    this.loadMarkets( 1, this.selectedRowsPerPage, this.searchText);
+    const pageNumber = Math.floor(event.first / this.selectedRowsPerPage) + 1;
+    this.loadMarkets(pageNumber , this.selectedRowsPerPage, this.searchText);
   }
 }
