@@ -27,7 +27,9 @@
           "SUBGROUP_NAME":"Name",
           "SUBGROUPS": "Subgroup(s)",
           "SUBMIT_FOOTER":"Fill all the mandatory fields.",
-          "SUBGROUP_ICON_ALT":"Icon"
+          "SUBGROUP_ICON_ALT":"Icon",
+          "CONFIRM_DELETE_HEADER":"Confirm Deletion",
+          "CONFIRM_DELETE_MESSAGE":"Are you sure you want to delete this market?"
       },
       "TOOLTIPS": {},
       "PLACEHOLDERS": {
@@ -48,7 +50,7 @@
           "LONG_CODE_FORMAT_INFO": "The format will be automatically set based on selections",
           "ADD_SUBGROUP_INFO_VALID": "Start adding Subgroup(s) for the Market",
           "ADD_SUBGROUP_INFO_INVALID": "Enter the Market Code/Name before adding Subgroup(s)",
-          "SEARCH_MARKETS": "Search markets...",
+          "SEARCH_MARKETS": "Search",
           "REGION": "Region",
           "SEARCH": "Search"
       },
@@ -63,8 +65,10 @@
               "UPDATE": "An error occurred while updating the market"
           },
           "CONFIRM": {
+              
               "CANCEL": "You have unsaved changes. Are you sure you want to proceed?",
               "DELETE": "Are you sure you want to delete this subgroup?"
+
           }
       },
       "NOTIFICATIONS": {

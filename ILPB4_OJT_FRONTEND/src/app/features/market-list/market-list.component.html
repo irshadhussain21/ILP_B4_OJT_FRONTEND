@@ -76,7 +76,7 @@
                     <td>{{ market.longMarketCode | uppercase }}</td>
                     <td>{{ market.code }}</td>
                     <td class="truncate capitalize-first">
-                        <a [routerLink]="['/markets', market.id]" class="market-link" [pTooltip]="market.name" tooltipPosition="top">{{ market.name }}</a>
+                        <a [routerLink]="['/markets', market.id]" class="market-link">{{ market.name }}</a>
                     </td>
                     <td>
                         <ng-container *ngIf="market.marketSubGroups && market.marketSubGroups.length > 0">
