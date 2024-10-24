@@ -10,12 +10,11 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DropdownModule } from 'primeng/dropdown';
 import { PaginatorModule } from 'primeng/paginator';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { TranslateModule,TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 /** Local imports */
 import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
 import { Market, MarketSubgroup } from '../../core/models/market';
-import { Region } from '../../core/models/region';
 import { HeaderComponent } from "../../shared/header/header.component";
 import { RegionEnum, RegionFullForms } from '../../core/enums/region.enum';
 import { PaginationConstants } from '../../config/market';
