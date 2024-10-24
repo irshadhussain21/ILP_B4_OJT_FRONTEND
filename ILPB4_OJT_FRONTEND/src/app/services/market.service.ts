@@ -119,7 +119,7 @@ export class MarketService {
     return this.http.delete(`${this.apiUrl}/${marketId}`);
   }
  
-getMarketById(marketId: number): Observable<any> {
+getMarketById(marketId?: number): Observable<any> {
   return this.http.get(`${this.apiUrl}/${marketId}/details`);
 }
 }

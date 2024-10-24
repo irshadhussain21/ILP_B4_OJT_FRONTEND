@@ -117,6 +117,7 @@ export class CreateMarketComponent implements OnInit {
   hasNameExistsError: boolean = false;
   hasEditedCode: boolean = false;
   hasEditedName: boolean = false;
+  existingMarket: Market | null = null;
 
   constructor(
     public fb: FormBuilder,
@@ -138,6 +139,28 @@ export class CreateMarketComponent implements OnInit {
     this.loadRegions();
     this.getRoute();
     this.setupFieldListeners();
+    if (this.isEditMode) {
+      // Load existing market data
+      this.loadMarketData(); // Implement this method to fetch market data
+    }
+  }
+
+  loadMarketData() {
+    // Assuming you have a service method to get the market data by ID
+    this.marketService.getMarketById(this.marketId).subscribe((market) => {
+      this.existingMarket = market;
+      this.populateForm(market);
+    });
+  }
+
+  populateForm(market: Market) {
+    this.marketForm.patchValue({
+      marketCode: market.code,
+      marketName: market.name,
+      longCode: market.longMarketCode,
+      region: market.region,
+      subregion: market.subRegion,
+    });
   }
 
   /**
@@ -334,6 +357,7 @@ export class CreateMarketComponent implements OnInit {
   fetchMarketData(marketId: number): void {
     this.marketService.getMarketDetailsById(marketId).subscribe((data) => {
       this.marketForm.patchValue({
+
         marketName: data.name,
         marketCode: data.code,
         longCode: data.longMarketCode,
