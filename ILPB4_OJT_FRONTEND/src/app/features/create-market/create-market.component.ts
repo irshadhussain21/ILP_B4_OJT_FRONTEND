@@ -316,7 +316,11 @@ export class CreateMarketComponent implements OnInit {
 
 
   }
-
+  extractMiddleLongCode(longMarketCode: string): string {
+    const regex = /[A-Z]-([A-Z]{2}\.[A-Z]{2})\.[A-Z]{2}/;
+    const match = longMarketCode.match(regex);
+    return match ? match[1] : '';
+  }
   /**
    * Fetches the market data for editing when the component is in edit mode.
    * @param marketId - The ID of the market to be edited.
@@ -326,12 +330,21 @@ export class CreateMarketComponent implements OnInit {
       this.marketForm.patchValue({
         marketName: data.name,
         marketCode: data.code,
-        longCode: data.longMarketCode,
+        longCodeMiddle: this.extractMiddleLongCode(data.longMarketCode),
         region: data.region,
         subregion: data.subRegion,
       });
-      this.subGroups = data.marketSubGroups || [];
+     
+ 
+      /**
+       * Extracts the middle part (e.g., 'XC.XX') from a given longMarketCode.
+       * @param longMarketCode - The complete long market code (e.g., 'N-XC.XX.AD').
+       * @returns The extracted middle part or an empty string if not found.
+       */
+   
 
+      this.subGroups = data.marketSubGroups || [];
+ 
       this.onRegionSelect(Number(data.region));
     });
   }
