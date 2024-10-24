@@ -255,7 +255,8 @@
     background-color: #5a6268;
   }
   .error-msg-container{
-    display: flex; 
+    display: flex;
+    flex-direction: column; 
     
   }
   .error-message {

@@ -177,7 +177,7 @@ export class CreateMarketComponent implements OnInit {
         ],
       ],
       region: ['', Validators.required],
-      subregion: [''],
+      subregion: ['',Validators.required],
     });
   
     this.marketForm.statusChanges.subscribe((status) => {
@@ -306,10 +306,12 @@ export class CreateMarketComponent implements OnInit {
 
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
-      const newLongCode = `${firstChar}XXXX${marketCode}`;
-      this.marketForm
-        .get('longCode')
-        ?.setValue(newLongCode, { emitEvent: false });
+      if(!this.isEditMode){
+        const newLongCode = `${firstChar}XXXX${marketCode}`;
+        this.marketForm
+          .get('longCode')
+          ?.setValue(newLongCode, { emitEvent: false });
+      }
     } else if (region) {
       const firstChar = region.value.charAt(0).toUpperCase();
       this.marketForm

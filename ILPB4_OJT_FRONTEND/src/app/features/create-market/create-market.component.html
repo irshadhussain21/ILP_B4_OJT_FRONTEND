@@ -58,6 +58,7 @@
               [inputId]="subregion.key.toString()"
               [value]="subregion.key"
               formControlName="subregion"
+              
             ></p-radioButton>
           </div>
         </div>
@@ -164,7 +165,7 @@
   </div>
 </div>
 <div class="btn-footer">
-  <p>{{"PAGE.LABELS.SUBMIT_FOOTER" | translate }}</p>
+  <p *ngIf="!isEditMode">{{"PAGE.LABELS.SUBMIT_FOOTER" | translate }}</p>
   <div class="btn-actions">
     <button type="button" class="cancel-button" (click)="onCancel()">
       {{ "PAGE.BUTTONS.CANCEL" | translate }}
