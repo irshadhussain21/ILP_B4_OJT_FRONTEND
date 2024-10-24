@@ -29,7 +29,8 @@ import { MarketSubgroupService } from '../../services/subgroup.service';
 import { MarketSubgroup } from '../../core/models/market';
 
 import { debounceTime } from 'rxjs/operators';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CreateMarketConfig } from '../../config/market';
 
 /**
  * LLD (Low-Level Design)
@@ -109,7 +110,8 @@ export class SubgroupComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private confirmationService: ConfirmationService,
-    private marketSubgroupService: MarketSubgroupService
+    private marketSubgroupService: MarketSubgroupService,
+    private translateService: TranslateService
   ) {}
 
   /**
@@ -126,7 +128,7 @@ export class SubgroupComponent implements OnInit {
   /**
    * Lifecycle hook to handle input changes.
    * Updates the form with the new `marketCode` whenever it changes.
-   * 
+   *
    * @param changes - Object containing the changed properties of inputs.
    */
   ngOnChanges(changes: SimpleChanges): void {
@@ -136,7 +138,7 @@ export class SubgroupComponent implements OnInit {
   /**
    * Handles changes to the market code.
    * Updates the market code in each form row without triggering change events.
-   * 
+   *
    * @param changes - Object containing the current and previous market code values.
    */
   handleMarketCodeChange(changes: SimpleChanges): void {
@@ -191,7 +193,9 @@ export class SubgroupComponent implements OnInit {
    */
   showSubgroupFunc() {
     this.showSubgroup = true;
-    if (this.rows.controls.every(row => row.get('isDeleted')?.value === true)) {
+    if (
+      this.rows.controls.every((row) => row.get('isDeleted')?.value === true)
+    ) {
       this.addRow();
     }
   }
@@ -201,9 +205,9 @@ export class SubgroupComponent implements OnInit {
    */
   emitValidSubGroups(): void {
     const validSubGroups = this.rows.controls
-    .filter((row) => row.valid)
-    .map((row) => row.value);
-    
+      .filter((row) => row.valid)
+      .map((row) => row.value);
+
     const hasInvalidRow = this.rows.controls.some((row) => row.invalid);
     this.isSubGroupFormInvalid.emit(hasInvalidRow);
     this.subGroupsChanged.emit({ subGroups: validSubGroups });
@@ -225,13 +229,13 @@ export class SubgroupComponent implements OnInit {
         } else {
           this.addRow();
         }
-      }
+      },
     });
   }
 
   /**
    * Getter for the form array of subgroup rows.
-   * 
+   *
    * @returns FormArray - Array of form groups representing subgroup rows.
    */
   get rows(): FormArray {
@@ -241,7 +245,7 @@ export class SubgroupComponent implements OnInit {
   /**
    * Creates a form group (row) for a new or existing subgroup.
    * Sets up validation for the subgroup code and name, ensuring they are in uppercase.
-   * 
+   *
    * @param subGroup - Optional `MarketSubgroup` object used to initialize the row.
    * @returns FormGroup - A form group representing a subgroup row.
    */
@@ -253,7 +257,12 @@ export class SubgroupComponent implements OnInit {
         marketCode: [this.marketCode],
         subGroupCode: [
           subGroup?.subGroupCode || '',
-          [Validators.required, Validators.pattern('^[A-Za-z0-9]{1}$')],
+          [
+            Validators.required,
+            Validators.pattern(
+              CreateMarketConfig.SUBGROUP_CODE_VALIDATION_REGEX
+            ),
+          ],
         ],
         subGroupName: [subGroup?.subGroupName || '', Validators.required],
         isDeleted: [subGroup?.isDeleted || false],
@@ -273,9 +282,9 @@ export class SubgroupComponent implements OnInit {
           .get('subGroupCode')
           ?.setValue(value.toUpperCase(), { emitEvent: false });
       }
-    if (row.get('subGroupId')?.value !== null) {
-      row.get('isEdited')?.setValue(true, { emitEvent: false });
-    }
+      if (row.get('subGroupId')?.value !== null) {
+        row.get('isEdited')?.setValue(true, { emitEvent: false });
+      }
     });
 
     row.get('subGroupName')?.valueChanges.subscribe((value) => {
@@ -350,7 +359,7 @@ export class SubgroupComponent implements OnInit {
   /**
    * Marks the selected row as deleted after confirmation.
    * Updates the subgroup visibility based on undeleted rows.
-   * 
+   *
    * @param rowIndex - Index of the row to delete.
    */
   deleteRow(rowIndex: number): void {
@@ -360,14 +369,18 @@ export class SubgroupComponent implements OnInit {
     }
 
     this.confirmationService.confirm({
-      message: 'Are you sure you want to delete this subgroup?',
+      message: this.translateService.instant(
+        CreateMarketConfig.MESSAGES.CONFIRM_MESSAGES.CONFIRM_DELETE
+      ),
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         const row = this.rows.at(rowIndex);
         row.get('isDeleted')?.setValue(true);
         this.emitValidSubGroups();
-        this.showSubgroup = this.rows.controls.some(row => row.get('isDeleted')?.value === false);
+        this.showSubgroup = this.rows.controls.some(
+          (row) => row.get('isDeleted')?.value === false
+        );
       },
       reject: () => {},
     });
@@ -376,12 +389,14 @@ export class SubgroupComponent implements OnInit {
   /**
    * Checks if any undeleted row is invalid, emitting the result.
    * Determines whether a new subgroup can be added.
-   * 
+   *
    * @returns boolean - True if a new subgroup can be added.
    */
   canAddSubgroup(): boolean {
-    const hasInvalidRow = this.rows.controls.some((row) =>!row.get('isDeleted')?.value && row.invalid);
+    const hasInvalidRow = this.rows.controls.some(
+      (row) => !row.get('isDeleted')?.value && row.invalid
+    );
     this.isSubGroupFormInvalid.emit(hasInvalidRow);
     return !hasInvalidRow;
-  }  
+  }
 }
