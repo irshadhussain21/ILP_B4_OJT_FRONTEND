@@ -159,7 +159,7 @@ export class MarketlistComponent implements OnInit {
    */
   subRegionsMap: { [key: string]: string } = {}; 
    
-  constructor(private marketService: MarketService, private regionService: RegionService) {
+  constructor(private marketService: MarketService) {
     this.regions = this.getRegions();
   }
  
@@ -202,7 +202,7 @@ export class MarketlistComponent implements OnInit {
     
       const region = this.selectedRegions.map(region => region.value).join(',');
     
-      this.marketService.getAllMarkets(0,10,null,region).subscribe(
+      this.marketService.getAllMarkets(1,10,null,region).subscribe(
         (data:any) => {
           this.filteredMarkets = data.markets;
          
