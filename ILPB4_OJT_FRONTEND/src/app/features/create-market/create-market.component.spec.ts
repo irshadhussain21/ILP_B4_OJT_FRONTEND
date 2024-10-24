@@ -19,7 +19,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router'
+import { MarketSubgroup } from '../../core/models/market';
 
 // Mock TranslateLoader
 class FakeLoader implements TranslateLoader {
@@ -33,9 +34,12 @@ describe('CreateMarketComponent', () => {
   let fixture: ComponentFixture<CreateMarketComponent>;
   let mockMarketService: jest.Mocked<MarketService>;
   let mockRegionService: jest.Mocked<RegionService>;
-  let httpMock: HttpTestingController;
 
+  let mockRouter: Router;
   beforeEach(async () => {
+    mockRouter = {
+      navigate: jest.fn(), // Mock the navigate method
+    } as unknown as Router;
     mockMarketService = {
       createMarket: jest.fn().mockReturnValue(of(1)), 
       updateMarket: jest.fn().mockReturnValue(of({})),
@@ -225,6 +229,64 @@ describe('CreateMarketComponent', () => {
       expect(component.subregions).toEqual(mockSubregions);
     });
   }));
+
+  it('should call checkMarketCodeExists on market code change', fakeAsync(() => {
+    component.hasEditedCode = true;
+    component.marketForm.get('marketCode')?.setValue('AA');
+    tick(300);
+    expect(mockMarketService.checkMarketCodeExists).toHaveBeenCalledWith('AA');
+  }));
+
+  it('should set code exists error if market code already exists', fakeAsync(() => {
+    mockMarketService.checkMarketCodeExists.mockReturnValueOnce(of(true));
+    component.hasEditedCode = true;
+    component.marketForm.get('marketCode')?.setValue('AA');
+    tick(300);
+    expect(component.hasCodeExistsError).toBe(true);
+    expect(component.marketForm.get('marketCode')?.errors?.['exists']).toBeTruthy();
+  })); 
+
+  it('should call checkMarketNameExists on market name change', fakeAsync(() => {
+    component.hasEditedName = true;
+    component.marketForm.get('marketName')?.setValue('Market 1');
+    tick(300);
+    expect(mockMarketService.checkMarketNameExists).toHaveBeenCalledWith('Market 1');
+  }));
+
+  it('should set name exists error if market name already exists', fakeAsync(() => {
+    mockMarketService.checkMarketNameExists.mockReturnValueOnce(of(true));
+    component.hasEditedName = true;
+    component.marketForm.get('marketName')?.setValue('Market 1');
+    tick(300);
+    expect(component.hasNameExistsError).toBe(true);
+    expect(component.marketForm.get('marketName')?.errors?.['exists']).toBeTruthy();
+  }));
+
+  it('should update the market long code when region or market code changes', () => {
+    component.marketForm.get('region')?.setValue(1);
+    component.marketForm.get('marketCode')?.setValue('TM');
+    component.updateLongCode();
+    expect(component.marketForm.get('longCode')?.value).toBe('RXXXXTM'); // Based on mock region data
+  }); 
+
+  it('should handle subgroup changes correctly', () => {
+    const mockSubgroups: MarketSubgroup[] = [
+      {
+        subGroupId: 1,
+        subGroupName: 'SG1',
+        subGroupCode: 'SG',
+        marketCode: 'TM',
+        isDeleted: false,
+        isEdited: false,
+      },
+    ];
+  
+    component.onSubGroupsChanged({ subGroups: mockSubgroups });
+  
+    // Verify that the component's subGroups property is updated correctly
+    expect(component.subGroups).toEqual(mockSubgroups);
+  });
+  
 
   beforeEach(() => {
     jest.clearAllMocks();
