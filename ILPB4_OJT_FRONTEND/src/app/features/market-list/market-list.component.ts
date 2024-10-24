@@ -13,7 +13,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { TranslateModule } from '@ngx-translate/core';
 /** Local imports */
 import { MarketService } from '../../services/market.service';
-import { RegionService } from '../../services/region.service';
 import { Market, MarketSubgroup } from '../../core/models/market';
 import { HeaderComponent } from "../../shared/header/header.component";
 import { RegionEnum, RegionFullForms } from '../../core/enums/region.enum';
@@ -185,6 +184,7 @@ export class MarketlistComponent implements OnInit {
     this.marketService.getAllMarkets(pageNumber, pageSize, searchText).subscribe(
       (response: any) => {
         this.markets = response.markets || []; 
+        this.markets.sort((a: Market, b: Market) => a.name.localeCompare(b.name));
         this.filteredMarkets = this.markets;
         this.totalMarkets = response.totalCount ;
         console.log(this.totalMarkets);
