@@ -130,24 +130,42 @@
       </div>
 
       <!-- Long Code -->
-      <div class="form-section">
-        <label class="form-label">
-          {{ "PAGE.LABELS.LONG_MARKET_CODE" | translate }}
-          <span class="asterik">*</span>
-        </label>
-        <p class="form-sub-label">
-          {{ "PAGE.PLACEHOLDERS.LONG_CODE_FORMAT_INFO" | translate }}
-        </p>
+<div class="form-section">
+  <label class="form-label">
+    {{ "PAGE.LABELS.LONG_MARKET_CODE" | translate }}
+    <span class="asterik">*</span>
+  </label>
+  <p class="form-sub-label">
+    {{ "PAGE.PLACEHOLDERS.LONG_CODE_FORMAT_INFO" | translate }}
+  </p>
 
-        <p-inputMask
-          formControlName="longCode"
-          mask="a-aa.aa.aa"
-          placeholder="_-__.__.__"
-          class="longcode-input"
-        ></p-inputMask>
-      </div>
+  <div class="longcode-container">
+    <!-- First Input (Region First Letter) -->
+    <input
+      type="text"
+      class="longcode-input1"
+      [value]="firstLetterOfRegion +'-'"
+      disabled
+    />
 
-      <!-- Subgroups -->
+    <!-- Middle Input (Masked Long Code) -->
+    <p-inputMask
+      formControlName="longCodeMiddle"
+      mask="aa.aa"
+      placeholder="__.__"
+      class="longcode-input"
+    ></p-inputMask>
+
+    <!-- Last Input (Market Code) -->
+    <input
+      type="text"
+      class="longcode-input2"
+      [value]="marketForm.get('marketCode')?.value | uppercase"
+      disabled
+    />
+  </div>
+</div>
+
       <div class="form-section">
         <label class="form-label">{{
           "PAGE.LABELS.SUBGROUPS" | translate

@@ -68,7 +68,7 @@
           }
       },
       "NOTIFICATIONS": {
-        "NO_SUBGROUPS_AVAILABLE": "No subgroups available" 
+        "NO_SUBGROUPS_AVAILABLE": "No subgroups defined for the market" 
       }
   }
 }

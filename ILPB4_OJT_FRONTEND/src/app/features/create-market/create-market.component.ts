@@ -117,6 +117,9 @@ export class CreateMarketComponent implements OnInit {
   hasNameExistsError: boolean = false;
   hasEditedCode: boolean = false;
   hasEditedName: boolean = false;
+  firstLetterOfRegion: string = '';  // For the first input
+  middleLongCode: string = '';       // For the middle input (controlled by form)
+  
 
   constructor(
     public fb: FormBuilder,
@@ -138,6 +141,7 @@ export class CreateMarketComponent implements OnInit {
     this.loadRegions();
     this.getRoute();
     this.setupFieldListeners();
+    this.updateLongCode();
   }
 
   /**
@@ -168,12 +172,12 @@ export class CreateMarketComponent implements OnInit {
           Validators.maxLength(2)   
         ],
       ],
-      longCode: [
+      longCodeMiddle: [
         '',
         [
           Validators.required,
-          Validators.minLength(8),  // Example min length, adjust based on long code format
-          Validators.maxLength(12)  // Example max length, adjust based on long code format
+          Validators.minLength(5),  // Example min length, adjust based on long code format
+          Validators.maxLength(5)  // Example max length, adjust based on long code format
         ],
       ],
       region: ['', Validators.required],
@@ -301,25 +305,16 @@ export class CreateMarketComponent implements OnInit {
     const region = this.regions.find(
       (r) => r.key === this.marketForm.get('region')?.value
     );
-    const marketCode =
-      this.marketForm.get('marketCode')?.value.toUpperCase() || '';
+    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase() || '';
 
-    if (region && marketCode.length === 2) {
-      const firstChar = region.value.charAt(0).toUpperCase();
-      if(!this.isEditMode){
-        const newLongCode = `${firstChar}XXXX${marketCode}`;
-        this.marketForm
-          .get('longCode')
-          ?.setValue(newLongCode, { emitEvent: false });
-      }
-    } else if (region) {
-      const firstChar = region.value.charAt(0).toUpperCase();
-      this.marketForm
-        .get('longCode')
-        ?.setValue(firstChar, { emitEvent: false });
+    // Update the first field (first letter of region)
+    if (region) {
+      this.firstLetterOfRegion = region.value.charAt(0).toUpperCase();
     } else {
-      this.marketForm.get('longCode')?.setValue('', { emitEvent: false });
+      this.firstLetterOfRegion = '';
     }
+
+
   }
 
   /**
@@ -356,12 +351,12 @@ export class CreateMarketComponent implements OnInit {
   onSubmit(): void {
     if (this.marketForm.valid) {
 
-      let longCode = this.marketForm.value.longCode;
-      const formattedLongCode = this.applyLongCodeFormat(longCode);
+      const longCodeMiddle = this.marketForm.value.longCodeMiddle;
+      const fullLongCode = `${this.firstLetterOfRegion}-${longCodeMiddle}.${this.marketForm.get('marketCode')?.value.toUpperCase()}`;
       const marketData: Market = {
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
-        longMarketCode: formattedLongCode.toUpperCase(),
+        longMarketCode: fullLongCode,
         region: this.marketForm.value.region,
         subRegion: this.marketForm.value.subregion,
         marketSubGroups:

@@ -49,10 +49,11 @@ export class HeaderComponent {
         const currentUrl = marketId
           ? `/markets/${marketId}`
           : `/markets/edit/${editId}`;
+         var name = market.name + '-'+market.code
         this.items = [
           { label: 'Home', url: '/' },
           { label: 'Markets', url: '/markets' },
-          { label: market.name, url: currentUrl }
+          { label: name, url: currentUrl }
         ];
       });
     } else {
