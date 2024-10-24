@@ -177,7 +177,7 @@ export class CreateMarketComponent implements OnInit {
         ],
       ],
       region: ['', Validators.required],
-      subregion: [''],
+      subregion: ['',Validators.required],
     });
   
     this.marketForm.statusChanges.subscribe((status) => {
