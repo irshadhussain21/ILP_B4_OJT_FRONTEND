@@ -297,7 +297,6 @@ export class MarketlistComponent implements OnInit {
   onRowsPerPageChange(event: any): void {
     this.selectedRowsPerPage = event.value;
     this.first = 0;
-    const pageNumber = Math.floor(event.first / this.selectedRowsPerPage) + 1;
-    this.loadMarkets(pageNumber , this.selectedRowsPerPage, this.searchText);
+    this.loadMarkets( 1, this.selectedRowsPerPage, this.searchText);
   }
 }
