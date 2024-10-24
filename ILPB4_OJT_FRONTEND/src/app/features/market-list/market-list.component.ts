@@ -254,17 +254,18 @@ export class MarketlistComponent implements OnInit {
      
       const region = this.selectedRegions.map(region => region.value).join(',');
     
-      this.marketService.getAllMarkets(1,10,null,region).subscribe(
-        (data:any) => {
-          this.filteredMarkets = data.markets;
+      // this.marketService.getAllMarkets(1,10,null,region).subscribe(
+      //   (data:any) => {
+      //     this.filteredMarkets = data.markets;
          
-          this.totalMarkets = data.length;  
-          this.first = 0;  
-        },
-        (error) => {
-          console.error('Error fetching filtered markets:', error);
-        }
-      );
+      //     this.totalMarkets = data.length;  
+      //     this.first = 0;  
+      //   },
+      //   (error) => {
+      //     console.error('Error fetching filtered markets:', error);
+      //   }
+      // );
+      this.loadMarkets(0, this.selectedRowsPerPage, this.searchText,region);
     } else {
       this.filteredMarkets = this.markets;
       console.log('nothing')
