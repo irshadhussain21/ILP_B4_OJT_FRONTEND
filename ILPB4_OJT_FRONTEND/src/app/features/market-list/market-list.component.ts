@@ -180,8 +180,8 @@ export class MarketlistComponent implements OnInit {
    /**
    * Function to load markets with pagination and search text.
    */
-  loadMarkets(pageNumber: number , pageSize: number , searchText: string = ''): void {
-    this.marketService.getAllMarkets(pageNumber, pageSize, searchText).subscribe(
+  loadMarkets(pageNumber: number , pageSize: number , searchText: string = '', region:string = ''): void {
+    this.marketService.getAllMarkets(pageNumber, pageSize, searchText,region).subscribe(
       (response: any) => {
         this.markets = response.markets || []; 
         this.markets.sort((a: Market, b: Market) => a.name.localeCompare(b.name));
@@ -202,17 +202,18 @@ export class MarketlistComponent implements OnInit {
     
       const region = this.selectedRegions.map(region => region.value).join(',');
     
-      this.marketService.getAllMarkets(1,10,null,region).subscribe(
-        (data:any) => {
-          this.filteredMarkets = data.markets;
+      // this.marketService.getAllMarkets(1,10,null,region).subscribe(
+      //   (data:any) => {
+      //     this.filteredMarkets = data.markets;
          
-          this.totalMarkets = data.length;  
-          this.first = 0;  
-        },
-        (error) => {
-          console.error('Error fetching filtered markets:', error);
-        }
-      );
+      //     this.totalMarkets = data.length;  
+      //     this.first = 0;  
+      //   },
+      //   (error) => {
+      //     console.error('Error fetching filtered markets:', error);
+      //   }
+      // );
+      this.loadMarkets(1, this.selectedRowsPerPage, this.searchText,region);
     } else {
       this.filteredMarkets = this.markets;
       this.totalMarkets = this.markets.length;

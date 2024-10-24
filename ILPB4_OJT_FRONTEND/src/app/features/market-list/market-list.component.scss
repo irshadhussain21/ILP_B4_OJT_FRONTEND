@@ -11,7 +11,7 @@
   .p-multiselect-label {
     visibility: hidden; 
     width: 100%; 
-    overflow: hidden; 
+   
     white-space: nowrap; 
     max-width: 90px;
   }
@@ -78,6 +78,7 @@
 }
 
 .search-container {
+
   margin-bottom: -10px;
   display: flex;
   flex-direction: row;
@@ -119,13 +120,9 @@
     font-size: 18px;
     color: #a0a0a0;
   }
+ 
 }
 
-.p-table-container {
-  white-space: nowrap;
-  padding-bottom: 10px;
-  overflow: auto;
-}
 
 ::ng-deep {
   .p-table {
@@ -138,9 +135,13 @@
     padding: 8px; /* Adjust padding for a more compact look */
   }
 
-  .p-table-container {
-    font-size: 12px; /* Ensure scrollable container also inherits reduced size */
-  }
+.p-table-container {
+  top:100px;
+  white-space: nowrap;
+  padding-bottom: 10px;
+  overflow:scroll;
+  font-size: 12px;
+}
 }
 
 @media (max-width: 768px) {
@@ -158,7 +159,7 @@
 
 .truncate {
   white-space: nowrap;
-  overflow: hidden;
+ 
   text-overflow: ellipsis;
   max-width: 100%;
 }

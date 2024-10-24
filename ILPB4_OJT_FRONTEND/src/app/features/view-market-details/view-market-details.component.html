@@ -47,7 +47,11 @@
       <div *ngFor="let subgroup of combinedSubGroupDetails" class="subgrouppanel-contt">
         <p>{{ subgroup }}</p>
       </div>
-      <p *ngIf="!marketDetails?.marketSubGroups?.length">{{ 'PAGE.NOTIFICATIONS.NO_SUBGROUPS_AVAILABLE' | translate }}</p>
+      <div class="no-subgroup" *ngIf="!marketDetails?.marketSubGroups?.length">
+        
+        <img _ngcontent-ng-c1048390573="" src="./assets/images/sub-group-draw.svg" class="error-icon" alt="Icon">
+        <p >{{ 'PAGE.NOTIFICATIONS.NO_SUBGROUPS_AVAILABLE' | translate }}</p>
+      </div>
     </div>
   </div>
 </div>
