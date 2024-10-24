@@ -8,6 +8,7 @@ export const CreateMarketConfig = {
     MAX_LONG_CODE_LENGTH: 20,
     MIN_LONG_CODE_LENGTH: 7,
     MARKET_CODE_VALIDATION_REGEX: /^[a-zA-Z]+$/,
+    SUBGROUP_CODE_VALIDATION_REGEX: /^[A-Za-z0-9]{1}$/,
     MESSAGES:{
     SUCCESS_MESSAGES:{
         MARKET_CREATED:"PAGE.TOAST_MESSAGE.SUCCESS_MARKET.CREATED",
@@ -21,7 +22,11 @@ export const CreateMarketConfig = {
       MARKET_CODE_EXISTS: 'PAGE.PLACEHOLDERS.ERROR_MARKET_CODE_EXISTS',
       MARKET_NAME_EXISTS: 'PAGE.PLACEHOLDERS.ERROR_MARKET_NAME_EXISTS',
     },
-    CONFIRM:"PAGE.TOAST_MESSAGE.CONFIRM.CANCEL"
+    CONFIRM_MESSAGES: {
+      CONFIRM_CANCEL:"PAGE.TOAST_MESSAGE.CONFIRM.CANCEL",
+      CONFIRM_DELETE:"PAGE.TOAST_MESSAGE.CONFIRM.DELETE",
+    }
+    
   
 },
     BUTTONS: {
@@ -39,6 +44,6 @@ export const CreateMarketConfig = {
   };
   
   export const PaginationConstants={
-    rowsPerPageOptions: [10, 25, 50, 75, 100],
-    defaultRows: 10,
+    rowsPerPageOptions: [5,10, 25, 50, 75, 100],
+    defaultRows: 5,
   }

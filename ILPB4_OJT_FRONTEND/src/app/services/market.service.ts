@@ -51,7 +51,7 @@ export class MarketService {
   console.log('hi',typeof(region))
 
 
-  let params = `?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+  let params = `pageNumber=${pageNumber}&pageSize=${pageSize}`;
   
   if (searchText) {
     params += `&searchText=${encodeURIComponent(searchText)}`;
