@@ -306,12 +306,10 @@ export class CreateMarketComponent implements OnInit {
 
     if (region && marketCode.length === 2) {
       const firstChar = region.value.charAt(0).toUpperCase();
-      if(!this.isEditMode){
-        const newLongCode = `${firstChar}XXXX${marketCode}`;
-        this.marketForm
-          .get('longCode')
-          ?.setValue(newLongCode, { emitEvent: false });
-      }
+      const newLongCode = `${firstChar}XXXX${marketCode}`;
+      this.marketForm
+        .get('longCode')
+        ?.setValue(newLongCode, { emitEvent: false });
     } else if (region) {
       const firstChar = region.value.charAt(0).toUpperCase();
       this.marketForm
@@ -335,8 +333,9 @@ export class CreateMarketComponent implements OnInit {
         region: data.region,
         subregion: data.subRegion,
       });
+      this.subGroups = data.marketSubGroups || [];
 
-      console.log(this.marketForm.value)
+      this.onRegionSelect(Number(data.region));
     });
   }
 
