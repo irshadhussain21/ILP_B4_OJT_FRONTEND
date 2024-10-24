@@ -16,6 +16,7 @@ import { MenuItem, ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CreateMarketConfig } from '../../config/market';
 
 /**
  * LLD
@@ -111,7 +112,8 @@ export class ViewMarketDetailsComponent implements OnInit {
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private translate: TranslateService 
+    private translate: TranslateService,
+    public translateService: TranslateService
   ) {
     this.translate.setDefaultLang('en');
     this.translate.use('en');
@@ -188,8 +190,8 @@ export class ViewMarketDetailsComponent implements OnInit {
    */
   public confirmDeleteMarket() {
     this.confirmationService.confirm({
-      message: this.translate.instant('PAGE.CONFIRM_DELETE_MESSAGE'), 
-      header: this.translate.instant('PAGE.CONFIRM_DELETE_HEADER'),   
+      message: this.translate.instant('PAGE.LABELS.CONFIRM_DELETE_MESSAGE'), 
+      header: this.translate.instant('PAGE.LABELS.CONFIRM_DELETE_HEADER'),   
       acceptLabel: this.translate.instant('PAGE.BUTTONS.CONFIRM'),    
       rejectLabel: this.translate.instant('PAGE.BUTTONS.CANCEL'),    
       rejectButtonStyleClass: 'p-button-transparent',
@@ -203,16 +205,20 @@ export class ViewMarketDetailsComponent implements OnInit {
    *marketId. On success, a success message is displayed using PrimeNG's MessageServiceand the user is 
    *redirected to the markets list. If an error occurs, it logs the error to the console.
    */
-  public deleteMarket() {
+    deleteMarket() {
     if (this.marketId) {
       this.marketService.deleteMarket(this.marketId).subscribe({
         next: () => {
           this.messageService.add({
             severity: 'success',
-            summary: this.translate.instant('PAGE.SUCCESS'), 
-            detail: this.translate.instant('PAGE.MARKET_DELETED_SUCCESS', { marketName: this.market?.name }), 
+            summary: 'Success',
+            detail: this.translateService.instant(
+              CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_CREATED
+            ),
           });
-          this.router.navigate(['/markets']);
+          setTimeout(() => {
+            this.router.navigate(['/markets']);
+          }, 1000);
         },
         error: (error) => {
           console.error('Error deleting market:', error);
@@ -220,6 +226,7 @@ export class ViewMarketDetailsComponent implements OnInit {
       });
     }
   }
+  
   /**
    The navigateToEdit method navigates the user to the market edit page using Angular's Router, 
    directing them to the /markets/edit/:marketId URL, where the marketId is dynamically inserted.
