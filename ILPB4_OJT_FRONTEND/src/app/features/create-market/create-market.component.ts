@@ -109,7 +109,7 @@ export class CreateMarketComponent implements OnInit {
   isEditMode: boolean = false;
   marketId?: number;
   regions: Region[] = [];
-  subregions: Region[] = [];
+  subregions: Region[] = [];  
   subGroups: MarketSubgroup[] = [];
   selectedRegion: number | null = null;
   selectedSubregion: string | null = null;
@@ -117,7 +117,8 @@ export class CreateMarketComponent implements OnInit {
   hasNameExistsError: boolean = false;
   hasEditedCode: boolean = false;
   hasEditedName: boolean = false;
-
+  originalMarketCode: string | null = null;
+  originalMarketName: string | null = null;
   constructor(
     public fb: FormBuilder,
     public marketService: MarketService,
@@ -164,20 +165,20 @@ export class CreateMarketComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.minLength(2),  
-          Validators.maxLength(2)   
-        ],
+          Validators.minLength(2),
+          Validators.maxLength(2)
+        ]
       ],
       longCode: [
         '',
         [
           Validators.required,
-          Validators.minLength(8),  // Example min length, adjust based on long code format
-          Validators.maxLength(12)  // Example max length, adjust based on long code format
-        ],
+          Validators.minLength(8),
+          Validators.maxLength(12)
+        ]
       ],
       region: ['', Validators.required],
-      subregion: ['',Validators.required],
+      subregion: ['', Validators.required],
     });
   
     this.marketForm.statusChanges.subscribe((status) => {
@@ -185,71 +186,108 @@ export class CreateMarketComponent implements OnInit {
     });
   }
   
-
-  /**
-   * Sets up listeners on specific form fields in the market form.
-   *
-   * The listeners include:
-   * - 'region': Updates the long code whenever the region changes.
-   * - 'marketCode': Adds a debounce for user input, checks if the code already exists,
-   *   sets validation errors accordingly, and updates the long code.
-   * - 'marketName': Adds a debounce for user input, checks if the name already exists,
-   *   and sets validation errors based on the existence check.
-   */
   setupFieldListeners(): void {
-    this.marketForm
-      .get('region')
-      ?.valueChanges.pipe(distinctUntilChanged())
+    // Listener for region changes
+    this.marketForm.get('region')?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => {
         this.updateLongCode();
       });
-
-    this.marketForm
-      .get('marketCode')
-      ?.valueChanges.pipe(
+  
+    // Listener for market code changes
+    this.marketForm.get('marketCode')?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((code) => {
-          if (!this.hasEditedCode) return [false];
-          this.hasCodeExistsError = false;
+        switchMap((code: string) => {
+          // If the field is empty, set the required error
           if (!code) {
             this.marketForm.get('marketCode')?.setErrors({ required: true });
             return [false];
           }
-          return this.marketService.checkMarketCodeExists(code);
+  
+          // Clear the error and skip existence check if code matches the original
+          if (this.isEditMode && code === this.originalMarketCode) {
+            this.marketForm.get('marketCode')?.setErrors(null);
+            this.hasCodeExistsError = false;
+            return [false];
+          }
+  
+          // If it's a new code, check its existence
+          if (this.hasEditedCode) {
+            return this.marketService.checkMarketCodeExists(code);
+          }
+  
+          return [false];
         })
       )
-      .subscribe((exists) => {
+      .subscribe((exists: boolean) => {
+        const currentCode = this.marketForm.get('marketCode')?.value;
+  
+        // Re-check against the original code
+        if (this.isEditMode && currentCode === this.originalMarketCode) {
+          this.marketForm.get('marketCode')?.setErrors(null);
+          this.hasCodeExistsError = false;
+          return;
+        }
+  
+        // Set the existence error if applicable
         this.hasCodeExistsError = exists;
         if (exists) {
           this.marketForm.get('marketCode')?.setErrors({ exists: true });
+        } else {
+          this.marketForm.get('marketCode')?.setErrors(null);
         }
+  
         this.updateLongCode();
       });
-
-    this.marketForm
-      .get('marketName')
-      ?.valueChanges.pipe(
+  
+    // Listener for market name changes
+    this.marketForm.get('marketName')?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((name) => {
-          if (!this.hasEditedName) return [false];
-          this.hasNameExistsError = false;
+        switchMap((name: string) => {
+          // If the field is empty, set the required error
           if (!name) {
             this.marketForm.get('marketName')?.setErrors({ required: true });
             return [false];
           }
-          return this.marketService.checkMarketNameExists(name);
+  
+          // Clear the error and skip existence check if name matches the original
+          if (this.isEditMode && name === this.originalMarketName) {
+            this.marketForm.get('marketName')?.setErrors(null);
+            this.hasNameExistsError = false;
+            return [false];
+          }
+  
+          // If it's a new name, check its existence
+          if (this.hasEditedName) {
+            return this.marketService.checkMarketNameExists(name);
+          }
+  
+          return [false];
         })
       )
-      .subscribe((exists) => {
+      .subscribe((exists: boolean) => {
+        const currentName = this.marketForm.get('marketName')?.value;
+  
+        // Re-check against the original name
+        if (this.isEditMode && currentName === this.originalMarketName) {
+          this.marketForm.get('marketName')?.setErrors(null);
+          this.hasNameExistsError = false;
+          return;
+        }
+  
+        // Set the existence error if applicable
         this.hasNameExistsError = exists;
         if (exists) {
           this.marketForm.get('marketName')?.setErrors({ exists: true });
+        } else {
+          this.marketForm.get('marketName')?.setErrors(null);
         }
       });
   }
-
+  
+  
+  
   getRegionNames(regionId: number) {
     const regionID = regionId as RegionEnum;
     const regionName = RegionNames[regionID];
@@ -335,6 +373,9 @@ export class CreateMarketComponent implements OnInit {
         region: data.region,
         subregion: data.subRegion,
       });
+      
+      this.originalMarketCode = data.code;
+      this.originalMarketName = data.name;
       this.subGroups = data.marketSubGroups || [];
 
       this.onRegionSelect(Number(data.region));
