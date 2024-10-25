@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .container {
   padding: 20px;
   height: 70vh;
@@ -5,19 +6,18 @@
   flex-direction: column;
   top: 110px;
   position: relative;
- overflow-y:scroll;
- -webkit-overflow-scrolling: touch;
-
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 .card {
   margin-top: 10px;
   border-radius: 6px;
   background-color: white;
-
   position: relative;
 }
- .header h1 {
+
+.header h1 {
   font-size: var(--font-size-large);
   font-weight: bold;
   margin-bottom: 10px;
@@ -25,26 +25,26 @@
   padding-bottom: 5px;
   position: sticky;
   margin-top: 20px;
-} 
- .header {
+}
+
+.header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky;
   top: 0;
   background-color: white;
- 
   border-bottom: 1px solid #e0e0e0;
   padding-bottom: 10px;
   font-family: var(--font-primary);
-} 
+}
 
 .header-buttons {
   display: flex;
   gap: 10px;
 }
 
-.edit-button{
+.edit-button {
   display: flex;
   border-color: #00506a;
   color: #00506a;
@@ -64,37 +64,38 @@
   padding-right: 16px;
 }
 
-.edit-button{
+.edit-button {
   border-color: #00506a;
   color: #00506a;
 }
 
-
 .icon-pencil::before {
-  content: "\270E";
+  content: "✎";
   font-size: 18px;
   margin-right: 8px;
 }
 
 .icon-options::before {
-  content: "\2022 \2022 \2022";
+  content: "•••";
   font-size: 18px;
   letter-spacing: 4px;
 }
 
-.edit-button:hover{
+.edit-button:hover {
   background-color: #f5f5f5;
 }
 
 .panel {
   margin-bottom: 20px;
 }
+
 .panel-header {
   font-weight: normal;
   font-size: var(--font-size-base);
   color: #898f91;
   margin-bottom: 5px;
 }
+
 .panel-content {
   font-size: var(--font-size-large);
   color: black;
@@ -103,18 +104,21 @@
   margin-bottom: 10px;
   font-family: var(--font-secondary);
 }
+
 .subgrouppanel-contt {
-    font-size: 14px;
-    color: #666;
-    border-bottom: 1px dashed #d3d3d3;
-    padding-bottom: 20px;
-    margin-bottom: 10px;
-  }
-  .Subgrouppanel .panel-header {
-    color: black;
-    font-size: var(--font-size-base);
-    margin-bottom: 20px;
-  }
+  font-size: 14px;
+  color: #666;
+  border-bottom: 1px dashed #d3d3d3;
+  padding-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+.Subgrouppanel .panel-header {
+  color: black;
+  font-size: var(--font-size-base);
+  margin-bottom: 20px;
+}
+
 .tag {
   display: inline-block;
   padding: 5px 10px;
@@ -125,12 +129,14 @@
   margin-right: 10px;
   margin-top: 5px;
 }
-.no-subgroup{
+
+.no-subgroup {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
+
 img.error-icon {
   width: 150px;
   height: 150px;
@@ -150,16 +156,16 @@ img.error-icon {
   color: #333;
   font-family: Arial, sans-serif;
 }
-::ng-deep .p-button
-{
+
+::ng-deep .p-button {
   background-color: white;
   border-color: #00506a;
-  color:#00506a;
-  margin:5px
+  color: #00506a;
+  margin: 5px;
 }
-::ng-deep .p-button-icon 
-{
-  color:#00506a;
-  
+
+::ng-deep .p-button-icon {
+  color: #00506a;
 }
-/*aliya  */
+
+/*aliya  *//*# sourceMappingURL=view-market-details.component.css.map */

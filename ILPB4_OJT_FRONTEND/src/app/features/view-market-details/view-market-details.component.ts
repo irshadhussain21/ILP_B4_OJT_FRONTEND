@@ -136,7 +136,7 @@ export class ViewMarketDetailsComponent implements OnInit {
    * @param marketDetails - The market object containing subgroups.
    * @returns An array of strings combining the market code with each subgroup's code and name.
    */
-  private combineSubGroupDetails(marketDetails: Market | null): string[] {
+   public combineSubGroupDetails(marketDetails: Market | null): string[] {
     return (
       marketDetails?.marketSubGroups?.map(
         (subgroup) =>
