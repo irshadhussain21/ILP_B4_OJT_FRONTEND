@@ -13,7 +13,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { TranslateModule } from '@ngx-translate/core';
 /** Local imports */
 import { MarketService } from '../../services/market.service';
-import { RegionService } from '../../services/region.service';
 import { Market, MarketSubgroup } from '../../core/models/market';
 import { HeaderComponent } from "../../shared/header/header.component";
 import { RegionEnum, RegionFullForms } from '../../core/enums/region.enum';
@@ -159,7 +158,7 @@ export class MarketlistComponent implements OnInit {
    */
   subRegionsMap: { [key: string]: string } = {}; 
    
-  constructor(private marketService: MarketService, private regionService: RegionService) {
+  constructor(private marketService: MarketService) {
     this.regions = this.getRegions();
   }
  
@@ -181,10 +180,11 @@ export class MarketlistComponent implements OnInit {
    /**
    * Function to load markets with pagination and search text.
    */
-  loadMarkets(pageNumber: number , pageSize: number , searchText: string = ''): void {
-    this.marketService.getAllMarkets(pageNumber, pageSize, searchText).subscribe(
+  loadMarkets(pageNumber: number , pageSize: number , searchText: string = '', region:string = ''): void {
+    this.marketService.getAllMarkets(pageNumber, pageSize, searchText,region).subscribe(
       (response: any) => {
         this.markets = response.markets || []; 
+        this.markets.sort((a: Market, b: Market) => a.name.localeCompare(b.name));
         this.filteredMarkets = this.markets;
         this.totalMarkets = response.totalCount ;
         console.log(this.totalMarkets);
@@ -202,17 +202,18 @@ export class MarketlistComponent implements OnInit {
     
       const region = this.selectedRegions.map(region => region.value).join(',');
     
-      this.marketService.getAllMarkets(1,10,null,region).subscribe(
-        (data:any) => {
-          this.filteredMarkets = data.markets;
+      // this.marketService.getAllMarkets(1,10,null,region).subscribe(
+      //   (data:any) => {
+      //     this.filteredMarkets = data.markets;
          
-          this.totalMarkets = data.length;  
-          this.first = 0;  
-        },
-        (error) => {
-          console.error('Error fetching filtered markets:', error);
-        }
-      );
+      //     this.totalMarkets = data.length;  
+      //     this.first = 0;  
+      //   },
+      //   (error) => {
+      //     console.error('Error fetching filtered markets:', error);
+      //   }
+      // );
+      this.loadMarkets(1, this.selectedRowsPerPage, this.searchText,region);
     } else {
       this.filteredMarkets = this.markets;
       this.totalMarkets = this.markets.length;

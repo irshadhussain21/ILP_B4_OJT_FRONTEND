@@ -63,8 +63,8 @@ export class MarketService {
     console.log(params)
     console.log('region',region)
   }
-  const url = `https://localhost:7058/api/Market${params}`;
-  console.log('Constructed URL:', url); // Log the full URL here
+  const apiUrl = `https://localhost:7058/api/Market${params}`;
+  console.log('API Call:', apiUrl);
   return this.http.get<Market[]>(`https://localhost:7058/api/Market?${params}`);
 }
 
