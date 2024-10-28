@@ -183,7 +183,11 @@ export class CreateMarketComponent implements OnInit {
       region: ['', Validators.required],
       subregion: ['',Validators.required],
     });
-  
+
+    if (this.isEditMode) {
+      this.marketForm.setErrors({ invalidEditMode: true }); // Set a custom error
+   }
+
     this.marketForm.statusChanges.subscribe((status) => {
       this.isMarketFormValid = status === 'VALID';
     });
@@ -205,9 +209,10 @@ export class CreateMarketComponent implements OnInit {
       .get('region')
       ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => {
+        this.marketForm.get('subregion')?.setValue('');
         this.updateLongCode();
-      });
-
+    });
+      
     this.marketForm
       .get('marketCode')
       ?.valueChanges.pipe(
@@ -220,7 +225,7 @@ export class CreateMarketComponent implements OnInit {
             this.marketForm.get('marketCode')?.setErrors({ required: true });
             return [false];
           }
-          return this.marketService.checkMarketCodeExists(code);
+            return this.marketService.checkMarketCodeExists(code);
         })
       )
       .subscribe((exists) => {
@@ -328,6 +333,7 @@ export class CreateMarketComponent implements OnInit {
   fetchMarketData(marketId: number): void {
     this.marketService.getMarketDetailsById(marketId).subscribe((data) => {
       this.marketForm.patchValue({
+
         marketName: data.name,
         marketCode: data.code,
         longCodeMiddle: this.extractMiddleLongCode(data.longMarketCode),
@@ -384,7 +390,7 @@ export class CreateMarketComponent implements OnInit {
               }))
             : [],
       };
-
+      
       if (this.isEditMode) {
         this.updateMarket(marketData);
       } else {
@@ -438,8 +444,8 @@ export class CreateMarketComponent implements OnInit {
           ),
         });
         setTimeout(() => {
-          this.router.navigate(['/markets']);
-        }, 1000);
+          this.router.navigate(['/markets',this.marketId]);
+        }, 1500);
       },
       error: () => {
         this.messageService.add({
@@ -482,7 +488,7 @@ export class CreateMarketComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.marketForm.reset();
-        this.router.navigate(['/markets']);
+        this.router.navigate(['/markets',this.marketId]);
       },
     });
   }
