@@ -148,6 +148,7 @@
     transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
     gap: 4px;
   }
+ 
   
   .region-option:hover, 
   .subregion-option:hover {
@@ -183,9 +184,20 @@
     padding: 10px;
     background-color: #fff;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
+    width: 30%;
   }
-   
+  ::ng-deep .p-divider.p-divider-vertical {
+    margin: 0;
+    padding: 0;
+    }
+    
+    ::ng-deep .p-divider-vertical:before {
+    position: absolute;
+    display: block;
+    top: 11px;
+    height: 100%;
+    content: "";
+    }
   .input-wrapper {
     position: relative;
     width: 100%;
@@ -224,6 +236,7 @@
     max-width: 100px;
     text-align: left;
   }
+  
   
   ::ng-deep .p-radiobutton-label {
     margin-left: 10px; /* Adjust the value for the desired space */

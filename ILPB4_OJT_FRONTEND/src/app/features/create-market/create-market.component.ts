@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -16,7 +16,7 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-
+import { DividerModule } from 'primeng/divider';
 /** Local imports */
 import { MarketService } from '../../services/market.service';
 import { RegionService } from '../../services/region.service';
@@ -99,6 +99,7 @@ import { RegionEnum } from '../../core/enums/region.enum';
     InputMaskModule,
     ConfirmDialogModule,
     SubgroupComponent,
+    DividerModule,
   ],
   providers: [MessageService, ConfirmationService],
 })
@@ -109,7 +110,7 @@ export class CreateMarketComponent implements OnInit {
   isEditMode: boolean = false;
   marketId?: number;
   regions: Region[] = [];
-  subregions: Region[] = [];  
+  subregions: Region[] = [];
   subGroups: MarketSubgroup[] = [];
   selectedRegion: number | null = null;
   selectedSubregion: string | null = null;
@@ -117,10 +118,10 @@ export class CreateMarketComponent implements OnInit {
   hasNameExistsError: boolean = false;
   hasEditedCode: boolean = false;
   hasEditedName: boolean = false;
-  firstLetterOfRegion: string = '';  // For the first input
-  middleLongCode: string = '';       // For the middle input (controlled by form)
-  originalMarketCode:string|null="";
-  originalMarketName:string|null="";
+  firstLetterOfRegion: string = ''; // For the first input
+  middleLongCode: string = ''; // For the middle input (controlled by form)
+  originalMarketCode: string | null = '';
+  originalMarketName: string | null = '';
 
   constructor(
     public fb: FormBuilder,
@@ -130,7 +131,8 @@ export class CreateMarketComponent implements OnInit {
     private route: ActivatedRoute,
     public messageService: MessageService,
     public confirmationService: ConfirmationService,
-    public translateService: TranslateService
+    public translateService: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   /**
@@ -139,8 +141,9 @@ export class CreateMarketComponent implements OnInit {
    */
   ngOnInit(): void {
     this.initializeForm();
-    this.loadRegions();
     this.getRoute();
+    this.loadRegions();
+
     this.setupFieldListeners();
     this.updateLongCode();
   }
@@ -167,85 +170,81 @@ export class CreateMarketComponent implements OnInit {
       marketName: ['', Validators.required],
       marketCode: [
         '',
-        [
-          Validators.required,
-          Validators.minLength(2),
-          Validators.maxLength(2)
-        ]
+        [Validators.required, Validators.minLength(2), Validators.maxLength(2)],
       ],
       longCodeMiddle: [
         '',
-        [
-          Validators.required,
-          Validators.minLength(5),  // Example min length, adjust based on long code format
-          Validators.maxLength(5)  // Example max length, adjust based on long code format
-        ],
+        [Validators.required, Validators.minLength(5), Validators.maxLength(5)],
       ],
       region: ['', Validators.required],
       subregion: ['', Validators.required],
     });
-  
+
     this.marketForm.statusChanges.subscribe((status) => {
       this.isMarketFormValid = status === 'VALID';
     });
   }
-  
+
   setupFieldListeners(): void {
     // Listener for region changes
-    this.marketForm.get('region')?.valueChanges.pipe(distinctUntilChanged())
+    this.marketForm
+      .get('region')
+      ?.valueChanges.pipe(distinctUntilChanged())
       .subscribe(() => {
         this.updateLongCode();
       });
-  
+
     // Listener for market code changes
-    this.marketForm.get('marketCode')?.valueChanges.pipe(
+    this.marketForm
+      .get('marketCode')
+      ?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((code: string) => {
+          console.log(this.originalMarketCode);
           // If the field is empty, set the required error
           if (!code) {
             this.marketForm.get('marketCode')?.setErrors({ required: true });
             return [false];
           }
-  
-          // Clear the error and skip existence check if code matches the original
-          if (this.isEditMode && code === this.originalMarketCode) {
+
+          // Skip validation if we're in edit mode and the code matches the original
+          if (
+            this.isEditMode &&
+            code.toLowerCase() === this.originalMarketCode?.toLowerCase()
+          ) {
+            console.log(this.originalMarketCode);
             this.marketForm.get('marketCode')?.setErrors(null);
             this.hasCodeExistsError = false;
             return [false];
           }
-  
-          // If it's a new code, check its existence
-          if (this.hasEditedCode) {
+
+          // Only check for existence if the code is different from the original
+          if (code !== this.originalMarketCode) {
             return this.marketService.checkMarketCodeExists(code);
           }
-  
+
           return [false];
         })
       )
       .subscribe((exists: boolean) => {
-        const currentCode = this.marketForm.get('marketCode')?.value;
-  
-        // Re-check against the original code
-        if (this.isEditMode && currentCode === this.originalMarketCode) {
-          this.marketForm.get('marketCode')?.setErrors(null);
-          this.hasCodeExistsError = false;
-          return;
-        }
-  
-        // Set the existence error if applicable
-        this.hasCodeExistsError = exists;
+        // No need to recheck against original code here since we handled it in the pipe
+
         if (exists) {
-          this.marketForm.get('marketCode')?.setErrors({ exists: true });
+          this.hasCodeExistsError = exists;
+          this.marketForm.get('marketCode')?.setErrors({ exists: false });
         } else {
+          this.hasCodeExistsError = false;
           this.marketForm.get('marketCode')?.setErrors(null);
         }
-  
+
         this.updateLongCode();
       });
-  
+
     // Listener for market name changes
-    this.marketForm.get('marketName')?.valueChanges.pipe(
+    this.marketForm
+      .get('marketName')
+      ?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((name: string) => {
@@ -254,33 +253,24 @@ export class CreateMarketComponent implements OnInit {
             this.marketForm.get('marketName')?.setErrors({ required: true });
             return [false];
           }
-  
-          // Clear the error and skip existence check if name matches the original
+
+          // Skip validation if we're in edit mode and the name matches the original
           if (this.isEditMode && name === this.originalMarketName) {
             this.marketForm.get('marketName')?.setErrors(null);
             this.hasNameExistsError = false;
             return [false];
           }
-  
-          // If it's a new name, check its existence
-          if (this.hasEditedName) {
+
+          // Only check for existence if the name is different from the original
+          if (name !== this.originalMarketName) {
             return this.marketService.checkMarketNameExists(name);
           }
-  
+
           return [false];
         })
       )
       .subscribe((exists: boolean) => {
-        const currentName = this.marketForm.get('marketName')?.value;
-  
-        // Re-check against the original name
-        if (this.isEditMode && currentName === this.originalMarketName) {
-          this.marketForm.get('marketName')?.setErrors(null);
-          this.hasNameExistsError = false;
-          return;
-        }
-  
-        // Set the existence error if applicable
+        // No need to recheck against original name here since we handled it in the pipe
         this.hasNameExistsError = exists;
         if (exists) {
           this.marketForm.get('marketName')?.setErrors({ exists: true });
@@ -289,9 +279,7 @@ export class CreateMarketComponent implements OnInit {
         }
       });
   }
-  
-  
-  
+
   getRegionNames(regionId: number) {
     const regionID = regionId as RegionEnum;
     const regionName = RegionNames[regionID];
@@ -343,7 +331,8 @@ export class CreateMarketComponent implements OnInit {
     const region = this.regions.find(
       (r) => r.key === this.marketForm.get('region')?.value
     );
-    const marketCode = this.marketForm.get('marketCode')?.value.toUpperCase() || '';
+    const marketCode =
+      this.marketForm.get('marketCode')?.value.toUpperCase() || '';
 
     // Update the first field (first letter of region)
     if (region) {
@@ -351,10 +340,7 @@ export class CreateMarketComponent implements OnInit {
     } else {
       this.firstLetterOfRegion = '';
     }
-
-
   }
-
   extractMiddleLongCode(longMarketCode: string): string {
     const regex = /[A-Z]-([A-Z]{2}\.[A-Z]{2})\.[A-Z]{2}/;
     const match = longMarketCode.match(regex);
@@ -373,14 +359,13 @@ export class CreateMarketComponent implements OnInit {
         region: data.region,
         subregion: data.subRegion,
       });
-     
 
       /**
        * Extracts the middle part (e.g., 'XC.XX') from a given longMarketCode.
        * @param longMarketCode - The complete long market code (e.g., 'N-XC.XX.AD').
        * @returns The extracted middle part or an empty string if not found.
        */
-    
+
       this.originalMarketCode = data.code;
       this.originalMarketName = data.name;
       this.subGroups = data.marketSubGroups || [];
@@ -403,9 +388,12 @@ export class CreateMarketComponent implements OnInit {
    */
   onSubmit(): void {
     if (this.marketForm.valid) {
-
       const longCodeMiddle = this.marketForm.value.longCodeMiddle;
-      const fullLongCode = `${this.firstLetterOfRegion}-${longCodeMiddle}.${this.marketForm.get('marketCode')?.value.toUpperCase()}`;
+      const fullLongCode = `${
+        this.firstLetterOfRegion
+      }-${longCodeMiddle}.${this.marketForm
+        .get('marketCode')
+        ?.value.toUpperCase()}`;
       const marketData: Market = {
         name: this.marketForm.value.marketName,
         code: this.marketForm.value.marketCode,
@@ -418,7 +406,8 @@ export class CreateMarketComponent implements OnInit {
                 subGroupId: subGroup.subGroupId || null,
                 subGroupName: subGroup.subGroupName,
                 subGroupCode: subGroup.subGroupCode,
-                marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
+                marketCode:
+                  subGroup.marketCode || this.marketForm.value.marketCode,
                 isEdited: subGroup.isEdited || false,
                 isDeleted: subGroup.isDeleted || false,
               }))
@@ -447,9 +436,10 @@ export class CreateMarketComponent implements OnInit {
             CreateMarketConfig.MESSAGES.SUCCESS_MESSAGES.MARKET_CREATED
           ),
         });
-        setTimeout(() => {
-          this.router.navigate(['/markets']);
-        }, 1000);
+        this.marketForm.reset();
+        // setTimeout(() => {
+        //   this.router.navigate(['/markets']);
+        // }, 1000);
       },
       error: () => {
         this.messageService.add({
@@ -500,6 +490,11 @@ export class CreateMarketComponent implements OnInit {
   onRegionSelect(regionId: number): void {
     this.selectedRegion = regionId;
     this.marketForm.get('region')?.setValue(regionId);
+    !this.isEditMode && ['marketName', 'marketCode', 'longCodeMiddle'].forEach((control) =>
+      this.marketForm.get(control)?.setValue('')
+    )
+    
+
     this.updateLongCode();
 
     this.regionService
@@ -573,8 +568,10 @@ export class CreateMarketComponent implements OnInit {
   }
   // Helper method to format longCode
   applyLongCodeFormat(longCode: string): string {
-   
-     const formattedCode = longCode.replace(/([A-Z])([A-Z]{2})([A-Z]{2})([A-Z]{2})/, '$1-$2.$3.$4');
+    const formattedCode = longCode.replace(
+      /([A-Z])([A-Z]{2})([A-Z]{2})([A-Z]{2})/,
+      '$1-$2.$3.$4'
+    );
     return formattedCode;
   }
 }
