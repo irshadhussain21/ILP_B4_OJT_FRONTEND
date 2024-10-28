@@ -191,7 +191,7 @@
     <button
       type="submit"
       class="submit-button"
-      [disabled]="marketForm.invalid || (isEditMode && !marketForm.get('subregion')?.value)"
+      [disabled]="marketForm.invalid || (isEditMode && (!isFormModified || !marketForm.get('subregion')?.value))"
       (click)="onSubmit()"
     >
       {{ getSubmitButtonText() | translate }}
