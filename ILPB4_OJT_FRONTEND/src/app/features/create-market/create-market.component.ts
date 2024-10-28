@@ -119,7 +119,7 @@ export class CreateMarketComponent implements OnInit {
   hasEditedName: boolean = false;
   firstLetterOfRegion: string = '';  // For the first input
   middleLongCode: string = '';       // For the middle input (controlled by form)
-  
+  isFormModified: boolean = false;
 
   constructor(
     public fb: FormBuilder,
@@ -142,6 +142,12 @@ export class CreateMarketComponent implements OnInit {
     this.getRoute();
     this.setupFieldListeners();
     this.updateLongCode();
+
+  if (this.isEditMode) {
+    this.marketForm.valueChanges.subscribe(() => {
+      this.isFormModified = this.marketForm.dirty;  // Set to true if any field is modified
+    });
+  }
   }
 
   /**
@@ -157,6 +163,12 @@ export class CreateMarketComponent implements OnInit {
       }
     });
   }
+
+  trackFormModifications(): void {
+  this.marketForm.valueChanges.subscribe(() => {
+    this.isFormModified = true;
+  });
+}
 
   /**
    * Initializes the form with required controls for market details.
@@ -500,7 +512,7 @@ export class CreateMarketComponent implements OnInit {
    * @param event - An object containing the updated list of subgroups.
    * @param event.subGroups - The array of MarketSubgroup objects reflecting the current state of subgroups.
    */
-  onSubGroupsChanged(event: { subGroups: MarketSubgroup[] }): void {
+  onSubGroupsChanged(event: { subGroups: MarketSubgroup[], isDirty : boolean }): void {
     this.subGroups = [...event.subGroups];
     const allSubgroupsDeleted = this.subGroups.every(
       (subGroup) => subGroup.isDeleted
@@ -508,6 +520,10 @@ export class CreateMarketComponent implements OnInit {
 
     if (allSubgroupsDeleted) {
       this.marketForm.setErrors(null);
+    }
+
+    if (event.isDirty) {
+      this.isFormModified = true;
     }
   }
 
