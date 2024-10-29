@@ -97,7 +97,7 @@ export class SubgroupComponent implements OnInit {
   @Input() marketId?: number;
   @Input() isMarketFormValid: boolean | undefined;
   @Output() subGroupsChanged = new EventEmitter<{
-    subGroups: MarketSubgroup[];
+    subGroups: MarketSubgroup[], isDirty : boolean
   }>();
   @Output() isSubGroupFormInvalid = new EventEmitter<boolean>();
 
@@ -210,7 +210,9 @@ export class SubgroupComponent implements OnInit {
 
     const hasInvalidRow = this.rows.controls.some((row) => row.invalid);
     this.isSubGroupFormInvalid.emit(hasInvalidRow);
-    this.subGroupsChanged.emit({ subGroups: validSubGroups });
+
+    const hasDirtyRow = this.rows.controls.some((row) => row.dirty);
+    this.subGroupsChanged.emit({ subGroups: validSubGroups, isDirty: hasDirtyRow });
   }
 
   /**
@@ -296,6 +298,7 @@ export class SubgroupComponent implements OnInit {
       if (row.get('subGroupId')?.value !== null) {
         row.get('isEdited')?.setValue(true, { emitEvent: false });
       }
+      row.markAsDirty();
     });
     return row;
   }
@@ -377,6 +380,7 @@ export class SubgroupComponent implements OnInit {
       accept: () => {
         const row = this.rows.at(rowIndex);
         row.get('isDeleted')?.setValue(true);
+        row.markAsDirty();
         this.emitValidSubGroups();
         this.showSubgroup = this.rows.controls.some(
           (row) => row.get('isDeleted')?.value === false

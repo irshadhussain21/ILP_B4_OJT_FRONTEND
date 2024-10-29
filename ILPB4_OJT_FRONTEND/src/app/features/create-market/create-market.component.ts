@@ -84,44 +84,42 @@
    *  }
    */
 
-  @Component({
-    selector: 'app-market-form',
-    standalone: true,
-    templateUrl: './create-market.component.html',
-    styleUrls: ['./create-market.component.scss'],
-    imports: [
-      ReactiveFormsModule,
-      CommonModule,
-      RadioButtonModule,
-      TranslateModule,
-      ToastModule,
-      HeaderComponent,
-      InputMaskModule,
-      ConfirmDialogModule,
-      SubgroupComponent,
-      DividerModule,
-    ],
-    providers: [MessageService, ConfirmationService],
-  })
-  export class CreateMarketComponent implements OnInit {
-    isMarketFormValid: boolean = false;
-    marketForm!: FormGroup;
-    title: string = CreateMarketConfig.TITLE_CREATE;
-    isEditMode: boolean = false;
-    marketId?: number;
-    regions: Region[] = [];
-    subregions: Region[] = [];
-    subGroups: MarketSubgroup[] = [];
-    selectedRegion: number | null = null;
-    selectedSubregion: string | null = null;
-    hasCodeExistsError: boolean = false;
-    hasNameExistsError: boolean = false;
-    hasEditedCode: boolean = false;
-    hasEditedName: boolean = false;
-    firstLetterOfRegion: string = ''; // For the first input
-    middleLongCode: string = ''; // For the middle input (controlled by form)
-    originalMarketCode: string | null = '';
-    originalMarketName: string | null = '';
+@Component({
+  selector: 'app-market-form',
+  standalone: true,
+  templateUrl: './create-market.component.html',
+  styleUrls: ['./create-market.component.scss'],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    RadioButtonModule,
+    TranslateModule,
+    ToastModule,
+    HeaderComponent,
+    InputMaskModule,
+    ConfirmDialogModule,
+    SubgroupComponent,
+  ],
+  providers: [MessageService, ConfirmationService],
+})
+export class CreateMarketComponent implements OnInit {
+  isMarketFormValid: boolean = false;
+  marketForm!: FormGroup;
+  title: string = CreateMarketConfig.TITLE_CREATE;
+  isEditMode: boolean = false;
+  marketId?: number;
+  regions: Region[] = [];
+  subregions: Region[] = [];
+  subGroups: MarketSubgroup[] = [];
+  selectedRegion: number | null = null;
+  selectedSubregion: string | null = null;
+  hasCodeExistsError: boolean = false;
+  hasNameExistsError: boolean = false;
+  hasEditedCode: boolean = false;
+  hasEditedName: boolean = false;
+  firstLetterOfRegion: string = '';  // For the first input
+  middleLongCode: string = '';       // For the middle input (controlled by form)
+  isFormModified: boolean = false;
 
     constructor(
       public fb: FormBuilder,
@@ -135,32 +133,43 @@
       public cdr: ChangeDetectorRef
     ) {}
 
-    /**
-     * On component initialization, it checks if the market ID is present in the route parameters
-     * to determine if the component is in edit mode. It also initializes the form and loads the regions.
-     */
-    ngOnInit(): void {
-      this.initializeForm();
-      this.getRoute();
-      this.loadRegions();
+  /**
+   * On component initialization, it checks if the market ID is present in the route parameters
+   * to determine if the component is in edit mode. It also initializes the form and loads the regions.
+   */
+  ngOnInit(): void {
+    this.initializeForm();
+    this.loadRegions();
+    this.getRoute();
+    this.setupFieldListeners();
+    this.updateLongCode();
 
-      this.setupFieldListeners();
-      this.updateLongCode();
-    }
+  if (this.isEditMode) {
+    this.marketForm.valueChanges.subscribe(() => {
+      this.isFormModified = this.marketForm.dirty;  // Set to true if any field is modified
+    });
+  }
+  }
 
-    /**
-     * Retrieves the market ID from the route parameters and sets the component to edit mode if an ID is present.
-     */
-    getRoute() {
-      this.route.params.subscribe((params) => {
-        if (params['id']) {
-          this.isEditMode = true;
-          this.marketId = +params['id'];
-          this.title = CreateMarketConfig.TITLE_EDIT;
-          this.fetchMarketData(this.marketId);
-        }
-      });
-    }
+  /**
+   * Retrieves the market ID from the route parameters and sets the component to edit mode if an ID is present.
+   */
+  getRoute() {
+    this.route.params.subscribe((params) => {
+      if (params['id']) {
+        this.isEditMode = true;
+        this.marketId = +params['id'];
+        this.title = CreateMarketConfig.TITLE_EDIT;
+        this.fetchMarketData(this.marketId);
+      }
+    });
+  }
+
+  trackFormModifications(): void {
+  this.marketForm.valueChanges.subscribe(() => {
+    this.isFormModified = true;
+  });
+}
 
     /**
      * Initializes the form with required controls for market details.
@@ -528,24 +537,27 @@
       });
     }
 
-    /**
-     * Updates the market's subgroup list when changes are emitted from the SubGroupComponent.
-     * Clears form errors if all subgroups are marked as deleted.
-     *
-     * @param event - An object containing the updated list of subgroups.
-     * @param event.subGroups - The array of MarketSubgroup objects reflecting the current state of subgroups.
-     */
-    onSubGroupsChanged(event: { subGroups: MarketSubgroup[] }): void {
-      this.subGroups = [...event.subGroups];
-      const allSubgroupsDeleted = this.subGroups.every(
-        (subGroup) => subGroup.isDeleted
-      );
+  /**
+   * Updates the market's subgroup list when changes are emitted from the SubGroupComponent.
+   * Clears form errors if all subgroups are marked as deleted.
+   *
+   * @param event - An object containing the updated list of subgroups.
+   * @param event.subGroups - The array of MarketSubgroup objects reflecting the current state of subgroups.
+   */
+  onSubGroupsChanged(event: { subGroups: MarketSubgroup[], isDirty : boolean }): void {
+    this.subGroups = [...event.subGroups];
+    const allSubgroupsDeleted = this.subGroups.every(
+      (subGroup) => subGroup.isDeleted
+    );
 
-      if (allSubgroupsDeleted) {
-        this.marketForm.setErrors(null);
-      }
+    if (allSubgroupsDeleted) {
+      this.marketForm.setErrors(null);
     }
 
+    if (event.isDirty) {
+      this.isFormModified = true;
+    }
+  }
 
     /**
      * Updates the market form's validation state based on subgroup errors.
