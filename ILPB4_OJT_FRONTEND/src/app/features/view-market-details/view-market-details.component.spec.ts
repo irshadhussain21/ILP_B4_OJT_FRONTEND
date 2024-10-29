@@ -182,4 +182,61 @@ describe('ViewMarketDetailsComponent', () => {
 
     expect(console.error).toHaveBeenCalledWith('Market ID not found in the route');
   });
+
+  it('should log an error if market ID is not in route on init', () => {
+    component.ngOnInit();
+    expect(console.error).toHaveBeenCalledWith('Market ID not found in the route');
+  });
+
+  it('should handle error when fetching market details fails', fakeAsync(() => {
+    mockMarketService.getMarketById.mockReturnValue(throwError('Failed to fetch market details'));
+    component.marketId = 1;
+    component.loadMarketDetails();
+    tick();
+
+    expect(console.error).toHaveBeenCalledWith('Failed to fetch market details', 'Failed to fetch market details');
+  }));
+  it('should not delete market if delete confirmation is rejected', () => {
+    mockConfirmationService.confirm = jest.fn().mockImplementation(({ reject }) => reject());
+
+    component.confirmDeleteMarket();
+    expect(console.error).not.toHaveBeenCalledWith('Error deleting market:');
+    expect(mockMarketService.deleteMarket).not.toHaveBeenCalled();
+  });
+  it('should log an error if deleteMarket fails', fakeAsync(() => {
+    mockMarketService.deleteMarket.mockReturnValue(throwError('Delete error'));
+    component.marketId = 1;
+    component.deleteMarket();
+    tick();
+
+    expect(console.error).toHaveBeenCalledWith('Error deleting market:', 'Delete error');
+  }));
+  
+  it('should disable Delete button if market has subgroups', () => {
+    component.marketDetails = {
+      name: 'Test Market',
+      code: 'TM',
+      longMarketCode: 'L-TM.TM.TM',
+      region: 'Test Region',
+      subRegion: 'Test SubRegion',
+      id: 1,
+      marketSubGroups: [
+        {
+          subGroupId: 1,
+          subGroupName: 'Subgroup',
+          subGroupCode: 'SG',
+          marketCode: 'TM',
+          isEdited: false,
+          isDeleted: false
+        }
+      ]
+    };
+  
+    component.setupMenuItems();
+  
+    // Check that items array and nested properties exist before accessing them
+    expect(component.items?.[0]?.items?.[0]?.disabled).toBeTruthy();
+  });
+  
+
 });
