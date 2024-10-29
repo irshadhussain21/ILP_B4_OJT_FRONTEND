@@ -14,9 +14,8 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
-
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { MarketService } from '../../services/market.service';
 
 // Mock TranslateLoader
@@ -44,12 +43,7 @@ describe('ViewMarketDetailsComponent', () => {
           region: 'LAAPA',
           subRegion: 'Africa',
           marketSubGroups: [
-            {
-              subGroupId: 1, subGroupName: 'Q-Island', subGroupCode: 'Q',
-              marketCode: '',
-              isEdited: false,
-              isDeleted: false
-            },
+            { subGroupId: 1, subGroupName: 'Q-Island', subGroupCode: 'Q' },
           ],
         })
       ),
@@ -101,14 +95,15 @@ describe('ViewMarketDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // it('should load market details on init', fakeAsync(() => {
-  //   component.ngOnInit();
-  //   tick();
+  it('should load market details on init', fakeAsync(() => {
+    component.marketId = 1;
+    component.ngOnInit();
+    tick();
 
-  //   expect(mockMarketService.getMarketById).toHaveBeenCalledWith(1);
-  //   expect(component.marketDetails?.name).toBe('Antarctica');
-  //   expect(component.marketDetails?.code).toBe('AA');
-  // }));
+    expect(mockMarketService.getMarketById).toHaveBeenCalledWith(1);
+    expect(component.marketDetails?.name).toBe('Antarctica');
+    expect(component.marketDetails?.code).toBe('AA');
+  }));
 
   it('should combine subgroups correctly', () => {
     const combinedSubGroups = component.combineSubGroupDetails({
@@ -131,16 +126,60 @@ describe('ViewMarketDetailsComponent', () => {
     expect(combinedSubGroups).toEqual(['AAQ - Q-Island']);
   });
 
-  // it('should delete market when confirmed', fakeAsync(() => {
-  //   component.marketId = 1;
-  //   component.confirmDeleteMarket();
-  //   tick();
+  it('should navigate to edit page when navigateToEdit is called', () => {
+    const navigateSpy = jest.spyOn(component['router'], 'navigate');
+    component.marketId = 1;
+    component.navigateToEdit();
+    expect(navigateSpy).toHaveBeenCalledWith(['/markets/edit/1']);
+  });
 
-  //   expect(mockMarketService.deleteMarket).toHaveBeenCalledWith(1);
-  //   expect(mockMessageService.add).toHaveBeenCalledWith({
-  //     severity: 'success',
-  //     summary: 'Success',
-  //     detail: 'Market Antarctica deleted successfully.',
-  //   });
-  // }));
+  it('should display success message when market is deleted', fakeAsync(() => {
+    component.marketId = 1;
+    component.confirmDeleteMarket();
+    tick();
+
+    expect(mockMarketService.deleteMarket).toHaveBeenCalledWith(1);
+    expect(mockMessageService.add).toHaveBeenCalledWith({
+      severity: 'success',
+      summary: 'Success',
+      detail: expect.any(String),
+    });
+  }));
+
+  it('should handle delete confirmation rejection', () => {
+    const rejectSpy = jest.fn();
+    mockConfirmationService.confirm = jest.fn().mockImplementation(({ reject }) => rejectSpy());
+
+    component.confirmDeleteMarket();
+    expect(rejectSpy).toHaveBeenCalled();
+  });
+
+  it('should handle error during market deletion', fakeAsync(() => {
+    mockMarketService.deleteMarket = jest.fn().mockReturnValue(throwError('Error deleting market'));
+    component.marketId = 1;
+    component.confirmDeleteMarket();
+    tick();
+
+    expect(mockMarketService.deleteMarket).toHaveBeenCalledWith(1);
+    expect(console.error).toHaveBeenCalledWith('Error deleting market:', 'Error deleting market');
+  }));
+
+  it('should set up menu items correctly', fakeAsync(() => {
+    component.marketId = 1;
+    component.ngOnInit();
+    tick();
+
+    component.setupMenuItems();
+    expect(component.items.length).toBeGreaterThan(0);
+    // expect(component.items?.[0]?.items?.[0]?.label).toBe('Delete Market');
+
+  }));
+
+  it('should handle missing market ID in route', () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    component.marketId = undefined;
+    component.ngOnInit();
+
+    expect(console.error).toHaveBeenCalledWith('Market ID not found in the route');
+  });
 });
