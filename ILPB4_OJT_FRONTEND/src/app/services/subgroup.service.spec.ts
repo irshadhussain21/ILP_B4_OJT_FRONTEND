@@ -1,50 +1,85 @@
-
-import { of } from 'rxjs';
-import { MarketSubgroup } from '../core/models/market';
-import { MarketSubgroupService} from './subgroup.service';
+import { TestBed } from '@angular/core/testing';
+import { MarketSubgroupService } from "./subgroup.service"
 import { HttpClient } from '@angular/common/http';
+import { of, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { MarketSubgroup } from '../core/models/market';
 
-describe('SubgroupService', () => {
+describe('MarketSubgroupService', () => {
   let service: MarketSubgroupService;
-  let httpClientSpy : any;
-  const mockApiUrl = `${environment.apiUrl}/MarketSubgroup`;
+  let httpClientMock: jest.Mocked<HttpClient>;
+
+  // Base URL for the API as defined in the service
+  const apiUrl = `${environment.apiUrl}/MarketSubgroup`;
 
   beforeEach(() => {
-    httpClientSpy = {
-        get : jest.fn() //mock fn of get used in service
-    }
-    service = new MarketSubgroupService(httpClientSpy);
-    service['apiUrl'] = mockApiUrl;
+    // Create a mock HttpClient
+    httpClientMock = {
+      get: jest.fn(),
+    } as unknown as jest.Mocked<HttpClient>;
+
+    TestBed.configureTestingModule({
+      providers: [
+        MarketSubgroupService,
+        { provide: HttpClient, useValue: httpClientMock },
+      ],
+    });
+
+    service = TestBed.inject(MarketSubgroupService);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should call GET API with valid marketId parameter and return data', (done) => {
-    const mockMarketId = 1;
-    const expectedData: MarketSubgroup[] = [
-      {
-        subGroupId: 1,
-        subGroupName: 'Test Subgroup 1',
-        subGroupCode: 'A',
-        marketId: 1,
-        isDeleted: false,
-        isEdited: false
-      }
-    ];
+  describe('#getSubgroups', () => {
+    it('should fetch subgroups for a given market ID', () => {
+      const marketId = 1;
+      const mockSubgroups: MarketSubgroup[] = [
+        { subGroupId: 1, subGroupName: 'Subgroup 1', subGroupCode: 'SG1', marketCode: 'M1', isDeleted: false, isEdited: false },
+        { subGroupId: 2, subGroupName: 'Subgroup 2', subGroupCode: 'SG2', marketCode: 'M1', isDeleted: false, isEdited: false },
+      ];
 
-    jest.spyOn(httpClientSpy,'get').mockReturnValue(of(expectedData));
+      httpClientMock.get.mockReturnValue(of(mockSubgroups));
 
-    service.getSubgroups(mockMarketId).subscribe((data) => {
-      expect(httpClientSpy.get).toHaveBeenCalledTimes(1)
-      expect(httpClientSpy.get).toHaveBeenCalledWith(
-        `${mockApiUrl}?marketId=${mockMarketId}`
-      );
-      expect(data).toEqual(expectedData);
-      expect(data.every(item => item.marketId === mockMarketId)).toBe(true);
-      done();
+      service.getSubgroups(marketId).subscribe((subgroups) => {
+        expect(subgroups).toEqual(mockSubgroups);
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(`${apiUrl}?marketId=${marketId}`);
+      expect(httpClientMock.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('should fetch all subgroups if no market ID is provided', () => {
+      const mockSubgroups: MarketSubgroup[] = [
+        { subGroupId: 1, subGroupName: 'Subgroup 1', subGroupCode: 'SG1', marketCode: 'M1', isDeleted: false, isEdited: false },
+        { subGroupId: 2, subGroupName: 'Subgroup 2', subGroupCode: 'SG2', marketCode: 'M2', isDeleted: false, isEdited: false },
+      ];
+
+      httpClientMock.get.mockReturnValue(of(mockSubgroups));
+
+      service.getSubgroups().subscribe((subgroups) => {
+        expect(subgroups).toEqual(mockSubgroups);
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(`${apiUrl}?marketId=undefined`);
+      expect(httpClientMock.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle error when fetching subgroups', () => {
+      const mockError = new Error('Network error');
+
+      httpClientMock.get.mockReturnValue(throwError(() => mockError));
+
+      service.getSubgroups(1).subscribe({
+        next: () => fail('Expected error, but got success response'),
+        error: (error) => {
+          expect(error).toBe(mockError);
+        },
+      });
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(`${apiUrl}?marketId=1`);
+      expect(httpClientMock.get).toHaveBeenCalledTimes(1);
     });
   });
 });

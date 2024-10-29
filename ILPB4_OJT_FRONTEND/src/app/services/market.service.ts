@@ -24,10 +24,8 @@ export class MarketService {
    * @returns Observable<number> An observable that emits the ID of the newly created market.
    */
   createMarket(market: Market): Observable<number> {
-   
     return this.http.post<number>(`${this.apiUrl}`, market);
   }
-
 
   /**
    * Retrieves market details by ID.
@@ -39,35 +37,38 @@ export class MarketService {
     return this.http.get(`${this.apiUrl}/${marketId}`);
   }
 
-/**
- * Retrieves a paginated list of market entries, with an optional search text filter.
- *
- * @param {number} pageNumber - The page number to retrieve.
- * @param {number} pageSize - The number of items per page.
- * @param {string | null} searchText - The optional search text to filter the markets by name, code, or long code.
- * @returns {Observable<any>} An observable that emits the paginated response containing markets and metadata.
- */
-  getAllMarkets(pageNumber: number, pageSize: number, searchText: string | null = null,region: string | null = null): Observable<any> {
-  console.log('hi',typeof(region))
+  /**
+   * Retrieves a paginated list of market entries, with an optional search text filter.
+   *
+   * @param {number} pageNumber - The page number to retrieve.
+   * @param {number} pageSize - The number of items per page.
+   * @param {string | null} searchText - The optional search text to filter the markets by name, code, or long code.
+   * @returns {Observable<any>} An observable that emits the paginated response containing markets and metadata.
+   */
+  getAllMarkets(
+    pageNumber: number,
+    pageSize: number,
+    searchText: string | null = null,
+    region: string | null = null
+  ): Observable<any> {
+    let params = `pageNumber=${pageNumber}&pageSize=${pageSize}`;
 
+    if (searchText) {
+      params += `&searchText=${encodeURIComponent(searchText)}`;
+      console.log('search text', searchText);
+    }
 
-  let params = `pageNumber=${pageNumber}&pageSize=${pageSize}`;
-  
-  if (searchText) {
-    params += `&searchText=${encodeURIComponent(searchText)}`;
-    console.log('search text',searchText)
+    if (region) {
+      params += `&regions=${encodeURIComponent(region)}`;
+      console.log(params);
+      console.log('region', region);
+    }
+    const apiUrl = `https://localhost:7058/api/Market${params}`;
+    console.log('API Call:', apiUrl);
+    return this.http.get<Market[]>(
+      `https://localhost:7058/api/Market?${params}`
+    );
   }
-
-  if (region) {
-    params += `&regions=${encodeURIComponent(region)}`;
-    console.log(params)
-    console.log('region',region)
-  }
-  const apiUrl = `https://localhost:7058/api/Market${params}`;
-  console.log('API Call:', apiUrl);
-  return this.http.get<Market[]>(`https://localhost:7058/api/Market?${params}`);
-}
-
 
   /**
    * Checks if a market code already exists.
@@ -109,17 +110,17 @@ export class MarketService {
   updateMarket(marketId: number, market: Market): Observable<any> {
     return this.http.put(`${this.apiUrl}/${marketId}`, market);
   }
-    /**
-    * Deletes a market entry by ID.
-    *
-    * @param marketId The ID of the market to delete.
-    * @returns Observable<any> An observable that emits the response from the delete operation.
-    */
+  /**
+   * Deletes a market entry by ID.
+   *
+   * @param marketId The ID of the market to delete.
+   * @returns Observable<any> An observable that emits the response from the delete operation.
+   */
   deleteMarket(marketId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${marketId}`);
   }
- 
-getMarketById(marketId?: number): Observable<any> {
-  return this.http.get(`${this.apiUrl}/${marketId}/details`);
-}
+
+  getMarketById(marketId?: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${marketId}/details`);
+  }
 }
