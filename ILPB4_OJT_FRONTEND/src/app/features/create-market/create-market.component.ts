@@ -396,7 +396,7 @@ export class CreateMarketComponent implements OnInit {
                 subGroupId: subGroup.subGroupId || null,
                 subGroupName: subGroup.subGroupName,
                 subGroupCode: subGroup.subGroupCode,
-                marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
+                // marketCode: subGroup.marketCode || this.marketForm.value.marketCode,
                 isEdited: subGroup.isEdited || false,
                 isDeleted: subGroup.isDeleted || false,
               }))
