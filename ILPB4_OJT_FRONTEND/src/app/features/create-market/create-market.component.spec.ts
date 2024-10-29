@@ -47,7 +47,6 @@ describe('CreateMarketComponent', () => {
       checkMarketCodeExists: jest.fn().mockReturnValue(of(false)),
       checkMarketNameExists: jest.fn().mockReturnValue(of(false)),
      
-
       getMarketDetailsById: jest.fn().mockReturnValue(
         of({
           id: 1,
@@ -70,7 +69,6 @@ describe('CreateMarketComponent', () => {
       }),
     };
     
-
     mockRegionService = {
       getAllRegions: jest
         .fn()
@@ -294,13 +292,13 @@ describe('CreateMarketComponent', () => {
         isEdited: false,
       },
     ];
-  
+
     component.onSubGroupsChanged({ subGroups: mockSubgroups });
-  
+
     // Verify that the component's subGroups property is updated correctly
     expect(component.subGroups).toEqual(mockSubgroups);
   });
-  
+
   it('should reset the form on resetForm call', () => {
     component.marketForm.patchValue({
       marketName: 'Test Market',
@@ -331,14 +329,12 @@ describe('CreateMarketComponent', () => {
     expect(component.loadRegions).toHaveBeenCalled();
   });
    
-
   it('should not set invalidEditMode error when not in edit mode', () => {
     component.isEditMode = false;
     component.initializeForm();
   
     expect(component.marketForm.errors?.['invalidEditMode']).toBeFalsy();
   });
-
   it('should submit the form when valid (edit mode)', fakeAsync(() => {
     component.isEditMode = true;
     component.marketId = 1;
@@ -380,7 +376,6 @@ describe('CreateMarketComponent', () => {
     expect(loadRegionsSpy).toHaveBeenCalled();
     expect(setupFieldListenersSpy).toHaveBeenCalled();
   });
-
   it('should initialize the form with required controls and validators', () => {
     component.initializeForm();
   
@@ -411,7 +406,6 @@ describe('CreateMarketComponent', () => {
     expect(component.title).toBe(CreateMarketConfig.TITLE_EDIT);
     expect(component.fetchMarketData).toHaveBeenCalledWith(1);
   }); 
-
   it('should update subregion form control on subregion change', () => {
     const subregionId = 1;
     component.onSubregionChange({}, subregionId);
@@ -460,7 +454,6 @@ describe('CreateMarketComponent', () => {
     expect(component.marketForm.errors?.['subgroupErrors']).toBeFalsy();
   });
   
-
    
   it('should format long code correctly', () => {
     const formattedCode = component.applyLongCodeFormat('LXXXXAAABBBCCC');
@@ -501,10 +494,8 @@ describe('CreateMarketComponent', () => {
       detail: 'Error updating the market',
     });
   }));
-
   it('should handle error in createMarket method', fakeAsync(() => {
    
-
     // Mock an error response
     mockMarketService.createMarket.mockReturnValueOnce(throwError(() => new Error('Error creating market')));
     
@@ -526,7 +517,6 @@ describe('CreateMarketComponent', () => {
       detail: component.translateService.instant(CreateMarketConfig.MESSAGES.ERROR_MESSAGES.CREATE),
     });
   })); 
-
   it('should return undefined for unknown region ID', () => {
     const regionName = component.getRegionNames(999); // Non-existent ID
     expect(regionName).toBeUndefined();
@@ -543,8 +533,6 @@ describe('CreateMarketComponent', () => {
     const formattedCode = component.applyLongCodeFormat('INVALIDFORMAT');
     expect(formattedCode).toBe('');
   });
-
-
   it('should prevent non-alphabetic input in marketCode field', () => {
     const event = { key: '1', preventDefault: jest.fn() } as any;
     component.onMarketCodeInput(event);
