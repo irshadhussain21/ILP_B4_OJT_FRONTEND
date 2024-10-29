@@ -11,7 +11,7 @@ export interface Market {
 export interface MarketSubgroup {
     subGroupId?: number | null;     
     marketId?: number;
-    // marketCode: string;      
+    marketCode: string;      
     subGroupCode: string;    
     subGroupName: string;
     isEdited: boolean;
