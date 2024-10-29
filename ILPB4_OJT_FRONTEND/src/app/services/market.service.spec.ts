@@ -1,173 +1,173 @@
-// import { TestBed } from '@angular/core/testing';
-// import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-// import { MarketService } from './market.service';
-// import { Market } from '../core/models/market';
-// import { environment } from '../../environments/environment';
+import { TestBed } from '@angular/core/testing';
+import { MarketService } from './market.service';
+import { HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
+import { Market } from '../core/models/market';
+import { environment } from '../../environments/environment';
 
-// describe('MarketService', () => {
-//   let service: MarketService;
-//   let httpMock: HttpTestingController;
-//   const apiUrl = `${environment.apiUrl}/market`;
+describe('MarketService', () => {
+  let service: MarketService;
+  let httpClientMock: jest.Mocked<HttpClient>;
+  const apiUrl = `${environment.apiUrl}/market`;
 
-//   beforeEach(() => {
-//     TestBed.configureTestingModule({
-//       imports: [HttpClientTestingModule],
-//       providers: [MarketService],
-//     });
+  beforeEach(() => {
+    // Mock HttpClient
+    httpClientMock = {
+      post: jest.fn(),
+      get: jest.fn(),
+      put: jest.fn(),
+      delete: jest.fn(),
+    } as unknown as jest.Mocked<HttpClient>;
 
-//     service = TestBed.inject(MarketService);
-//     httpMock = TestBed.inject(HttpTestingController);
-//   });
+    TestBed.configureTestingModule({
+      providers: [
+        MarketService,
+        { provide: HttpClient, useValue: httpClientMock },
+      ],
+    });
 
-//   afterEach(() => {
-//     httpMock.verify();
-//   });
+    service = TestBed.inject(MarketService);
+  });
 
-//   it('should be created', () => {
-//     expect(service).toBeTruthy();
-//   });
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
 
-//   // Test case for createMarket()
-//   it('should create a market and return its ID', () => {
-//     const newMarket: Market = { name: 'Market 1', code: 'MK', longMarketCode: 'LMC001', region: 'Region1', subRegion: 'SubRegion1' };
-//     const expectedMarketId = 1;
+  describe('createMarket', () => {
+    it('should call HttpClient.post with the correct URL and market data', () => {
+      const mockMarket: Market = {
+          id: 1, name: 'Market 1', code: 'M1',
+          longMarketCode: 'AJSKDFJ',
+          region: '1',
+          subRegion: '2'
+      };
+      httpClientMock.post.mockReturnValue(of(1));
 
-//     service.createMarket(newMarket).subscribe((marketId) => {
-//       expect(marketId).toEqual(expectedMarketId);
-//     });
+      service.createMarket(mockMarket).subscribe((response) => {
+        expect(response).toBe(1);
+      });
 
-//     const req = httpMock.expectOne(`${apiUrl}`);
-//     expect(req.request.method).toBe('POST');
-//     req.flush(expectedMarketId);
-//   });
+      expect(httpClientMock.post).toHaveBeenCalledWith(`${apiUrl}`, mockMarket);
+    });
+  });
 
-//   // Test case for getMarketDetailsById()
-//   it('should fetch market details by ID', () => {
-//     const marketId = 1;
-//     const marketDetails = { id: marketId, name: 'Market 1', code: 'MK', longMarketCode: 'LMC001', region: 'Region1', subRegion: 'SubRegion1' };
+  describe('getMarketDetailsById', () => {
+    it('should call HttpClient.get with the correct URL', () => {
+      const marketId = 1;
+      const mockMarketDetails = { id: 1, name: 'Market 1', code: 'M1' };
+      httpClientMock.get.mockReturnValue(of(mockMarketDetails));
 
-//     service.getMarketDetailsById(marketId).subscribe((details) => {
-//       expect(details).toEqual(marketDetails);
-//     });
+      service.getMarketDetailsById(marketId).subscribe((response) => {
+        expect(response).toEqual(mockMarketDetails);
+      });
 
-//     const req = httpMock.expectOne(`${apiUrl}/${marketId}`);
-//     expect(req.request.method).toBe('GET');
-//     req.flush(marketDetails);
-//   });
+      expect(httpClientMock.get).toHaveBeenCalledWith(`${apiUrl}/${marketId}`);
+    });
+  });
 
-//   // Test case for getAllMarkets()
-//   it('should fetch all markets with pagination', () => {
-//     const markets: Market[] = [
-//       { id: 1, name: 'Market 1', code: 'MK', longMarketCode: 'LMC001', region: 'Region1', subRegion: 'SubRegion1' },
-//       { id: 2, name: 'Market 2', code: 'MJ', longMarketCode: 'LMC002', region: 'Region2', subRegion: 'SubRegion2' }
-//     ];
-//     const pageNumber = 1;
-//     const pageSize = 10;
+  describe('getAllMarkets', () => {
+    it('should call HttpClient.get with the correct URL and parameters', () => {
+      const pageNumber = 1;
+      const pageSize = 10;
+      const searchText = 'M';
+      const region = 'Region 1';
+      const mockMarkets = [{ id: 1, name: 'Market 1', code: 'M1' }];
+      const expectedUrl = `https://localhost:7058/api/Market?pageNumber=${pageNumber}&pageSize=${pageSize}&searchText=${encodeURIComponent(
+        searchText
+      )}&regions=${encodeURIComponent(region)}`;
 
-//     service.getAllMarkets(pageNumber, pageSize).subscribe((result) => {
-//       expect(result.length).toBe(2);
-//       expect(result).toEqual(markets);
-//     });
+      httpClientMock.get.mockReturnValue(of(mockMarkets));
 
-//     const req = httpMock.expectOne(`${apiUrl}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-//     expect(req.request.method).toBe('GET');
-//     req.flush(markets);
-//   });
+      service
+        .getAllMarkets(pageNumber, pageSize, searchText, region)
+        .subscribe((response) => {
+          expect(response).toEqual(mockMarkets);
+        });
 
-//   // Test case for checkMarketCodeExists()
-//   it('should check if a market code exists', () => {
-//     const marketCode = 'MK';
-//     const exists = true;
+      expect(httpClientMock.get).toHaveBeenCalledWith(expectedUrl);
+    });
+  });
 
-//     service.checkMarketCodeExists(marketCode).subscribe((result) => {
-//       expect(result).toBe(exists);
-//     });
+  describe('checkMarketCodeExists', () => {
+    it('should call HttpClient.get with the correct URL for market code existence', () => {
+      const marketCode = 'M1';
+      httpClientMock.get.mockReturnValue(of(true));
 
-//     const req = httpMock.expectOne(`${apiUrl}/code/${marketCode}/exists`);
-//     expect(req.request.method).toBe('GET');
-//     req.flush(exists);
-//   });
+      service.checkMarketCodeExists(marketCode).subscribe((response) => {
+        expect(response).toBe(true);
+      });
 
-//   // Test case for checkMarketNameExists()
-//   it('should check if a market name exists', () => {
-//     const marketName = 'Market 1';
-//     const exists = true;
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        `${apiUrl}/code/${marketCode}/exists`,
+        { params: { marketCode } }
+      );
+    });
+  });
 
-//     service.checkMarketNameExists(marketName).subscribe((result) => {
-//       expect(result).toBe(exists);
-//     });
+  describe('checkMarketNameExists', () => {
+    it('should call HttpClient.get with the correct URL for market name existence', () => {
+      const marketName = 'Market 1';
+      httpClientMock.get.mockReturnValue(of(true));
 
-//     const req = httpMock.expectOne(`${apiUrl}/name/${marketName}/exists`);
-//     expect(req.request.method).toBe('GET');
-//     req.flush(exists);
-//   });
+      service.checkMarketNameExists(marketName).subscribe((response) => {
+        expect(response).toBe(true);
+      });
 
-//   // Test case for updateMarket()
-//   it('should update a market', () => {
-//     const marketId = 1;
-//     const updatedMarket: Market = { id: marketId, name: 'Updated Market', code: 'UMKT', longMarketCode: 'ULMC001', region: 'Region1', subRegion: 'SubRegion1' };
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        `${apiUrl}/name/${marketName}/exists`,
+        { params: { marketName } }
+      );
+    });
+  });
 
-//     service.updateMarket(marketId, updatedMarket).subscribe((response) => {
-//       expect(response).toBeTruthy();
-//     });
+  describe('updateMarket', () => {
+    it('should call HttpClient.put with the correct URL and market data', () => {
+      const marketId = 1;
+      const mockMarket: Market = {
+          id: 1, name: 'Updated Market', code: 'UM1',
+          longMarketCode: '',
+          region: '',
+          subRegion: ''
+      };
+      httpClientMock.put.mockReturnValue(of({}));
 
-//     const req = httpMock.expectOne(`${apiUrl}/${marketId}`);
-//     expect(req.request.method).toBe('PUT');
-//     req.flush({});
-//   });
+      service.updateMarket(marketId, mockMarket).subscribe((response) => {
+        expect(response).toEqual({});
+      });
 
-//   // Test case for deleteMarket()
-//   it('should delete a market by ID', () => {
-//     const marketId = 1;
+      expect(httpClientMock.put).toHaveBeenCalledWith(
+        `${apiUrl}/${marketId}`,
+        mockMarket
+      );
+    });
+  });
 
-//     service.deleteMarket(marketId).subscribe((response) => {
-//       expect(response).toBeTruthy();
-//     });
+  describe('deleteMarket', () => {
+    it('should call HttpClient.delete with the correct URL', () => {
+      const marketId = 1;
+      httpClientMock.delete.mockReturnValue(of({}));
 
-//     const req = httpMock.expectOne(`${apiUrl}/${marketId}`);
-//     expect(req.request.method).toBe('DELETE');
-//     req.flush({});
-//   });
+      service.deleteMarket(marketId).subscribe((response) => {
+        expect(response).toEqual({});
+      });
 
-//   // Test case for searchMarkets()
-//   it('should search markets by text', () => {
-//     const searchText = 'Market';
-//     const markets: Market[] = [{ id: 1, name: 'Market 1', code: 'MK', longMarketCode: 'LMC001', region: 'Region1', subRegion: 'SubRegion1' }];
+      expect(httpClientMock.delete).toHaveBeenCalledWith(`${apiUrl}/${marketId}`);
+    });
+  });
 
-//     service.searchMarkets(searchText).subscribe((result) => {
-//       expect(result).toEqual(markets);
-//     });
+  describe('getMarketById', () => {
+    it('should call HttpClient.get with the correct URL for market details', () => {
+      const marketId = 1;
+      const mockMarketDetails = { id: 1, name: 'Market 1', code: 'M1' };
+      httpClientMock.get.mockReturnValue(of(mockMarketDetails));
 
-//     const req = httpMock.expectOne(`${apiUrl}/search?searchText=${searchText}`);
-//     expect(req.request.method).toBe('GET');
-//     req.flush(markets);
-//   });
+      service.getMarketById(marketId).subscribe((response) => {
+        expect(response).toEqual(mockMarketDetails);
+      });
 
-//   // Test case for getFilteredMarkets()
-//   it('should get filtered markets by region', () => {
-//     const regions = 'Region 1';
-//     const markets: Market[] = [{ id: 1, name: 'Market 1', code: 'MK', longMarketCode: 'LMC001', region: 'Region1', subRegion: 'SubRegion1' }];
-
-//     service.getFilteredMarkets(regions).subscribe((result) => {
-//       expect(result).toEqual(markets);
-//     });
-
-//     const req = httpMock.expectOne(`${apiUrl}/filter?Regions=${encodeURIComponent(regions)}`);
-//     expect(req.request.method).toBe('GET');
-//     req.flush(markets);
-//   });
-
-//   // Test case for getMarketById()
-//   it('should get market by ID with details', () => {
-//     const marketId = 1;
-//     const marketDetails = { id: marketId, name: 'Market 1', code: 'MK', longMarketCode: 'LMC001', region: 'Region1', subRegion: 'SubRegion1' };
-
-//     service.getMarketById(marketId).subscribe((details) => {
-//       expect(details).toEqual(marketDetails);
-//     });
-
-//     const req = httpMock.expectOne(`${apiUrl}/${marketId}/details`);
-//     expect(req.request.method).toBe('GET');
-//     req.flush(marketDetails);
-//   });
-// });
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        `${apiUrl}/${marketId}/details`
+      );
+    });
+  });
+});

@@ -11,7 +11,7 @@ import { RegionService } from '../../services/region.service';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { HttpTestingController } from '@angular/common/http/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ToastModule } from 'primeng/toast';
 import { InputMaskModule } from 'primeng/inputmask';
@@ -21,6 +21,7 @@ import { provideRouter } from '@angular/router';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router'
 import { MarketSubgroup } from '../../core/models/market';
+import { CreateMarketConfig } from '../../config/market';
 
 // Mock TranslateLoader
 class FakeLoader implements TranslateLoader {
@@ -45,6 +46,8 @@ describe('CreateMarketComponent', () => {
       updateMarket: jest.fn().mockReturnValue(of({})),
       checkMarketCodeExists: jest.fn().mockReturnValue(of(false)),
       checkMarketNameExists: jest.fn().mockReturnValue(of(false)),
+     
+
       getMarketDetailsById: jest.fn().mockReturnValue(
         of({
           id: 1,
@@ -57,6 +60,16 @@ describe('CreateMarketComponent', () => {
         })
       ),
     } as unknown as jest.Mocked<MarketService>;
+
+    const mockConfirmationService = {
+      confirm: jest.fn((confirmation: any) => {
+        if (confirmation.accept) {
+          confirmation.accept(); // Simulate the user clicking 'accept'
+        }
+        return confirmation; // Return the confirmation object to satisfy the type
+      }),
+    };
+    
 
     mockRegionService = {
       getAllRegions: jest
@@ -85,9 +98,10 @@ describe('CreateMarketComponent', () => {
 
         provideRouter([]),
         { provide: MarketService, useValue: mockMarketService },
-        { provide: RegionService, useValue: mockRegionService },
+        { provide: RegionService, useValue: mockRegionService }, 
+        { provide: ConfirmationService, useValue: mockConfirmationService },
         MessageService,
-        ConfirmationService,
+       
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -285,6 +299,317 @@ describe('CreateMarketComponent', () => {
   
     // Verify that the component's subGroups property is updated correctly
     expect(component.subGroups).toEqual(mockSubgroups);
+  });
+  
+  it('should reset the form on resetForm call', () => {
+    component.marketForm.patchValue({
+      marketName: 'Test Market',
+      marketCode: 'TM',
+      longCode: 'L-TM.AA.AA',
+      region: 'Region 1',
+      subregion: 'Subregion 1',
+    });
+  
+    component.marketForm.reset();
+  
+    expect(component.marketForm.value).toEqual({
+      marketName: '',
+      marketCode: '',
+      longCodeMiddle: '',
+      region: '',
+      subregion: '',
+    });
+  });
+  
+  it('should call initializeForm and loadRegions on ngOnInit', () => {
+    jest.spyOn(component, 'initializeForm');
+    jest.spyOn(component, 'loadRegions');
+  
+    component.ngOnInit();
+  
+    expect(component.initializeForm).toHaveBeenCalled();
+    expect(component.loadRegions).toHaveBeenCalled();
+  });
+   
+
+  it('should not set invalidEditMode error when not in edit mode', () => {
+    component.isEditMode = false;
+    component.initializeForm();
+  
+    expect(component.marketForm.errors?.['invalidEditMode']).toBeFalsy();
+  });
+
+  it('should submit the form when valid (edit mode)', fakeAsync(() => {
+    component.isEditMode = true;
+    component.marketId = 1;
+  
+    component.marketForm.patchValue({
+      marketName: 'Updated Market',
+      marketCode: 'UM',
+      longCodeMiddle: 'L-UM.AA.AA',
+      region: 'Region 1',
+      subregion: 'Subregion 1',
+    });
+  
+    component.isMarketFormValid = true;
+    component.subGroups = [];
+  
+    fixture.detectChanges();
+  
+    component.onSubmit();
+    tick(); // Simulate async passage of time
+  
+    expect(mockMarketService.updateMarket).toHaveBeenCalledWith(1, {
+      name: 'UPDATED MARKET',
+      code: 'UM',
+      longMarketCode: 'L-UM.AA.AA',
+      region: 'Region 1',
+      subRegion: 'Subregion 1',
+      marketSubGroups: [],
+    });
+    expect(mockMarketService.updateMarket).toHaveBeenCalledTimes(1);
+  }));
+  it('should call initializeForm, loadRegions, and setupFieldListeners on initialization', () => {
+    const initializeFormSpy = jest.spyOn(component, 'initializeForm');
+    const loadRegionsSpy = jest.spyOn(component, 'loadRegions');
+    const setupFieldListenersSpy = jest.spyOn(component, 'setupFieldListeners');
+  
+    component.ngOnInit();
+  
+    expect(initializeFormSpy).toHaveBeenCalled();
+    expect(loadRegionsSpy).toHaveBeenCalled();
+    expect(setupFieldListenersSpy).toHaveBeenCalled();
+  });
+
+  it('should initialize the form with required controls and validators', () => {
+    component.initializeForm();
+  
+    const marketNameControl = component.marketForm.get('marketName');
+    const marketCodeControl = component.marketForm.get('marketCode');
+    const longCodeMiddleControl = component.marketForm.get('longCodeMiddle');
+    const regionControl = component.marketForm.get('region');
+    const subregionControl = component.marketForm.get('subregion');
+  
+    expect(marketNameControl).toBeTruthy();
+    expect(marketCodeControl).toBeTruthy();
+    expect(longCodeMiddleControl).toBeTruthy();
+    expect(regionControl).toBeTruthy();
+    expect(subregionControl).toBeTruthy();
+  
+    expect(marketNameControl?.hasError('required')).toBe(true);
+    expect(marketCodeControl?.hasError('required')).toBe(true);
+  });
+  
+  it('should set to edit mode and fetch market data when marketId is present', () => {
+    jest.spyOn(component, 'fetchMarketData');
+    component.route.params = of({ id: 1 }); // Simulate route params
+  
+    component.getRoute();
+  
+    expect(component.isEditMode).toBe(true);
+    expect(component.marketId).toBe(1);
+    expect(component.title).toBe(CreateMarketConfig.TITLE_EDIT);
+    expect(component.fetchMarketData).toHaveBeenCalledWith(1);
+  }); 
+
+  it('should update subregion form control on subregion change', () => {
+    const subregionId = 1;
+    component.onSubregionChange({}, subregionId);
+  
+    expect(component.selectedSubregion).toBe(subregionId.toString());
+    expect(component.marketForm.get('subregion')?.value).toBe(subregionId);
+  });
+  
+  // it('should reset the form and navigate back on cancel confirmation', fakeAsync(() => {
+  //   jest.spyOn(component.confirmationService, 'confirm').mockImplementation((options) => {
+  //     options.accept(); // Simulate user clicking 'accept'
+  //   });
+  
+  //   component.onCancel();
+  //   tick();
+  
+  //   expect(component.marketForm.value).toEqual({
+  //     marketName: '',
+  //     marketCode: '',
+  //     longCodeMiddle: '',
+  //     region: '',
+  //     subregion: '',
+  //   });
+  //   expect(mockRouter.navigate).toHaveBeenCalledWith(['/markets', component.marketId]);
+  // }));
+  it('should clear form fields when a new region is selected in create mode', () => {
+    component.isEditMode = false;
+    component.marketForm.patchValue({
+      marketName: 'Test Market',
+      marketCode: 'TM',
+      longCodeMiddle: 'L-TM',
+    });
+  
+    component.onRegionSelect(1);
+  
+    expect(component.marketForm.get('marketName')?.value).toBe('');
+    expect(component.marketForm.get('marketCode')?.value).toBe('');
+    expect(component.marketForm.get('longCodeMiddle')?.value).toBe('');
+  });
+  
+  it('should set form errors when subgroup errors are found', () => {
+    component.onSubgroupErrorsFound(true);
+    expect(component.marketForm.errors?.['subgroupErrors']).toBe(true);
+  
+    component.onSubgroupErrorsFound(false);
+    expect(component.marketForm.errors?.['subgroupErrors']).toBeFalsy();
+  });
+  
+
+   
+  it('should format long code correctly', () => {
+    const formattedCode = component.applyLongCodeFormat('LXXXXAAABBBCCC');
+    expect(formattedCode).toBe('L-XX.AA.BB.CC');
+  });
+  
+  it('should return the correct region name', () => {
+    const regionName = component.getRegionNames(1);
+    expect(regionName).toBe('Region 1'); // Based on mock data
+  });
+  
+  it('should return the correct submit button text', () => {
+    component.isEditMode = false;
+    expect(component.getSubmitButtonText()).toBe('Create Market'); // Based on config
+  
+    component.isEditMode = true;
+    expect(component.getSubmitButtonText()).toBe('Update Market'); // Based on config
+  });
+  
+ 
+  it('should handle error in updateMarket method', fakeAsync(() => {
+    mockMarketService.updateMarket.mockReturnValueOnce(of({ error: true }));
+  
+    component.updateMarket({
+      name: 'Updated Market',
+      code: 'UM',
+      longMarketCode: 'L-UM.AA.AA',
+      region: 'Region 1',
+      subRegion: 'Subregion 1',
+      marketSubGroups: [],
+    });
+  
+    tick();
+  
+    expect(component.messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Error updating the market',
+    });
+  }));
+
+  it('should handle error in createMarket method', fakeAsync(() => {
+   
+
+    // Mock an error response
+    mockMarketService.createMarket.mockReturnValueOnce(throwError(() => new Error('Error creating market')));
+    
+  
+    component.createMarket({
+      name: 'Test Market',
+      code: 'TM',
+      longMarketCode: 'L-TM.AA.AA',
+      region: 'Region 1',
+      subRegion: 'Subregion 1',
+      marketSubGroups: [],
+    });
+  
+    tick();
+  
+    expect(component.messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Error',
+      detail: component.translateService.instant(CreateMarketConfig.MESSAGES.ERROR_MESSAGES.CREATE),
+    });
+  })); 
+
+  it('should return undefined for unknown region ID', () => {
+    const regionName = component.getRegionNames(999); // Non-existent ID
+    expect(regionName).toBeUndefined();
+  });
+  
+  it('should not update firstLetterOfRegion if no region is selected', () => {
+    component.marketForm.get('region')?.setValue(null);
+    component.updateLongCode();
+  
+    expect(component.firstLetterOfRegion).toBe('');
+  });
+  
+  it('should return an empty string when longCode format is invalid', () => {
+    const formattedCode = component.applyLongCodeFormat('INVALIDFORMAT');
+    expect(formattedCode).toBe('');
+  });
+
+
+  it('should prevent non-alphabetic input in marketCode field', () => {
+    const event = { key: '1', preventDefault: jest.fn() } as any;
+    component.onMarketCodeInput(event);
+  
+    expect(event.preventDefault).toHaveBeenCalled();
+  });
+  
+  it('should initialize the component in create mode', () => {
+    component.isEditMode = false; 
+    component.ngOnInit();
+  
+    expect(component.marketForm).toBeDefined();
+    expect(component.title).toBe(CreateMarketConfig.TITLE_CREATE);
+    expect(component.isEditMode).toBe(false);
+  });
+  
+  it('should initialize the component in edit mode', fakeAsync(() => {
+    component.isEditMode = true;
+    component.marketId = 1;
+    component.ngOnInit();
+  
+    tick();
+  
+    expect(component.title).toBe(CreateMarketConfig.TITLE_EDIT);
+    expect(component.isEditMode).toBe(true);
+    expect(mockMarketService.getMarketDetailsById).toHaveBeenCalledWith(1);
+  }));
+  
+  
+  
+  it('should call the confirmation dialog on cancel', () => {
+    const confirmSpy = jest.spyOn(component.confirmationService, 'confirm');
+  
+    component.onCancel();
+  
+    // Check that the confirmation dialog was called
+    expect(confirmSpy).toHaveBeenCalled();
+  
+    // Get the arguments passed to confirm
+    const confirmArgs = confirmSpy.mock.calls[0][0];
+  
+    // Assert each property individually
+    expect(confirmArgs.message).toBe(
+      component.translateService.instant(
+        CreateMarketConfig.MESSAGES.CONFIRM_MESSAGES.CONFIRM_CANCEL
+      )
+    );
+    expect(confirmArgs.header).toBe('Confirmation');
+    expect(confirmArgs.icon).toBe('pi pi-exclamation-triangle');
+  });
+  
+  it('should reset the form and navigate on confirmation accept', () => {
+    // Spy on form reset and router navigation
+  
+    const formResetSpy = jest.spyOn(component.marketForm, 'reset');
+    const navigateSpy = jest.spyOn(component.router, 'navigate');
+  
+    // Call onCancel method
+    component.onCancel();
+    
+    // Check if the form was reset
+    expect(formResetSpy).toHaveBeenCalled();
+  
+    // Check if the router navigates to the correct URL
+    expect(navigateSpy).toHaveBeenCalledWith(['/markets', component.marketId]);
   });
   
 
