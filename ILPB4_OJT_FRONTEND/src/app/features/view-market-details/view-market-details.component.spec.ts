@@ -99,7 +99,6 @@ describe('ViewMarketDetailsComponent', () => {
     component.marketId = 1;
     component.ngOnInit();
     tick();
-
     expect(mockMarketService.getMarketById).toHaveBeenCalledWith(1);
     expect(component.marketDetails?.name).toBe('Antarctica');
     expect(component.marketDetails?.code).toBe('AA');
@@ -171,7 +170,7 @@ describe('ViewMarketDetailsComponent', () => {
 
     component.setupMenuItems();
     expect(component.items.length).toBeGreaterThan(0);
-    // expect(component.items?.[0]?.items?.[0]?.label).toBe('Delete Market');
+    
 
   }));
 
@@ -234,7 +233,7 @@ describe('ViewMarketDetailsComponent', () => {
   
     component.setupMenuItems();
   
-    // Check that items array and nested properties exist before accessing them
+    
     expect(component.items?.[0]?.items?.[0]?.disabled).toBeTruthy();
   });
   

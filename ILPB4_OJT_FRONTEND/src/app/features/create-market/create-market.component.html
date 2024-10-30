@@ -58,7 +58,7 @@
               [inputId]="subregion.key.toString()"
               [value]="subregion.key"
               formControlName="subregion"
-              
+              [required]="true"
             ></p-radioButton>
           </div>
         </div>
@@ -83,15 +83,17 @@
             maxlength="2"
             autocapitalize="on"
             (input)="hasEditedCode = true"
-            (keydown)="onMarketCodeInput($event)"
+            (keydown)="onMarketCodeInput($event)" 
+            required="true"
           />
-          <span class="divider"></span>
+          <p-divider layout="vertical"></p-divider>
+          <span class="divider" ></span>
           <input
             formControlName="marketName"
             type="text"
             placeholder="{{ 'PAGE.PLACEHOLDERS.ENTER_NAME' | translate }}"
             class="marketname-input"
-            (input)="hasEditedName = true"
+            (input)="hasEditedName = true" required="true"
           />
         </div>
         <div class="error-msg-container">
@@ -191,7 +193,7 @@
     <button
       type="submit"
       class="submit-button"
-      [disabled]="marketForm.invalid"
+      [disabled]="marketForm.invalid || (isEditMode && !marketForm.get('subregion')?.value)"
       (click)="onSubmit()"
     >
       {{ getSubmitButtonText() | translate }}
