@@ -63,9 +63,8 @@ describe('CreateMarketComponent', () => {
     const mockConfirmationService = {
       confirm: jest.fn((confirmation: any) => {
         if (confirmation.accept) {
-          confirmation.accept(); // Simulate the user clicking 'accept'
+          confirmation.accept(); 
         }
-        return confirmation; // Return the confirmation object to satisfy the type
       }),
     };
     
@@ -397,7 +396,7 @@ describe('CreateMarketComponent', () => {
   
   it('should set to edit mode and fetch market data when marketId is present', () => {
     jest.spyOn(component, 'fetchMarketData');
-    component.route.params = of({ id: 1 }); // Simulate route params
+    component.route.params = of({ id: 1 }); 
   
     component.getRoute();
   
