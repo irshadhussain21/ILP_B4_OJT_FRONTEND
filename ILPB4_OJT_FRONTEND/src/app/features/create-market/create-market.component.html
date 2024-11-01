@@ -86,7 +86,7 @@
             (keydown)="onMarketCodeInput($event)" 
             required="true"
           />
-         
+          <p-divider layout="vertical"></p-divider>
           <span class="divider" ></span>
           <input
             formControlName="marketName"
@@ -193,7 +193,7 @@
     <button
       type="submit"
       class="submit-button"
-      [disabled]="marketForm.invalid || (isEditMode && (!isFormModified || !marketForm.get('subregion')?.value))"
+      [disabled]="marketForm.invalid || (isEditMode && !marketForm.get('subregion')?.value)"
       (click)="onSubmit()"
     >
       {{ getSubmitButtonText() | translate }}
