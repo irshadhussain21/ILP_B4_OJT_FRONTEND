@@ -120,8 +120,9 @@
     hasEditedName: boolean = false;
     firstLetterOfRegion: string = ''; // For the first input
     middleLongCode: string = ''; // For the middle input (controlled by form)
-    originalMarketCode: string | null = '';
-    originalMarketName: string | null = '';
+    originalMarketCode: string = '';
+    originalMarketName: string = '';
+    isFormModified: boolean = false;
 
     constructor(
       public fb: FormBuilder,
@@ -141,11 +142,17 @@
      */
     ngOnInit(): void {
       this.initializeForm();
-      this.getRoute();
       this.loadRegions();
+      this.getRoute();
 
       this.setupFieldListeners();
       this.updateLongCode();
+
+      if (this.isEditMode) {
+        this.marketForm.valueChanges.subscribe(() => {
+          this.isFormModified = this.marketForm.dirty; // Set to true if any field is modified
+        });
+      }
     }
 
     /**
@@ -159,6 +166,12 @@
           this.title = CreateMarketConfig.TITLE_EDIT;
           this.fetchMarketData(this.marketId);
         }
+      });
+    }
+
+    trackFormModifications(): void {
+      this.marketForm.valueChanges.subscribe(() => {
+        this.isFormModified = true;
       });
     }
 
@@ -535,7 +548,10 @@
      * @param event - An object containing the updated list of subgroups.
      * @param event.subGroups - The array of MarketSubgroup objects reflecting the current state of subgroups.
      */
-    onSubGroupsChanged(event: { subGroups: MarketSubgroup[] }): void {
+    onSubGroupsChanged(event: {
+      subGroups: MarketSubgroup[];
+      isDirty: boolean;
+    }): void {
       this.subGroups = [...event.subGroups];
       const allSubgroupsDeleted = this.subGroups.every(
         (subGroup) => subGroup.isDeleted
@@ -543,6 +559,10 @@
 
       if (allSubgroupsDeleted) {
         this.marketForm.setErrors(null);
+      }
+
+      if (event.isDirty) {
+        this.isFormModified = true;
       }
     }
 
