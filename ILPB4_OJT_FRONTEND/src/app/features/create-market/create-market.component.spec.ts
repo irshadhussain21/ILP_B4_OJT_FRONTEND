@@ -292,7 +292,7 @@ describe('CreateMarketComponent', () => {
       },
     ];
 
-    component.onSubGroupsChanged({ subGroups: mockSubgroups });
+    component.onSubGroupsChanged({ subGroups: mockSubgroups, isDirty: true });
 
     // Verify that the component's subGroups property is updated correctly
     expect(component.subGroups).toEqual(mockSubgroups);
