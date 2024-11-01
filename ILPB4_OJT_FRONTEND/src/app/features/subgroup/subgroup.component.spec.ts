@@ -59,12 +59,7 @@ describe('SubgroupComponent', () => {
       getSubgroups: jest.fn().mockReturnValue(
         of([
           {
-            subGroupId: 1,
-            subGroupName: 'Sub Group 1',
-            subGroupCode: 'A',
-            marketId: 1,
-            isDeleted: false,
-            isEdited: false,
+            ...testSubGroup
           },
         ])
       ),
@@ -139,46 +134,28 @@ describe('SubgroupComponent', () => {
   describe('Data Loading', () => {
     it('should load subgroups if marketId exists', () => {
       component.marketId = 1;
-      const subGroups: MarketSubgroup[] = [
-        {
-          subGroupId: 1,
-          subGroupName: 'Test Group',
-          subGroupCode: 'A',
-          marketId: 1,
-          marketCode: 'AA',
-          isDeleted: false,
-          isEdited: false,
-        },
-      ];
+      const subGroups: MarketSubgroup[] = [{ ...testSubGroup }];
       mockSubgroupService.getSubgroups.mockReturnValue(of(subGroups));
-
+  
       component.loadSubGroupsIfMarketIdExists();
-
+  
       expect(mockSubgroupService.getSubgroups).toHaveBeenCalledWith(1);
       expect(component.showSubgroup).toBe(true);
       expect(component.rows.length).toBe(subGroups.length);
     });
-
+  
     it('should set form controls based on subgroups data from service', () => {
-      const subGroups: MarketSubgroup[] = [
-        {
-          subGroupId: 1,
-          subGroupName: 'Test Group',
-          subGroupCode: 'A',
-          marketId: 1,
-          marketCode: 'AA',
-          isDeleted: false,
-          isEdited: false,
-        },
-      ];
+      const subGroups: MarketSubgroup[] = [{ ...testSubGroup }];
       mockSubgroupService.getSubgroups.mockReturnValue(of(subGroups));
-
+  
       component.loadSubGroups();
-
+  
       expect(component.rows.length).toBe(1);
       expect(component.showSubgroup).toBe(true);
     });
   });
+  
+
 
   describe('Form Behavior', () => {
     it('should emit valid subgroups on form value changes', fakeAsync(() => {
@@ -186,17 +163,8 @@ describe('SubgroupComponent', () => {
       component.initializeForm();
       component.subscribeToFormChanges();
 
-      const testSubGroup: MarketSubgroup = {
-        subGroupName: 'Test Group',
-        subGroupCode: 'A',
-        marketId: 1,
-        marketCode: 'AA',
-        isDeleted: false,
-        isEdited: false,
-      };
+      component.rows.push(component.createRow({ ...testSubGroup }));
 
-      // Add row with testSubGroup data
-      component.rows.push(component.createRow(testSubGroup));
       component.form.updateValueAndValidity();
       tick(300);
       expect(emitValidSubGroupsSpy).toHaveBeenCalled();
@@ -207,18 +175,7 @@ describe('SubgroupComponent', () => {
       component.initializeForm();
       component.subscribeToFormChanges();
 
-      // Define the invalid test data for the row
-      const testSubGroup: MarketSubgroup = {
-        subGroupName: '',
-        subGroupCode: 'A',
-        marketId: 1,
-        marketCode: 'AA',
-        isDeleted: false,
-        isEdited: false,
-      };
-
-      // Add row with invalid test data
-      component.rows.push(component.createRow(testSubGroup));
+      component.rows.push(component.createRow({ ...testSubGroup, subGroupName: '' }));
 
       // Manually trigger form status evaluation
       component.form.updateValueAndValidity();
@@ -232,27 +189,10 @@ describe('SubgroupComponent', () => {
       component.marketCode = 'AA';
       component.initializeForm();
 
-      const testSubGroupValid: MarketSubgroup = {
-        subGroupName: 'Valid Group',
-        subGroupCode: 'A',
-        marketId: 1,
-        marketCode: 'AA',
-        isDeleted: false,
-        isEdited: false,
-      };
-
-      const testSubGroupInvalid: MarketSubgroup = {
-        subGroupName: '',
-        subGroupCode: 'A',
-        marketId: 1,
-        marketCode: 'AA',
-        isDeleted: false,
-        isEdited: false,
-      };
 
       // Add rows: one valid and one invalid
-      component.rows.push(component.createRow(testSubGroupValid));
-      component.rows.push(component.createRow(testSubGroupInvalid)); // Invalid row
+      component.rows.push(component.createRow({ ...testSubGroup, subGroupName: 'Valid Group', subGroupId:null }));
+      component.rows.push(component.createRow({ ...testSubGroup, subGroupName: '', subGroupId: null })); // Invalid row
 
       // Force update values and validity to reflect changes
       component.form.updateValueAndValidity();
@@ -264,7 +204,8 @@ describe('SubgroupComponent', () => {
       expect(emitSpy).toHaveBeenCalledWith({
         subGroups: [
           {
-            ...testSubGroupValid,
+            ...testSubGroup,
+            subGroupName: 'Valid Group',
             subGroupId: null,
           },
         ],
@@ -416,7 +357,6 @@ describe('SubgroupComponent', () => {
     it('should not apply duplicate error if one subgroup is marked as deleted', () => {
       const row1 = component.createRow({ ...testSubGroup, isDeleted: true });
       const row2 = component.createRow({ ...testSubGroup });
-
       component.rows.controls.push(row1, row2);
 
       component.rows.updateValueAndValidity();
