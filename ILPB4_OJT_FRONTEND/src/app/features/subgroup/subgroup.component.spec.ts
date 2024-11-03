@@ -17,6 +17,8 @@ import {
 } from '@ngx-translate/core';
 import {
   AbstractControl,
+  FormArray,
+  FormBuilder,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
@@ -31,6 +33,7 @@ import { DividerModule } from 'primeng/divider';
 import { MarketSubgroup } from '../../core/models/market';
 import { ChangeDetectorRef, SimpleChanges } from '@angular/core';
 import { CreateMarketConfig } from '../../config/market';
+import { By } from '@angular/platform-browser';
 
 class FakeLoader implements TranslateLoader {
   getTranslation(_lang: string) {
@@ -42,6 +45,7 @@ describe('SubgroupComponent', () => {
   let component: SubgroupComponent;
   let fixture: ComponentFixture<SubgroupComponent>;
   let mockSubgroupService: jest.Mocked<MarketSubgroupService>;
+  let confirmationService: jest.Mocked<ConfirmationService>;
 
   const testSubGroup: MarketSubgroup = {
     subGroupId: 1,
@@ -66,14 +70,11 @@ describe('SubgroupComponent', () => {
     } as unknown as jest.Mocked<MarketSubgroupService>;
 
     const mockConfirmationService = {
-      confirm: jest.fn((confirmation: ConfirmationService) => {
-        // Simulate user acceptance by emitting a value
-        if (confirmation.accept) {
-          confirmation.accept.subscribe(() => {
-            // Simulate the user accepting
-          });
+      confirm: jest.fn((confirmation: any) => {
+        // Directly call the accept function for testing
+        if (confirmation.accept){
+          confirmation.accept()
         }
-        return confirmation;
       }),
     };
 
@@ -102,8 +103,13 @@ describe('SubgroupComponent', () => {
 
     fixture = TestBed.createComponent(SubgroupComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+
+    confirmationService = TestBed.inject(
+      ConfirmationService
+    ) as jest.Mocked<ConfirmationService>;
+    
     component.marketCode = 'AA';
+    fixture.detectChanges();
 
     // Spies to monitor method calls in ngOnInit
     jest.spyOn(component, 'initializeForm');
@@ -111,11 +117,99 @@ describe('SubgroupComponent', () => {
     jest.spyOn(component, 'subscribeToFormChanges');
   });
 
-  describe('Component Initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
+
+  it('should render subgroup template if showSubgroup is true', () => {
+    component.showSubgroup = true;
+    fixture.detectChanges();
+    
+    const subgroupElement = fixture.debugElement.query(By.css('.form-container'));
+    expect(subgroupElement).toBeTruthy();  // Ensure template is rendered
+ });
+
+ 
+ it('should render the empty subgroup template with invalid message if showSubgroup is false and isMarketFormValid is false', () => {
+  component.showSubgroup = false;
+  component.isMarketFormValid = false;
+  fixture.detectChanges();
+
+  const emptySubgroupTemplate = fixture.debugElement.query(By.css('.empty-subgroup-template'));
+  expect(emptySubgroupTemplate).toBeTruthy();
+
+  const invalidMessage = emptySubgroupTemplate.query(By.css('p'));
+  expect(invalidMessage.nativeElement.textContent).toContain('ADD_SUBGROUP_INFO_INVALID'); // Adjust based on actual translation
+});
+
+it('should render the empty subgroup template with valid message if showSubgroup is false and isMarketFormValid is true', () => {
+  component.showSubgroup = false;
+  component.isMarketFormValid = true;
+  fixture.detectChanges();
+
+  const emptySubgroupTemplate = fixture.debugElement.query(By.css('.empty-subgroup-template'));
+  expect(emptySubgroupTemplate).toBeTruthy();
+
+  const validMessage = emptySubgroupTemplate.query(By.css('p'));
+  expect(validMessage.nativeElement.textContent).toContain('ADD_SUBGROUP_INFO_VALID'); // Adjust based on actual translation
+});
+
+it('should disable the empty state button if isMarketFormValid is false', () => {
+  component.showSubgroup = false;
+  component.isMarketFormValid = false;
+  fixture.detectChanges();
+
+  const button = fixture.debugElement.query(By.css('#empty-state-subgroup-button'));
+  expect(button.nativeElement.disabled).toBeTruthy();
+});
+
+it('should enable the empty state button if isMarketFormValid is true', () => {
+  component.showSubgroup = false;
+  component.isMarketFormValid = true;
+  fixture.detectChanges();
+
+  const button = fixture.debugElement.query(By.css('#empty-state-subgroup-button'));
+  expect(button.nativeElement.disabled).toBeFalsy();
+});
+
+
+
+it('should disable the add subgroup button if isMarketFormValid is false', () => {
+  component.showSubgroup = true;
+  component.isMarketFormValid = false;
+  fixture.detectChanges();
+
+  const addButton = fixture.debugElement.query(By.css('#add-subgroup-button'));
+  expect(addButton.nativeElement.disabled).toBeTruthy();
+});
+
+it('should disable "Add Subgroup" button if canAddSubgroup returns false', () => {
+  component.showSubgroup = true;
+  jest.spyOn(component, 'canAddSubgroup').mockReturnValue(false);
+  fixture.detectChanges();
+
+  const addButton = fixture.debugElement.query(By.css('#add-subgroup-button'));
+  expect(addButton.nativeElement.disabled).toBeTruthy();
+});
+
+it('should enable the add subgroup button if isMarketFormValid is true and canAddSubgroup is true', () => {
+  component.showSubgroup = true;
+  component.isMarketFormValid = true;
+  jest.spyOn(component, 'canAddSubgroup').mockReturnValue(true);
+  fixture.detectChanges();
+
+  const addButton = fixture.debugElement.query(By.css('#add-subgroup-button'));
+  expect(addButton.nativeElement.disabled).toBeFalsy();
+});
+
+it('should add a row when addRow() is called', () => {
+  const initialRowCount = component.rows.length;
+  component.addRow();
+  expect(component.rows.length).toBe(initialRowCount + 1);
+});
+
+  describe('Component Initialization', () => {
     it('should call initializeForm, loadSubGroupsIfMarketIdExists, and subscribeToFormChanges on ngOnInit', () => {
       component.ngOnInit();
 
