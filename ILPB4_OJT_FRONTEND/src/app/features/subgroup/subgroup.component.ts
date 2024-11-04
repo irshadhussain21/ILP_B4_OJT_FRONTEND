@@ -162,13 +162,10 @@ export class SubgroupComponent implements OnInit {
 
   /**
    * Loads existing subgroups if `marketId` is provided.
-   * Adds a new empty row if no subgroups are found.
    */
   loadSubGroupsIfMarketIdExists(): void {
     if (this.marketId) {
       this.loadSubGroups();
-    } else {
-      this.addRow();
     }
   }
 

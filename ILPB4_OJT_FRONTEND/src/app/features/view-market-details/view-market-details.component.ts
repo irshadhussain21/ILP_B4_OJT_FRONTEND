@@ -148,7 +148,7 @@ export class ViewMarketDetailsComponent implements OnInit {
   /*
    *The loadMarketDetails method fetches market data via the MarketService, assigns the retrieved data to the marketDetails properties.
    */
-  private loadMarketDetails() {
+ loadMarketDetails() {
     this.marketService.getMarketById(this.marketId!).subscribe({
       next: (data: Market) => {
         this.marketDetails = data;
@@ -168,7 +168,7 @@ export class ViewMarketDetailsComponent implements OnInit {
    * option that is disabled if the market has subgroups, and configures commands to trigger methods like
    * confirmDeleteMarket when an option is selected.
    */
-  private setupMenuItems() {
+  setupMenuItems() {
     this.items = [
       {
         items: [
