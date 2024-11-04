@@ -78,6 +78,15 @@ import { PaginationConstants } from '../../config/market';
   styleUrls: ['./market-list.component.scss']
 })
 export class MarketlistComponent implements OnInit {
+  transformRegion(regionKey: string) {
+    throw new Error('Method not implemented.');
+  }
+  sortMarkets(arg0: string, arg1: string) {
+    throw new Error('Method not implemented.');
+  }
+  filterByRegion() {
+    throw new Error('Method not implemented.');
+  }
 
   /**
    * Title for the market list component
@@ -159,13 +168,13 @@ export class MarketlistComponent implements OnInit {
   subRegionsMap: { [key: string]: string } = {}; 
    
   constructor(private marketService: MarketService) {
-    this.regions = this.getRegions();
+
   }
  
 
   ngOnInit() {
     this.loadMarkets(1,this.rows);
-
+    this.regions = this.getRegions();
   }
   /**The getRegions() function generates a list of regions by mapping the numeric values from the RegionEnum to their 
    * corresponding labels from the RegionFullForms map. */
@@ -174,7 +183,7 @@ export class MarketlistComponent implements OnInit {
       .filter(key => !isNaN(Number(RegionEnum[key as keyof typeof RegionEnum])))
       .map(key => ({
         label: RegionFullForms[RegionEnum[key as keyof typeof RegionEnum]],
-        value: RegionEnum[key as keyof typeof RegionEnum], 
+        value: RegionEnum[key as keyof typeof RegionEnum],
       }));
   } 
    /**
@@ -186,7 +195,7 @@ export class MarketlistComponent implements OnInit {
         this.markets = response.markets || []; 
         this.markets.sort((a: Market, b: Market) => a.name.localeCompare(b.name));
         this.filteredMarkets = this.markets;
-        this.totalMarkets = response.totalCount ;
+        this.totalMarkets = response.totalCount;
         console.log(this.totalMarkets);
       
       },
@@ -221,7 +230,7 @@ export class MarketlistComponent implements OnInit {
    * Clears the search filter and resets the filtered list to the original markets list
    */
   clearFilter() {
-    this.searchText = ''; 
+    this.searchText = '';
     this.filterMarkets();  
   }
 
