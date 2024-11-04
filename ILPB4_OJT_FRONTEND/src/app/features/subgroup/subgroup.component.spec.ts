@@ -24,14 +24,18 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputTextModule } from 'primeng/inputtext';
 import { DividerModule } from 'primeng/divider';
 import { MarketSubgroup } from '../../core/models/market';
-import { ChangeDetectorRef, Component, NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  NO_ERRORS_SCHEMA,
+  SimpleChanges,
+} from '@angular/core';
 import { CreateMarketConfig } from '../../config/market';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -46,7 +50,6 @@ describe('SubgroupComponent', () => {
   let component: SubgroupComponent;
   let fixture: ComponentFixture<SubgroupComponent>;
   let mockSubgroupService: jest.Mocked<MarketSubgroupService>;
-  let confirmDialog: ConfirmDialog;
 
   const testSubGroup: MarketSubgroup = {
     subGroupId: 1,
@@ -70,12 +73,19 @@ describe('SubgroupComponent', () => {
       ),
     } as unknown as jest.Mocked<MarketSubgroupService>;
 
+    const mockConfirmationService = {
+      confirm: jest.fn((confirmation: any) => {
+        if (confirmation.accept) {
+          confirmation.accept();
+        }
+      }),
+    };
+
     // Configure the testing module
     await TestBed.configureTestingModule({
       imports: [
         NoopAnimationsModule,
         ReactiveFormsModule,
-        ConfirmDialogModule,
         TableModule,
         ButtonModule,
         InputGroupModule,
@@ -90,15 +100,13 @@ describe('SubgroupComponent', () => {
       providers: [
         provideHttpClient(),
         { provide: MarketSubgroupService, useValue: mockSubgroupService },
-        ConfirmationService,
+        { provide: ConfirmationService, useValue: mockConfirmationService },
       ],
-      declarations: [ConfirmDialog],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SubgroupComponent);
     component = fixture.componentInstance;
-    confirmDialog = fixture.debugElement.query(By.css('p-confirmdialog')).componentInstance;
-
     component.marketCode = 'AA';
     fixture.detectChanges();
 
@@ -215,29 +223,87 @@ describe('SubgroupComponent', () => {
     });
   });
 
-
-
-  describe('Delete Row Confirmation Dialog', () => {
-    it('should display the header', () => {
-        confirmDialog.header = 'Confirmation';
-        confirmDialog.visible = true;
-        fixture.detectChanges();
-
-        const confirmDialogEl = fixture.debugElement.query(By.css('.p-dialog-title')).nativeElement;
-        expect(confirmDialogEl).toBeTruthy();
-        expect(confirmDialogEl.textContent).toContain('Confirmation');
+  describe('deleteRow method', () => {
+    beforeEach(() => {
+      // Set up the form with 'rows' FormArray containing one item
+      component.form = new FormGroup({
+        rows: new FormArray([
+          new FormGroup({
+            isDeleted: new FormControl(false),
+          }),
+        ]),
+      });
     });
 
-    
+    it('should not call confirmation dialog if rowsArray is null', () => {
+      // Set up the form without 'rows' FormArray
+      component.form = new FormGroup({});
+
+      const confirmSpy = jest.spyOn(
+        component['confirmationService'],
+        'confirm'
+      );
+      component.deleteRow(0);
+
+      // Verify that the confirmation dialog was not called
+      expect(confirmSpy).not.toHaveBeenCalled();
+    });
+
+    it('should call confirmation dialog and delete the row on confirmation accept', () => {
+      // Spy on the methods we want to verify were called
+      const emitSpy = jest.spyOn(component, 'emitValidSubGroups');
+      const confirmSpy = jest
+        .spyOn(component['confirmationService'], 'confirm')
+        .mockImplementation((config: any) => {
+          // Simulate the "accept" function of the confirmation dialog
+          return config.accept();
+        });
+
+      component.deleteRow(0);
+
+      // Check that the confirmation dialog was called
+      expect(confirmSpy).toHaveBeenCalled();
+
+      // Verify the row's isDeleted is set to true and marked as dirty
+      const row = (component.form.get('rows') as FormArray).at(0);
+      expect(row.get('isDeleted')?.value).toBe(true);
+      expect(row.dirty).toBe(true);
+
+      // Verify that emitValidSubGroups was called
+      expect(emitSpy).toHaveBeenCalled();
+
+      // Verify that showSubgroup is updated based on undeleted rows
+      expect(component.showSubgroup).toBe(false); // assuming only one row was present and now deleted
+    });
+
+    it('should not delete the row if confirmation is rejected', () => {
+      // Spy on confirmation service to simulate rejection and verify dialog is shown
+      const confirmSpy = jest
+        .spyOn(component['confirmationService'], 'confirm')
+        .mockImplementation((config: any) => {
+          // Simulate the "reject" function of the confirmation dialog
+          return config.reject();
+        });
+
+      // Call deleteRow
+      component.deleteRow(0);
+
+      // Check that the confirmation dialog was called
+      expect(confirmSpy).toHaveBeenCalled();
+
+      // Verify that isDeleted is not modified and row is not marked as dirty
+      const row = (component.form.get('rows') as FormArray).at(0);
+      expect(row.get('isDeleted')?.value).toBe(false);
+      expect(row.dirty).toBe(false);
+    });
   });
 
-  describe('Functionality Tests', () => {
+  describe('Add subgroup row in form', () => {
     it('should add a row when addRow() is called', () => {
       const initialRowCount = component.rows.length;
       component.addRow();
       expect(component.rows.length).toBe(initialRowCount + 1);
     });
-    
   });
 
   describe('Component Initialization', () => {
