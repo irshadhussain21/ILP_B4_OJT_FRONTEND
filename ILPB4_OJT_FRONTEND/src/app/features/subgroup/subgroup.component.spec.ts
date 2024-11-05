@@ -223,6 +223,120 @@ describe('SubgroupComponent', () => {
     });
   });
 
+  describe('canAddSubgroup() - flag to enable/disable add subgroup button', () => {
+    let row1: FormGroup;
+    let row2: FormGroup;
+  
+    beforeEach(() => {
+      // Create mock FormGroups for rows with required structure
+      row1 = component.createRow({ ...testSubGroup});
+      row2 = component.createRow({ ...testSubGroup });
+      
+      // Spy on isSubGroupFormInvalid event emitter
+      jest.spyOn(component.isSubGroupFormInvalid, 'emit');
+    });
+  
+    it('should return true when all rows are valid and emit false', () => {
+      // Set rows to valid states
+      row1.setErrors(null);
+      row2.setErrors(null);
+  
+      // Add rows to controls
+      component.rows.controls = [row1, row2];
+  
+      // Call canAddSubgroup and check return value
+      const result = component.canAddSubgroup();
+      expect(result).toBe(true);
+  
+      // Check that isSubGroupFormInvalid is emitted with false
+      expect(component.isSubGroupFormInvalid.emit).toHaveBeenCalledWith(false);
+    });
+  
+    it('should return false when any non-deleted row is invalid and emit true', () => {
+      // Set one row to invalid state
+      row1.setErrors({ required: true });
+  
+      // Add rows to controls
+      component.rows.controls = [row1, row2];
+  
+      // Call canAddSubgroup and check return value
+      const result = component.canAddSubgroup();
+      expect(result).toBe(false);
+  
+      // Check that isSubGroupFormInvalid is emitted with true
+      expect(component.isSubGroupFormInvalid.emit).toHaveBeenCalledWith(true);
+    });
+  
+    it('should ignore deleted rows when checking validity', () => {
+      // Set the deleted row to an invalid state
+      row1.get('isDeleted')?.setValue(true);
+      row1.setErrors({ required: true });
+  
+      // Set the other row to valid
+      row2.setErrors(null);
+  
+      // Add rows to controls
+      component.rows.controls = [row1, row2];
+  
+      // Call canAddSubgroup and check return value
+      const result = component.canAddSubgroup();
+      expect(result).toBe(true);
+  
+      // Check that isSubGroupFormInvalid is emitted with false
+      expect(component.isSubGroupFormInvalid.emit).toHaveBeenCalledWith(false);
+    });
+  
+    it('should return true and emit false if there are no rows', () => {
+      // Clear any rows
+      component.rows.controls = [];
+  
+      // Call canAddSubgroup and check return value
+      const result = component.canAddSubgroup();
+      expect(result).toBe(true);
+  
+      // Check that isSubGroupFormInvalid is emitted with false
+      expect(component.isSubGroupFormInvalid.emit).toHaveBeenCalledWith(false);
+    });
+  });
+  
+
+  describe('click() functionality of empty state add subgroup button', () => {
+    it('should set showSubgroup to true', () => {
+      // Act: Call showSubgroupFunc
+      component.showSubgroupFunc();
+  
+      // Assert: showSubgroup should be true
+      expect(component.showSubgroup).toBe(true);
+    });
+  
+    it('should add a row if all rows are marked as deleted', () => {
+      // Arrange: Add rows that are all marked as deleted
+      const deletedRow = component.createRow({ ...testSubGroup, isDeleted: true });
+      component.rows.controls.push(deletedRow);
+  
+      // Act: Call showSubgroupFunc
+      component.showSubgroupFunc();
+  
+      // Assert: A new row should be added
+      expect(component.rows.controls.length).toBe(2);
+      expect(component.rows.controls[1].get('isDeleted')?.value).toBe(false);
+    });
+  
+    it('should not add a row if not all rows are marked as deleted', () => {
+      // Arrange: Add a mix of deleted and non-deleted rows
+      const deletedRow = component.createRow({ ...testSubGroup, isDeleted: true });
+      const activeRow = component.createRow({ ...testSubGroup, isDeleted: false });
+      component.rows.controls.push(deletedRow, activeRow);
+  
+      // Act: Call showSubgroupFunc
+      component.showSubgroupFunc();
+  
+      // Assert: No new row should be added
+      expect(component.rows.controls.length).toBe(2);
+    });
+  });
+  
+
   describe('deleteRow method', () => {
     beforeEach(() => {
       // Set up the form with 'rows' FormArray containing one item
@@ -344,6 +458,18 @@ describe('SubgroupComponent', () => {
       expect(component.rows.length).toBe(1);
       expect(component.showSubgroup).toBe(true);
     });
+
+    it('should add a row if no subgroups are returned from the service', () => {
+      // Arrange: mock the service response with an empty array
+      mockSubgroupService.getSubgroups.mockReturnValue(of([]));
+  
+      // Act: call loadSubGroups
+      component.loadSubGroups();
+  
+      // Assert: check if one row is added and showSubgroup remains false
+      expect(component.rows.length).toBe(1); // a new row should be added
+      expect(component.showSubgroup).toBe(false);
+    });
   });
 
   describe('Form Behavior', () => {
@@ -417,26 +543,27 @@ describe('SubgroupComponent', () => {
   });
 
   describe('ngOnChanges', () => {
-    it('should update marketCode to uppercase when marketCode changes', () => {
-      // Simulate `marketCode` change
-      const changes: SimpleChanges = {
+    let changes: SimpleChanges;
+
+    beforeEach(() => {
+      // Define the base `changes` object
+      changes = {
         marketCode: {
-          currentValue: 'BB',
-          previousValue: 'AA',
+          currentValue: 'bb',
+          previousValue: 'aa',
           firstChange: false,
           isFirstChange: () => false,
         },
       };
+    });
 
-      // Call ngOnChanges with the simulated change
+    it('should update marketCode to uppercase when marketCode changes', () => {
       component.ngOnChanges(changes);
 
-      // Check if marketCode has been updated to uppercase
       expect(component.marketCode).toBe('BB');
     });
 
     it('should propagate updated marketCode to each row control', () => {
-      // Set up initial form rows
       const row1 = component.createRow({
         ...testSubGroup,
         subGroupName: 'Test 1',
@@ -450,19 +577,12 @@ describe('SubgroupComponent', () => {
 
       component.rows.controls.push(row1, row2);
 
-      component.rows.updateValueAndValidity();
+      changes['marketCode'].currentValue = 'cc';
 
-      // Update marketCode and trigger ngOnChanges
-      component.marketCode = 'BB';
-      component.rows.controls.forEach((row) => {
-        row
-          .get('marketCode')
-          ?.setValue(component.marketCode, { emitEvent: false });
-      });
+      component.ngOnChanges(changes);
 
-      // Verify that each row's marketCode control is updated to the uppercase marketCode
       component.rows.controls.forEach((row) => {
-        expect(row.get('marketCode')?.value).toBe('BB');
+        expect(row.get('marketCode')?.value).toBe('CC');
       });
     });
   });
@@ -493,6 +613,36 @@ describe('SubgroupComponent', () => {
       expect(rowFormGroup.get('isEdited')?.value).toBe(false);
     });
   });
+
+  describe('Row FormGroup Value Changes', () => {
+    let row: FormGroup;
+  
+    beforeEach(() => {
+      // Set up a test row with `createRow` method
+      row = component.createRow(testSubGroup);
+    });
+  
+    it('should convert subGroupCode to uppercase on value change', () => {
+      row.get('subGroupCode')?.setValue('b');
+      expect(row.get('subGroupCode')?.value).toBe('B');
+    });
+  
+    it('should set isEdited to true when subGroupId is present and subGroupCode is modified', () => {
+      row.get('subGroupCode')?.setValue('c');
+      expect(row.get('isEdited')?.value).toBe(true);
+    });
+  
+    it('should convert subGroupName to uppercase on value change', () => {
+      row.get('subGroupName')?.setValue('newname');
+      expect(row.get('subGroupName')?.value).toBe('NEWNAME');
+    });
+  
+    it('should set isEdited to true when subGroupId is present and subGroupName is modified', () => {
+      row.get('subGroupName')?.setValue('anotherName');
+      expect(row.get('isEdited')?.value).toBe(true);
+    });
+  });
+  
 
   describe('Form Control Validators', () => {
     it('should apply required and pattern validators on subGroupCode control', () => {
@@ -581,6 +731,44 @@ describe('SubgroupComponent', () => {
       expect(row1.hasError('duplicateSubgroupName')).toBeFalsy();
       expect(row2.hasError('duplicateSubgroupCode')).toBeFalsy();
       expect(row2.hasError('duplicateSubgroupName')).toBeFalsy();
+    });
+  });
+
+  describe('duplicateSubgroupCodeValidator', () => {
+    let formGroup: FormGroup;
+    let otherFormGroup: FormGroup;
+  
+    beforeEach(() => {
+      formGroup = component.createRow({ ...testSubGroup ,subGroupCode: 'A1', marketCode: 'M1' });
+      otherFormGroup = component.createRow({ ...testSubGroup, subGroupCode: 'A1', marketCode: 'M1' });
+      component.rows.controls = [formGroup, otherFormGroup];
+    });
+  
+    it('should return null when there are no duplicate subGroupCodes', () => {
+      formGroup.get('subGroupCode')?.setValue('A2');
+      const validatorFn = component.duplicateSubgroupCodeValidator();
+      const result = validatorFn(formGroup);
+      expect(result).toBeNull();
+    });
+  
+    it('should return duplicateSubgroupCode error when a duplicate subGroupCode is found in the same market', () => {
+      const validatorFn = component.duplicateSubgroupCodeValidator();
+      const result = validatorFn(formGroup);
+      expect(result).toEqual({ duplicateSubgroupCode: true });
+    });
+  
+    it('should return null when duplicate subGroupCode exists in a different market', () => {
+      otherFormGroup.get('marketCode')?.setValue('M2');
+      const validatorFn = component.duplicateSubgroupCodeValidator();
+      const result = validatorFn(formGroup);
+      expect(result).toBeNull();
+    });
+  
+    it('should ignore deleted rows when checking for duplicates', () => {
+      otherFormGroup.get('isDeleted')?.setValue(true);
+      const validatorFn = component.duplicateSubgroupCodeValidator();
+      const result = validatorFn(formGroup);
+      expect(result).toBeNull();
     });
   });
 });
