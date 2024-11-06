@@ -295,7 +295,6 @@ export class SubgroupComponent implements OnInit {
       if (row.get('subGroupId')?.value !== null) {
         row.get('isEdited')?.setValue(true, { emitEvent: false });
       }
-      row.markAsDirty();
     });
     return row;
   }
