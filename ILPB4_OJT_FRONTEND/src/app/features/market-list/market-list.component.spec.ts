@@ -11,6 +11,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { MarketService } from '../../services/market.service';
+import { waitForAsync } from '@angular/core/testing';
 
 class FakeLoader implements TranslateLoader {
   getTranslation(lang: string) {
@@ -158,7 +159,7 @@ describe('MarketlistComponent', () => {
     expect(component.loadMarkets).toHaveBeenCalledWith(1, component.selectedRowsPerPage, component.searchText);
   });
 
-  it('should load markets with correct parameters on loadMarkets', () => {
+  it('should load markets with correct parameters on loadMarkets', waitForAsync(() => {
     // Arrange: Set up any initial values required for loadMarkets
     const pageNo = 1;
     const rowsPerPage = 10;
@@ -183,57 +184,69 @@ describe('MarketlistComponent', () => {
     // Act: Call the loadMarkets method
     component.loadMarkets(pageNo, rowsPerPage, searchText);
   
-    // Assert: Check that the markets were loaded correctly
-    expect(mockMarketService.getAllMarkets).toHaveBeenCalledWith(pageNo, rowsPerPage, searchText);
-    expect(component.markets).toEqual([{
-      id: 1,
-      name: 'Market 1',
-      code: 'M1',
-      longMarketCode: 'L-M1.AA.AA',
-      region: 'Region 1',
-      subRegion: 'Subregion 1',
-      marketSubGroups: [],
-    }]);
-    expect(component.totalMarkets).toBe(1);
-  });
+    // Wait for async operations to complete
+    fixture.whenStable().then(() => {
+      // Assert: Check that the markets were loaded correctly
+      expect(mockMarketService.getAllMarkets).toHaveBeenCalledWith(pageNo, rowsPerPage, searchText);
+      expect(component.markets).toEqual([
+        {
+          id: 1,
+          name: 'Market 1',
+          code: 'M1',
+          longMarketCode: 'L-M1.AA.AA',
+          region: 'Region 1',
+          subRegion: 'Subregion 1',
+          marketSubGroups: [],
+        },
+      ]);
+      expect(component.totalMarkets).toBe(1);
+    });
+  }));
+  
 
-  it('should handle empty market response correctly in loadMarkets', () => {
+  it('should handle empty market response correctly in loadMarkets', waitForAsync(() => {
     // Arrange: Set up initial values for loadMarkets
     const pageNo = 1;
     const rowsPerPage = 10;
     const searchText = 'Non-existent Market';
-
+  
     // Mock the getAllMarkets method of the MarketService to return an empty response
     mockMarketService.getAllMarkets.mockReturnValue(of({
       markets: [],
       totalCount: 0,
     }));
-
+  
     // Act: Call the loadMarkets method
     component.loadMarkets(pageNo, rowsPerPage, searchText);
+  
+    // Wait for async operations to complete
+    fixture.whenStable().then(() => {
+      // Assert: Check that markets are set to an empty array
+      expect(component.markets).toEqual([]);
+      // Assert: Check that totalMarkets is updated to 0
+      expect(component.totalMarkets).toBe(0);
+    });
+  }));
 
-    // Assert: Check that markets are set to an empty array
-    expect(component.markets).toEqual([]);
-    // Assert: Check that totalMarkets is updated to 0
-    expect(component.totalMarkets).toBe(0);
-  });
-
-  it('should filter markets based on selected regions', () => {
+  it('should filter markets based on selected regions', waitForAsync(() => {
     // Arrange: Set initial values
     component.markets = [
       { id: 1, name: 'Market 1', code: 'M1', longMarketCode: 'L-M1.AA.AA', region: 'Region 1', subRegion: 'Subregion 1', marketSubGroups: [] },
       { id: 2, name: 'Market 2', code: 'M2', longMarketCode: 'L-M2.AA.AA', region: 'Region 2', subRegion: 'Subregion 2', marketSubGroups: [] },
     ];
     component.selectedRegions = ['Region 1']; // Set selected regions for filtering
-
-    // Act: Call the filterMarkets method
+  
+    // Act: Call the filterMarketsByRegion method
     component.filterMarketsByRegion();
-
-    // Assert: Check that filteredMarkets only contains the markets from selectedRegions
-    expect(component.filteredMarkets).toEqual([
-      { id: 1, name: 'Market 1', code: 'M1', longMarketCode: 'L-M1.AA.AA', region: 'Region 1', subRegion: 'Subregion 1', marketSubGroups: [] },
-    ]);
-  });
+  
+    // Wait for any asynchronous operations if present
+    fixture.whenStable().then(() => {
+      // Assert: Check that filteredMarkets only contains the markets from selectedRegions
+      expect(component.filteredMarkets).toEqual([
+        { id: 1, name: 'Market 1', code: 'M1', longMarketCode: 'L-M1.AA.AA', region: 'Region 1', subRegion: 'Subregion 1', marketSubGroups: [] },
+      ]);
+    });
+  }));
 
   it('should not filter markets if no regions are selected', () => {
     // Arrange: Set initial markets
@@ -249,17 +262,36 @@ describe('MarketlistComponent', () => {
     // Assert: Check that filteredMarkets still contains all markets
     expect(component.filteredMarkets).toEqual(component.markets);
   });
+  
+  it('should reset filters and pagination on clearFilter', () => {
+    // Arrange: Set initial values for searchText and selectedRegions
+    component.searchText = 'Market';
+    component.selectedRegions = ['Region 1', 'Region 2'];
 
-  it('should handle region transformations correctly', () => {
-    // Arrange: Set some regions
-    component.regions = ['Region 1', 'Region 2'];
+    // Act: Call clearFilter method
+    component.clearFilter();
 
-    // Act: Call the transformRegions method
-    component.transformRegion('Region 1');
+    // Assert: Verify that searchText and selectedRegions are reset
+    expect(component.searchText).toBe('');
+    expect(component.selectedRegions).toEqual([]);
+    expect(component.first).toBe(0);
+  });
+  it('should filter markets by selected region', () => {
+    // Arrange: Define markets and selected region
+    component.markets = [
+      { id: 1, name: 'Market 1', code: 'M1', longMarketCode: 'L-M1.AA.AA', region: 'Region 1', subRegion: 'Subregion 1', marketSubGroups: [] },
+      { id: 2, name: 'Market 2', code: 'M2', longMarketCode: 'L-M2.AA.AA', region: 'Region 2', subRegion: 'Subregion 2', marketSubGroups: [] },
+    ];
+    component.selectedRegions = ['Region 1'];
 
-    // Assert: Check that transformed regions are correctly set
-    expect(component.selectedRegions).toEqual(['Region 1', 'Region 2']);
+    // Act: Call the filterByRegion method
+    component.filterByRegion();
+
+    // Assert: Verify that only markets in 'Region 1' are in filteredMarkets
+    expect(component.filteredMarkets).toEqual([
+      { id: 1, name: 'Market 1', code: 'M1', longMarketCode: 'L-M1.AA.AA', region: 'Region 1', subRegion: 'Subregion 1', marketSubGroups: [] },
+    ]);
   });
 
-  // Additional tests can be added as necessary
+
 });

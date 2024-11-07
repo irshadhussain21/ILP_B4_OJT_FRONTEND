@@ -78,9 +78,7 @@ import { PaginationConstants } from '../../config/market';
   styleUrls: ['./market-list.component.scss']
 })
 export class MarketlistComponent implements OnInit {
-  transformRegion(regionKey: string) {
-    throw new Error('Method not implemented.');
-  }
+ 
   sortMarkets(arg0: string, arg1: string) {
     throw new Error('Method not implemented.');
   }
