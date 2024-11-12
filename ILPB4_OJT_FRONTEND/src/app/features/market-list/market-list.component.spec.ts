@@ -47,6 +47,7 @@ describe('MarketlistComponent', () => {
     mockRouter = {
       navigate: jest.fn(),
     } as unknown as Router;
+    
 
     // Mock the ActivatedRoute
     const mockActivatedRoute = {
@@ -264,34 +265,139 @@ describe('MarketlistComponent', () => {
   });
   
   it('should reset filters and pagination on clearFilter', () => {
-    // Arrange: Set initial values for searchText and selectedRegions
+    // Arrange: Set initial values for searchText, selectedRegions, and first
     component.searchText = 'Market';
     component.selectedRegions = ['Region 1', 'Region 2'];
-
+    component.first = 5; // Assume 5 to simulate pagination not at the start
+  
     // Act: Call clearFilter method
     component.clearFilter();
-
-    // Assert: Verify that searchText and selectedRegions are reset
+  
+    // Assert: Verify that searchText, selectedRegions, and first are reset
     expect(component.searchText).toBe('');
     expect(component.selectedRegions).toEqual([]);
     expect(component.first).toBe(0);
   });
-  it('should filter markets by selected region', () => {
-    // Arrange: Define markets and selected region
+  
+  it('should handle page change and update first value correctly', () => {
+    // Arrange: Set initial page values
+    component.first = 0; // Assume first is 0 initially
+    component.selectedRowsPerPage = 10;
+  
+    // Act: Simulate a page change
+    component.onPageChange({ first: 10, rows: 10 });
+  
+    // Assert: Verify that first value is updated to 10
+    expect(component.first).toBe(10);
+  });
+
+  it('should sort the markets correctly based on the provided sort field', () => {
+    // Arrange: Set initial markets
     component.markets = [
       { id: 1, name: 'Market 1', code: 'M1', longMarketCode: 'L-M1.AA.AA', region: 'Region 1', subRegion: 'Subregion 1', marketSubGroups: [] },
       { id: 2, name: 'Market 2', code: 'M2', longMarketCode: 'L-M2.AA.AA', region: 'Region 2', subRegion: 'Subregion 2', marketSubGroups: [] },
     ];
-    component.selectedRegions = ['Region 1'];
-
-    // Act: Call the filterByRegion method
-    component.filterByRegion();
-
-    // Assert: Verify that only markets in 'Region 1' are in filteredMarkets
-    expect(component.filteredMarkets).toEqual([
+  
+    // Act: Call the onSort method with a sort field (e.g., sort by name)
+    component.onSort({ field: 'name', order: 1 });
+  
+    // Assert: Check that markets are sorted by name in ascending order
+    expect(component.markets[0].name).toBe('Market 1');
+    expect(component.markets[1].name).toBe('Market 2');
+  });
+  
+  it('should filter markets correctly when multiple regions are selected', () => {
+    // Arrange: Set initial values
+    component.markets = [
       { id: 1, name: 'Market 1', code: 'M1', longMarketCode: 'L-M1.AA.AA', region: 'Region 1', subRegion: 'Subregion 1', marketSubGroups: [] },
-    ]);
+      { id: 2, name: 'Market 2', code: 'M2', longMarketCode: 'L-M2.AA.AA', region: 'Region 2', subRegion: 'Subregion 2', marketSubGroups: [] },
+      { id: 3, name: 'Market 3', code: 'M3', longMarketCode: 'L-M3.AA.AA', region: 'Region 1', subRegion: 'Subregion 3', marketSubGroups: [] },
+    ];
+    component.selectedRegions = [
+      { value: 'Region 1' }, 
+      { value: 'Region 2' }
+    ]; // Multiple regions selected, ensuring the structure matches
+  
+    // Mock the loadMarkets method to avoid real API calls
+    const loadMarketsSpy = jest.spyOn(component, 'loadMarkets').mockImplementation(() => {});
+  
+    // Act: Call the filterMarketsByRegion method
+    component.filterMarketsByRegion();
+  
+    // Assert: Ensure loadMarkets was called with the correct parameters
+    expect(loadMarketsSpy).toHaveBeenCalledWith(
+      1, // page number
+      component.selectedRowsPerPage, // selected rows per page
+      component.searchText, // search text
+      'Region 1,Region 2' // the joined regions
+    );
+    
+    // Assert: If selected regions are empty, filteredMarkets should be assigned all markets
+    component.selectedRegions = []; // No regions selected
+    component.filterMarketsByRegion();
+    expect(component.filteredMarkets).toEqual(component.markets); // All markets should be shown
+  });
+  
+
+  it('should handle empty searchText and load all markets', () => {
+    // Arrange: Set searchText to an empty string
+    component.searchText = '';
+  
+    // Mock the loadMarkets method to simulate an empty search
+    jest.spyOn(component, 'loadMarkets');
+  
+    // Act: Call the filterMarkets method
+    component.filterMarkets();
+  
+    // Assert: Verify that loadMarkets is called to load all markets with an empty search text
+    expect(component.loadMarkets).toHaveBeenCalledWith(1, component.selectedRowsPerPage, '');
   });
 
-
+  it('should transform region enum correctly in the template', () => {
+    // Arrange: Set initial values
+    component.markets = [
+      {
+        id: 1, name: 'Market 1', region: 'R1',
+        code: '',
+        longMarketCode: '',
+        subRegion: ''
+      }, // Use region codes as in RegionEnum
+      {
+        id: 2, name: 'Market 2', region: 'R2',
+        code: '',
+        longMarketCode: '',
+        subRegion: ''
+      }
+    ];
+  
+    // Act: Trigger change detection to reflect the transformation
+    fixture.detectChanges();
+  
+    // Assert: Check if the region names are transformed correctly using getRegions
+    const regionElements = fixture.nativeElement.querySelectorAll('.market-region');
+    expect(regionElements[0].textContent).toBe('Full Form of Region 1');  // Transformed value for R1
+    expect(regionElements[1].textContent).toBe('Full Form of Region 2');  // Transformed value for R2
+  });
+  
+  it('should clear searchText, reset pagination, and call filterMarkets on clearFilter', () => {
+    // Arrange: Set initial values
+    component.searchText = 'some text'; // Set an initial search text
+    component.first = 10; // Set a non-zero page number to simulate pagination
+  
+    // Mock the filterMarkets method to check if it gets called
+    jest.spyOn(component, 'filterMarkets'); 
+  
+    // Act: Call the clearFilter method
+    component.clearFilter();
+  
+    // Assert: Check that searchText is cleared
+    expect(component.searchText).toBe(''); 
+  
+    // Assert: Check that first (pagination) is reset to 0
+    expect(component.first).toBe(0); 
+  
+    // Assert: Check that filterMarkets was called
+    expect(component.filterMarkets).toHaveBeenCalled(); 
+  });
+  
 });

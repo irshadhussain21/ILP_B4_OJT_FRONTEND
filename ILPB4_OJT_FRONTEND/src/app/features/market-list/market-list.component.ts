@@ -79,12 +79,12 @@ import { PaginationConstants } from '../../config/market';
 })
 export class MarketlistComponent implements OnInit {
  
-  sortMarkets(arg0: string, arg1: string) {
-    throw new Error('Method not implemented.');
-  }
-  filterByRegion() {
-    throw new Error('Method not implemented.');
-  }
+  // sortMarkets(arg0: string, arg1: string) {
+  //   throw new Error('Method not implemented.');
+  // }
+  // filterByRegion() {
+  //   throw new Error('Method not implemented.');
+  // }
 
   /**
    * Title for the market list component
@@ -229,7 +229,9 @@ export class MarketlistComponent implements OnInit {
    */
   clearFilter() {
     this.searchText = '';
-    this.filterMarkets();  
+    this.selectedRegions = []; // Reset selectedRegions
+    this.first = 0; // Reset pagination to the first page
+    this.filterMarkets();
   }
 
   onSort(event: any) {
@@ -285,7 +287,6 @@ export class MarketlistComponent implements OnInit {
     console.log('Current Page Number:', pageNumber);
     
   }
-
   /**
    * Function to handle rows per page change
    */
